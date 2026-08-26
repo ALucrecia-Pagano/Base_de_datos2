@@ -2,7 +2,7 @@
 
 # Protocolo de Seguridad — TP2 Concurrencia e IA
 
-Alumno: Pagano Amanda.
+Alumnos: Liendo Mateo, Avila Lucas, Pagano Amanda.
 
 Comisión: 4.
 
@@ -62,7 +62,7 @@ COMMIT;
 -- solo si el resultado fue el esperado
 ```
 
-Me conecto a la copia de trabajo con: psql -U postgres -d foodstore_copia_trabajo
+Nos conectamos a la copia de trabajo con: psql -U postgres -d foodstore_copia_trabajo
 
 **Cuándo se salta:** nunca. Ningún INSERT, UPDATE, DELETE o cambio de estructura se ejecuta fuera de un bloque BEGIN...COMMIT/ROLLBACK.
 

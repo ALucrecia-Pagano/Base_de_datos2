@@ -10,14 +10,14 @@
 
 -- ----------------------------------------------------------------------------
 -- RESTRICCIÓN 1: Transición irreversible de estado en tabla 'pedido'
--- Un pedido en ENTREGADO o CANCELADO no puede volver a PENDIENTE ni EN_PREPARACION
+-- Un pedido en ENTREGADO o CANCELADO es un estado final y no admite ningún cambio
 -- ----------------------------------------------------------------------------
 CREATE OR REPLACE FUNCTION fn_validar_transicion_estado_pedido()
 RETURNS TRIGGER AS $$
 BEGIN
-    IF OLD.estado IN ('ENTREGADO', 'CANCELADO') AND NEW.estado IN ('PENDIENTE', 'EN_PREPARACION') THEN
-        RAISE EXCEPTION 'Transición no permitida: un pedido en estado % no puede cambiar a %',
-            OLD.estado, NEW.estado;
+    IF OLD.estado IN ('ENTREGADO', 'CANCELADO') AND NEW.estado <> OLD.estado THEN
+        RAISE EXCEPTION 'Transición no permitida: el estado % es un estado final y no admite cambios.',
+            OLD.estado;
     END IF;
     RETURN NEW;
 END;

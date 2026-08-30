@@ -1,7 +1,7 @@
 -- ============================================================================
 -- TRABAJO PRÁCTICO N.º 2 - CONCURRENCIA E IA
 -- Archivo: TP2_Concurrencia_IA/restricciones_integridad.sql
--- Motor: PostgreSQL 14+
+-- Motor: PostgreSQL 17.11
 -- Descripción: Restricciones de integridad mediante triggers:
 --   1. Transiciones irreversibles de estados finalizados en pedidos.
 --   2. Validación de fecha_hora no futura en pedidos.

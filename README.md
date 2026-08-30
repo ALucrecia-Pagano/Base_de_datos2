@@ -10,23 +10,54 @@ Todo el trabajo gira en torno a un mismo proyecto integrador: **FoodStore**, un 
 
 ```
 Practicos/
-├── TP1_FoodStore/          # TP1: modelado ER, normalización y DDL en PostgreSQL (trabajo grupal)
-├── TP2_Concurrencia_IA/    # TP2: concurrencia, integridad y uso de IA (OpenCode/Kiro) — individual
-│   └── parte1/             # Restricciones de integridad versionadas
-├── protocolo_seguridad.md  # Protocolo de seguridad para el trabajo con IA (TP2, Parte 0)
-├── AGENTS.md               # Contexto del repo generado con OpenCode
-└── .kiro/steering/         # Documentos de contexto generados con Kiro
+├── TP1_FoodStore/                         # TP1: modelado ER, normalización y DDL en PostgreSQL
+│   ├── schema.sql
+│   ├── dbdiagram_code.dbml
+│   ├── diagrama_er.png / diagrama_er.pdf
+│   └── README.md
+├── TP2_Concurrencia_IA/                   # TP2: integridad, transacciones y concurrencia
+│   ├── parte1/                            # Restricciones de integridad (triggers)
+│   │   ├── restricciones_integridad.sql
+│   │   ├── respaldo_foodstore_copia_trabajo.sql
+│   │   └── DUIA_parte1.md
+│   ├── parte2/                            # Laboratorio de concurrencia
+│   │   ├── informe_concurrencia.md
+│   │   └── DUIA_Parte2.md
+│   ├── parte3/                            # Lectura crítica de scripts SQL
+│   │   ├── ejercicio_lectura_critica.md
+│   │   └── DUIA_Parte3.md
+│   └── README.md
+├── protocolo_seguridad.md                 # Protocolo de seguridad — TP2 Parte 0
+├── AGENTS.md
+└── .kiro/steering/                        # Documentos de contexto generados con Kiro
 ```
 
 ## TP1 — FoodStore (modelado y DDL)
 
-Proyecto integrador de Base de Datos I: diseño completo de la base de datos FoodStore, con modelo entidad-relación, derivación al modelo relacional, normalización hasta BCNF y el script DDL final (`schema.sql`) para PostgreSQL, junto con la Declaración de Uso de IA (DUIA) del trabajo original.
+Proyecto integrador de Base de Datos I: diseño completo de la base de datos FoodStore, con modelo entidad-relación, derivación al modelo relacional, normalización hasta BCNF y el script DDL final (`schema.sql`) para PostgreSQL.
 
 ## TP2 — Concurrencia e IA
 
-sobre el mismo esquema de FoodStore. Trabajo práctico de laboratorio sobre integridad, transacciones y concurrencia. Incluye:
+Trabajo práctico de laboratorio grupal sobre el mismo esquema FoodStore. Cubre integridad, transacciones y concurrencia. Todas las partes están terminadas.
 
-- **Parte 0** (`protocolo_seguridad.md`, en la raíz): protocolo de copia, transacción y respaldo para trabajar de forma segura con scripts generados por IA.
-- **Parte 1** (`TP2_Concurrencia_IA/parte1/`): restricciones de integridad generadas con OpenCode (transición de estado de pedidos, fecha no futura, validación de stock), probadas y aplicadas sobre una copia de trabajo, con su respectiva Declaración de Uso de IA (DUIA).
-- **Parte 2** (en curso): laboratorio de anomalías de concurrencia con dos sesiones simultáneas.
-- **Parte 3** (pendiente): ejercicio de lectura crítica de scripts SQL.
+- **Parte 0** (`protocolo_seguridad.md`, en la raíz): protocolo de tres pasos (copia, transacción, respaldo) para trabajar de forma segura con scripts generados por IA, adaptado al entorno real (PostgreSQL 17.11, Git Bash, `psql`).
+
+- **Parte 1** (`TP2_Concurrencia_IA/parte1/`): tres restricciones de integridad implementadas como triggers PL/pgSQL, generadas con OpenCode (Gemini) en modo Plan → Build:
+  1. Transición de estado: un pedido en `ENTREGADO` o `CANCELADO` no puede cambiar a ningún otro estado.
+  2. Fecha no futura: `fecha_hora` de un pedido no puede ser posterior a `now()`.
+  3. Validación de stock: `cantidad` en `detalle_pedido` no puede superar el `stock` disponible del producto.
+
+  Probadas sobre `foodstore_copia_trabajo` con casos válidos e inválidos, dentro de una transacción. DUIA incluida en `DUIA_parte1.md`.
+
+- **Parte 2** (`TP2_Concurrencia_IA/parte2/`): laboratorio de anomalías de concurrencia con dos sesiones `psql` simultáneas sobre `foodstore_copia_trabajo`, guiado con Claude. Tres escenarios documentados en `informe_concurrencia.md`:
+  1. Lectura no repetible — demostrada en `READ COMMITTED`, resuelta con `REPEATABLE READ`.
+  2. Lectura fantasma — demostrada en `READ COMMITTED`, resuelta con `SERIALIZABLE`.
+  3. Espera por bloqueo (`FOR UPDATE`) — dos sesiones sobre la misma fila de `producto`.
+
+  Cada explicación de la IA fue verificada en el motor real. DUIA incluida en `DUIA_Parte2.md`.
+
+- **Parte 3** (`TP2_Concurrencia_IA/parte3/`): lectura crítica de dos scripts SQL con errores de lógica, realizada con Kiro. Documentada en `ejercicio_lectura_critica.md`:
+  1. `UPDATE` sin cláusula `WHERE` — afecta todas las filas de la tabla.
+  2. `DELETE` con `NOT IN` — falla silenciosamente ante valores `NULL` en la subconsulta.
+
+  Para cada script se documenta el efecto real, por qué no coincide con la intención declarada y la versión corregida. DUIA incluida en `DUIA_Parte3.md`.

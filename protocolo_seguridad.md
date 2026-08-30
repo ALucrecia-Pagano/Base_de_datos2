@@ -76,7 +76,7 @@ Antes de aplicar cualquier cambio estructural (ALTER TABLE, DROP, CREATE INDEX, 
 pg_dump -U postgres -d foodstore_copia_trabajo -f respaldo_foodstore_copia_trabajo.sql
 ```
 
-El archivo de respaldo se guarda dentro de la carpeta TP2_Concurrencia_IA/, junto con el resto de los archivos de este trabajo práctico (este protocolo vive en la raíz del repo, según lo pedido en la consigna),
+El archivo de respaldo se guarda dentro de la carpeta TP2_Concurrencia_IA/parte1/, junto con el script de restricciones y la DUIA de la Parte 1 (este protocolo vive en la raíz del repo, según lo pedido en la consigna),
 
 fechado si hace falta generar más de uno.
 

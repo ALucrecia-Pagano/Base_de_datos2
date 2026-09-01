@@ -1,0 +1,8 @@
+# Tabla comparativa - TP3 Parte 2
+
+| Consulta | Índice aplicado | Plan antes (nodo, cost, tiempo real) | Plan después (nodo, cost, tiempo real) | Mejora |
+|---|---|---|---|---|
+| Q1 (pedidos pendientes) | `idx_pedido_estado_fecha (estado, fecha_hora DESC)` | Parallel Seq Scan + Sort + Gather Merge, cost=4925.32, Execution Time=33.698 ms | Index Scan using idx_pedido_estado_fecha, cost=0.29..7.00, Execution Time=0.908 ms | ~37x (33.7ms → 0.9ms) |
+| Q2 (productos por categoría y precio) | `idx_producto_categoria_precio (id_categoria, precio_lista)` | Seq Scan + Sort, cost=1645.05, Execution Time=12.384 ms | Bitmap Heap Scan + Sort (el Sort NO desapareció), cost=2020.65, Execution Time=12.787 ms | Ninguna (levemente más lento, dentro del ruido de medición) |
+| Q3 - solo indice 1 | `idx_pedido_fecha_hora (fecha_hora)` | (ver fila Q3 completa abajo) | Bitmap Heap Scan on pedido via idx_pedido_fecha_hora, pero plan pasa a ser serial (sin Gather/paralelismo), cost=17399.84, Execution Time=203.051 ms | Empeoro: 160.1ms -> 203.1ms. Costo estimado bajo pero tiempo real subio -- se perdio el paralelismo de 2 workers que tenia el plan original |
+| Q3 (total facturado por cliente, ambos indices) | `idx_pedido_fecha_hora` + `idx_detalle_pedido_id_pedido` | Hash Join x2 + Seq Scans, con Gather (2 workers), cost=18077.61, Execution Time=160.112 ms | Hash Join x2 + Seq Scan on detalle_pedido (idx_detalle_pedido_id_pedido NO fue usado por el planificador), sin paralelismo, cost=17399.84, Execution Time=198.558 ms | Empeoro: 160.1ms -> 198.6ms. El segundo indice nunca fue elegido por el optimizador (confirma la incertidumbre que la propia IA habia anticipado); el primero perdio el paralelismo que tenia el plan original |

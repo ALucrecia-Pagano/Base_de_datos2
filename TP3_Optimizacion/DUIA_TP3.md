@@ -5,7 +5,7 @@
 | Herramienta | Para qué se usó | Prompt / spec | Se aceptó / descartó |
 |---|---|---|---|
 
-## Parte 2 — Laboratorio EXPLAIN (02_optimizacion_explain)
+## Parte 2 — Laboratorio EXPLAIN (parte2_optimizacion_explain)
 
 | Herramienta | Para qué se usó | Prompt / spec | Se aceptó / descartó |
 |---|---|---|---|
@@ -31,9 +31,6 @@
 | OpenCode (Plan->Build) | Generar script de carga masiva propio | Spec con reglas de volumen y nombres del esquema propio | Descartado: no correspondia al dataset especifico pedido por la catedra |
 | Claude (asistente) | Traducir Genera_registros.sql al esquema real y mapear el ENUM estado | Adaptacion literal, documentando cada cambio de nombre | Aceptado: mapeo usuario->cliente, categoria_id->id_categoria, precio->precio_lista, usuario_id->id_cliente, CONFIRMADO->EN_PREPARACION, TERMINADO->ENTREGADO, precio_unitario completado con precio_lista |
 
-### Verificacion pendiente
-seed_masivo.sql (version catedra) todavia no se ejecuto contra
-foodstore_tp3_carga. Pendiente correrlo y registrar el resultado.
 
 ### Resultado de la ejecucion (confirmado en el motor)
 
@@ -45,3 +42,29 @@ Ejecutado contra `foodstore_tp3_carga` con:
 - pedido: 200.000 filas insertadas
 - detalle_pedido: 621.794 filas insertadas (promedio ~3.1 lineas/pedido, dentro del rango 1-4 esperado)
 - COMMIT confirmado, ANALYZE ejecutado sobre las 4 tablas afectadas.
+
+### Verificacion independiente con Kiro
+
+Se genero con Kiro (modo spec, solo lectura) el script
+`verificacion_carga.sql`, que chequea contra `foodstore_tp3_carga`:
+conteo de filas por tabla, integridad referencial (FKs huerfanas),
+precios negativos, duplicados de PK compuesta en detalle_pedido, y
+distribucion de pedidos por estado y forma de pago.
+
+Resultado: 0 filas huerfanas, 0 precios negativos, 0 duplicados de PK.
+Distribucion de estado y forma_pago uniforme (~25% y ~33% respectivamente).
+Diferencia de conteos (3/3/5/7) coincide exactamente con el dataset de
+prueba original de TP1, heredado por clonar foodstore_dev con -T.
+
+Conclusion: carga masiva verificada como integra y consistente con
+las restricciones del esquema. Respaldo generado
+(respaldo_foodstore_tp3_carga.sql) antes de iniciar la Parte 2, que
+va a aplicar cambios DDL (CREATE INDEX) sobre la copia de trabajo.
+
+Parte 1 cerrada.
+
+**Nota sobre el respaldo:** se genero localmente con
+`pg_dump -U postgres -d foodstore_tp3_carga -f respaldo_foodstore_tp3_carga.sql`
+(~32MB). No se versiona en Git por su peso — se excluyo via `.gitignore`.
+Es reproducible en cualquier momento con el mismo comando, ya que la base
+foodstore_tp3_carga sigue existiendo localmente.

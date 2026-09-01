@@ -205,6 +205,43 @@ Los planes "antes" (sin indices nuevos) estan en
 `planes/plan_q1_antes.txt`, `plan_q2_antes.txt`, `plan_q3_antes.txt`,
 medidos sobre la base ya corregida (v2, ver seccion anterior).
 
+### Lectura linea por linea de los 4 indices antes de aplicar (consigna, punto 4)
+
+Antes de ejecutar cada `CREATE INDEX` sobre `foodstore_tp3_carga` se
+verifico explicitamente, para las 4 propuestas de Kiro:
+
+- **idx_pedido_estado_fecha (estado, fecha_hora DESC)**: indice btree
+  compuesto (tipo por defecto, no se pidio ningun tipo especial). Ambas
+  columnas (`estado`, `fecha_hora`) existen en `pedido` con esos nombres
+  exactos. No es `UNIQUE` ni parcial, por lo que no puede romper ninguna
+  restriccion existente. Ataca exactamente el filtro `WHERE estado = ...`
+  y el `ORDER BY fecha_hora DESC` de Q1, coherente con el nodo
+  `Parallel Seq Scan + Sort` del plan real.
+- **idx_producto_categoria_precio (id_categoria, precio_lista)**: mismo
+  tipo de indice (btree, no unico, no parcial). Columnas existentes en
+  `producto`. Se entendio que, a diferencia del indice parcial
+  `idx_productos_categoria_activo` ya existente, este no filtra por
+  `activo`, por lo que cubre productos activos e inactivos por igual —
+  decision correcta para Q2, que tampoco filtra por `activo`.
+- **idx_pedido_fecha_hora (fecha_hora)**: indice btree simple de una
+  sola columna. Se entendio que este indice no afecta la relacion con
+  `idx_pedidos_cliente_id` (columnas distintas) ni genera conflicto de
+  nombre.
+- **idx_detalle_pedido_id_pedido (id_pedido)**: indice btree simple. Se
+  verifico que no colisiona con `idx_detalle_pedido_producto_id`
+  (indice existente sobre `id_producto`, columna distinta) ni con la
+  PK compuesta `(id_pedido, id_producto)`.
+
+En los 4 casos se confirmo antes de ejecutar que: (a) es un `CREATE
+INDEX` simple, sin `CONCURRENTLY` ni opciones no estandar que ameriten
+mas revision; (b) no es una sentencia destructiva (un `CREATE INDEX` no
+modifica filas, solo agrega una estructura de acceso); (c) el nombre del
+indice no colisiona con ninguno de los 3 indices ya existentes de TP1.
+Ninguna de las 4 propuestas fue rechazada en esta etapa de lectura —
+las que no sirvieron se detectaron recien al medir con EXPLAIN ANALYZE
+despues de aplicarlas (ver tabla de resultados abajo), no por lectura
+previa incorrecta.
+
 ### Herramientas utilizadas
 
 | Herramienta | Para que se uso | Prompt / spec | Se acepto / descarto |

@@ -26,6 +26,12 @@
 --    exactos serán los del seed; ajustar los expected según
 --    corresponda.
 -- ============================================================
+--    NOTA: el conteo de detalle_pedido (621794) no es determinístico:
+--    depende de la distribución aleatoria de 1-4 líneas por pedido.
+--    Si se recrea la carga desde cero, este número puede variar
+--    levemente; no comparar contra un valor exacto sino contra el
+--    rango esperado (~600.000-650.000).
+-- ============================================================
 
 \echo ''
 \echo '--- 1. CONTEO DE FILAS POR TABLA ---'

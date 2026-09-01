@@ -100,6 +100,3 @@ independiente de Kiro) y respaldo generado antes de iniciar cambios DDL.
 ## Parte 2 — Laboratorio EXPLAIN (parte2_optimizacion_explain)
 
 **Estado: pendiente, aun no iniciada.**
-
-| Herramienta | Para que se uso | Prompt / spec | Se acepto / descarto |
-|---|---|---|---|

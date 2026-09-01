@@ -34,3 +34,14 @@
 ### Verificacion pendiente
 seed_masivo.sql (version catedra) todavia no se ejecuto contra
 foodstore_tp3_carga. Pendiente correrlo y registrar el resultado.
+
+### Resultado de la ejecucion (confirmado en el motor)
+
+Ejecutado contra `foodstore_tp3_carga` con:
+`psql -U postgres -d foodstore_tp3_carga -f TP3_Optimizacion/parte1_carga_masiva/seed_masivo.sql`
+
+- producto: 50.000 filas insertadas
+- cliente: 20.000 filas insertadas
+- pedido: 200.000 filas insertadas
+- detalle_pedido: 621.794 filas insertadas (promedio ~3.1 lineas/pedido, dentro del rango 1-4 esperado)
+- COMMIT confirmado, ANALYZE ejecutado sobre las 4 tablas afectadas.

@@ -100,3 +100,83 @@ independiente de Kiro) y respaldo generado antes de iniciar cambios DDL.
 ## Parte 2 — Laboratorio EXPLAIN (parte2_optimizacion_explain)
 
 **Estado: pendiente, aun no iniciada.**
+## Correccion critica post-cierre: bug de aleatorizacion no correlacionada
+
+**Contexto:** durante la Parte 2 (al analizar la selectividad real de Q2
+antes de aplicar indices), se detecto que producto.id_categoria estaba
+degenerado: 50.002 de 50.003 productos en una sola categoria. Esto llevo
+a una investigacion mas profunda que revelo un bug de fondo en el script
+Genera_registros.sql original de la catedra (no introducido por la
+adaptacion de nombres hecha en este proyecto).
+
+**Causa tecnica:** las subconsultas escalares del tipo
+`(SELECT id FROM tabla ORDER BY random() LIMIT 1)`, al no hacer referencia
+a ninguna columna de la fila externa, pueden ser resueltas por PostgreSQL
+una unica vez para toda la sentencia en vez de una vez por fila. Lo mismo
+ocurrio con un CROSS JOIN LATERAL cuya subconsulta interna tampoco
+referenciaba la fila externa -- el motor lo trato como no correlacionado
+en la practica, pese a la palabra clave LATERAL.
+
+**Impacto medido (version v1, base foodstore_tp3_carga antes del arreglo):**
+- producto.id_categoria: 50.002 de 50.003 filas en una sola categoria
+  (esperado: reparto ~50/50 entre las 2 categorias)
+- pedido.id_cliente: 200.000 de 200.005 pedidos pertenecientes a un
+  UNICO cliente (id 7481) (esperado: reparto entre ~20.000 clientes)
+- detalle_pedido.id_producto: solo 7 productos distintos en 621.801
+  filas (esperado: cercano a 50.000 productos distintos)
+
+**Correccion aplicada (version v2 de seed_masivo.sql):** se reemplazaron
+las subconsultas escalares y el CROSS JOIN LATERAL por indexado de
+arrays (array_agg de IDs + floor(random()*n) como expresion directa en
+la lista de columnas del SELECT), que si se evalua fila por fila. Para
+detalle_pedido se elimino ademas la dependencia de dos llamadas
+separadas a random() para producto y precio: se selecciona el
+id_producto por indice de array y se recupera su precio_lista real
+mediante un JOIN comun (no lateral) contra producto.
+
+**Procedimiento de correccion:**
+1. Base foodstore_tp3_carga recreada desde cero
+   (dropdb + createdb -T foodstore_dev).
+2. seed_masivo.sql v2 ejecutado exitosamente:
+   producto 50.000, cliente 20.000, pedido 200.000,
+   detalle_pedido 499.564 filas insertadas.
+3. Re-verificado con verificacion_carga.sql (actualizado con una nueva
+   seccion 6 de distribucion de FKs, agregada especificamente para
+   detectar este tipo de problema a futuro):
+   - producto.id_categoria: 24.922 / 25.081 (~50/50) -- CORREGIDO
+   - clientes distintos con pedidos: 20.003 de 20.003 -- CORREGIDO
+   - productos distintos vendidos: 50.001 de 50.003 -- CORREGIDO
+   - integridad referencial, precios negativos, duplicados de PK:
+     0 filas en todos los casos (igual que en la version v1)
+   - distribucion de estado y forma_pago: se mantiene uniforme
+     (~25% y ~33% respectivamente, no estaban afectados por este bug)
+4. Nota sobre el conteo de detalle_pedido: bajo de 621.801 (v1, con
+   bug) a 499.571 (v2, corregido). Este numero mas bajo es el
+   CORRECTO: 499.571 / 200.005 pedidos = ~2.5 lineas por pedido en
+   promedio, que coincide exactamente con el promedio esperado de una
+   eleccion uniforme entre 1 y 4 lineas ((1+2+3+4)/4 = 2.5). El
+   numero viejo (621.801, ~3.1 promedio) era en si mismo otro sintoma
+   del mismo bug, no un dato mas confiable.
+5. Respaldo (pg_dump) regenerado sobre la base corregida; el respaldo
+   anterior (generado sobre la base con el bug) quedo obsoleto y fue
+   reemplazado (no se versiona en git, ver .gitignore).
+6. Los planes de EXPLAIN ANALYZE de la Parte 2 (Q1, Q2, Q3) que se
+   habian medido sobre la base con el bug se descartaron sin
+   conservar, porque no representan el comportamiento real del
+   esquema. Se vuelven a medir desde cero sobre la base ya corregida.
+
+**Alcance para el resto del curso:** el bug esta en el script original
+distribuido por la catedra (Genera_registros.sql), no en la adaptacion
+de nombres propia. Es probable que cualquier companero que haya usado
+el mismo script tenga el mismo problema en su base. Se genero un
+documento de hallazgo (Word) para compartir con companeros y catedra.
+
+**Herramientas usadas para este hallazgo y correccion:**
+
+| Herramienta | Para que se uso | Se acepto / descarto |
+|---|---|---|
+| Claude (asistente) | Diagnosticar la causa raiz del sesgo detectado en Q2, verificar el alcance sobre las 3 relaciones, proponer y redactar la correccion (indexado de arrays en vez de subconsultas no correlacionadas) | Aceptado, verificado empiricamente en el motor tras cada cambio |
+
+**Estado: correccion aplicada y verificada. Carga masiva v2 confirmada
+como integra, con distribucion de claves foraneas correcta. Parte 1
+re-cerrada.**

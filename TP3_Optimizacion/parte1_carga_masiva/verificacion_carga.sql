@@ -26,7 +26,7 @@
 --    exactos serán los del seed; ajustar los expected según
 --    corresponda.
 -- ============================================================
---    NOTA: el conteo de detalle_pedido (621794) no es determinístico:
+--    NOTA: el conteo de detalle_pedido (499571) no es determinístico:
 --    depende de la distribución aleatoria de 1-4 líneas por pedido.
 --    Si se recrea la carga desde cero, este número puede variar
 --    levemente; no comparar contra un valor exacto sino contra el
@@ -66,8 +66,8 @@ UNION ALL
 SELECT
     'detalle_pedido',
     COUNT(*),
-    621794,
-    COUNT(*) - 621794
+    499571,
+    COUNT(*) - 499571
 FROM detalle_pedido
 
 ORDER BY tabla;
@@ -212,3 +212,29 @@ SELECT 'categoria',             COUNT(*) FROM categoria;
 \echo '============================================================='
 \echo 'Verificacion finalizada. Revisar resultados arriba.'
 \echo '============================================================='
+
+
+-- ============================================================
+-- 6. DISTRIBUCION DE CLAVES FORANEAS (agregado tras detectar el
+--    bug de subconsultas no correlacionadas en la version v1 del
+--    seed). Un conteo DISTINCT muy bajo respecto del total de
+--    filas de la tabla referenciada indica que la aleatoriedad
+--    no se esta aplicando por fila.
+-- ============================================================
+
+\echo ''
+\echo '--- 6a. DISTRIBUCION producto.id_categoria (esperado: cerca de 50/50) ---'
+SELECT id_categoria, COUNT(*) AS cantidad
+FROM producto
+GROUP BY id_categoria
+ORDER BY id_categoria;
+
+\echo ''
+\echo '--- 6b. CLIENTES DISTINTOS CON PEDIDOS (esperado: cerca de 20.000) ---'
+SELECT COUNT(DISTINCT id_cliente) AS clientes_distintos, COUNT(*) AS total_pedidos
+FROM pedido;
+
+\echo ''
+\echo '--- 6c. PRODUCTOS DISTINTOS VENDIDOS (esperado: cerca de 50.000) ---'
+SELECT COUNT(DISTINCT id_producto) AS productos_distintos, COUNT(DISTINCT id_pedido) AS pedidos_distintos
+FROM detalle_pedido;

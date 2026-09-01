@@ -1,6 +1,6 @@
 -- ============================================================================
 -- TRABAJO PRÁCTICO N.º 3 - OPTIMIZACIÓN Y PERFORMANCE DE CONSULTAS
--- Archivo: 01_carga_masiva/seed_masivo.sql
+-- Archivo: parte1_carga_masiva/seed_masivo.sql
 -- Motor: PostgreSQL 17
 -- Adaptación del script Genera_registros.sql provisto por la cátedra al
 -- esquema real de FoodStore (TP1). Mapeo aplicado:

@@ -242,7 +242,7 @@ cache equivalentes en promedio.
 
 ---
 
-## 6. Protocolo de ejecución
+## 8. Protocolo de ejecución
 
 Todos los `CREATE INDEX` y `SET LOCAL` se ejecutaron dentro de bloques
 `BEGIN...ROLLBACK` sobre `foodstore_tp3_carga`, sin modificar `foodstore_dev`

@@ -15,6 +15,12 @@
 > - Tiempo después: promedio del control intercalado A-B-A-B-A-B
 >   (600.7 / 557.1 / 556.2 ms), que elimina el sesgo de orden de cache.
 >   Corrida oficial única para el plan registrado: 601.629 ms.
+> - **Aclaración sobre `plan_antes.txt`:** ese archivo registra una corrida
+>   aislada distinta (660.865 ms), capturada antes de iniciar el control de
+>   ruido. No es un error ni una inconsistencia: es la primera medición
+>   individual del plan completo, mientras que 621.0 ms (usado en la tabla
+>   de arriba) es el promedio de 3 corridas independientes, más confiable
+>   para reportar como "tiempo antes" oficial de la competencia.
 
 ---
 

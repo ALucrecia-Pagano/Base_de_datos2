@@ -13,6 +13,29 @@ qué se aceptó/modificó/descartó con su justificación técnica.
 
 ## Parte A — Plan de indexado asistido por IA
 
+### Lectura línea por línea antes de ejecutar (consigna, punto 3 del flujo obligatorio)
+
+Antes de aplicar cualquier `CREATE INDEX` generado por OpenCode —tanto
+dentro de `BEGIN...ROLLBACK` para pruebas como al aplicar en firme— se
+leyó el SQL propuesto y se verificó explícitamente:
+
+- Que el tipo de índice (B-tree, parcial, covering, BRIN) coincidiera
+  con lo que pedía la spec correspondiente.
+- Que las columnas y su orden fueran las que participan del filtro,
+  join u `ORDER BY` real de la consulta (no genéricas).
+- Que ningún `CREATE INDEX` tocara el modelo de datos ni agregara
+  restricciones no pedidas.
+- En los casos con condición parcial (`WHERE activo = TRUE`,
+  `WHERE estado <> 'CANCELADO'`), que la condición coincidiera
+  exactamente con el filtro de la consulta que se buscaba optimizar.
+
+Ningún índice se ejecutó "a ciegas": los que no se entendían del todo
+al proponerse (por ejemplo, el `pages_per_range` del candidato BRIN)
+se investigaron antes de decidir, no se aplicaron ni se descartaron
+sin comprender el mecanismo (ver Caso 3 más abajo, donde el
+`pages_per_range = 32` propuesto por Kiro se justificó explícitamente
+antes de decidir no crear el índice).
+
 ### Caso 1 — Q5: Ranking de clientes por gasto total
 
 | Campo | Detalle |

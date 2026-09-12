@@ -76,3 +76,47 @@ CREATE INDEX idx_producto_categoria_precio_activo
 -- precio_lista); (b) aporta una mejora real aunque modesta; (c) sirve
 -- ademas para acelerar cualquier otra consulta futura que ordene
 -- productos activos por precio dentro de una categoria.
+
+-- ----------------------------------------------------------------------------
+-- CASO 3 — Q4: Top 3 productos por facturacion dentro de cada categoria
+-- Spec: specs/spec_03_pedido_fecha_brin.md
+-- ----------------------------------------------------------------------------
+
+-- Candidato BRIN — DESCARTADO SIN CREAR
+-- CREATE INDEX idx_pedido_fecha_hora_brin
+--     ON pedido USING BRIN (fecha_hora)
+--     WITH (pages_per_range = 32);
+--
+-- Descartado antes de crearlo, con evidencia estadistica:
+--   SELECT correlation FROM pg_stats
+--   WHERE tablename = 'pedido' AND attname = 'fecha_hora';
+--   -> resultado real: 0.013024098 (practicamente nula)
+--
+-- Un BRIN funciona eliminando rangos de paginas cuyo [min,max] no
+-- intersecta el filtro. Con correlacion ~0, cada rango de paginas
+-- contiene fechas de todo el año mezcladas (el seed genero fecha_hora
+-- con random() independiente del orden de insercion por id), asi que
+-- no hay casi ningun rango descartable. Crear este indice hubiera sido
+-- un gasto de tiempo para confirmar algo que la estadistica ya
+-- garantiza: no va a servir.
+
+-- Candidato B-tree — CREADO Y MEDIDO, DESCARTADO
+-- CREATE INDEX idx_pedido_fecha_hora_btree
+--     ON pedido (fecha_hora DESC);
+-- (dejado comentado a proposito: NO se aplica en firme)
+--
+-- Este si se creo y se midio (dentro de BEGIN...ROLLBACK), porque a
+-- diferencia del BRIN no habia forma de descartarlo solo con
+-- estadisticas -- el riesgo (perdida de paralelismo) solo se confirma
+-- ejecutando. Resultado real: el planificador SI lo uso (Bitmap Index
+-- Scan + Bitmap Heap Scan), pero el tiempo empeoro: 658.299 ms (sin
+-- indice, Parallel Seq Scan) -> 921.482 ms (con indice, Bitmap Heap
+-- Scan serializado). El filtro retiene ~47% de la tabla pedido -- muy
+-- poco selectivo para justificar abandonar el Seq Scan paralelo.
+-- Mismo patron ya documentado en TP3-Q3 con un indice equivalente.
+
+-- Intervencion aceptada — SET LOCAL work_mem (igual que en Caso 1 y en TP4)
+--   SET LOCAL work_mem = '16MB';
+-- Ya confirmado en TP4-Parte4 que resuelve el spill a disco del
+-- HashAggregate de esta misma consulta. No repetido en detalle aca
+-- para no duplicar la medicion ya documentada en TP4.

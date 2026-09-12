@@ -133,6 +133,69 @@ herramienta correcta para el problema — cuando el cuello de botella es
 la *estructura* de la consulta (ejecutar algo N veces en vez de una),
 hay que reescribir, no indexar.
 
+## Caso 3 — Q4: Top 3 productos por facturación dentro de cada categoría
+
+**Consulta:** ver `queries.sql` (Q4) — join de 4 tablas + funciones de
+ventana, ya trabajada en TP4-Parte4 pero nunca desde el ángulo de
+índices.
+
+**Plan "antes":** `plan_q4_antes.txt`. Execution Time: **658.299 ms**.
+Mismo patrón que en TP4: `Sort ... external merge Disk` (spill a
+disco) como cuello de botella principal, y filtro
+`estado <> 'CANCELADO' AND fecha_hora >= now() - interval '6 months'`
+sobre `pedido`, reteniendo ~35.5% de las filas.
+
+### Candidato 1 — BRIN sobre `fecha_hora`
+
+`specs/spec_03_pedido_fecha_brin.md`. Antes de crearlo, se verificó la
+correlación física de la columna:
+```sql
+SELECT correlation FROM pg_stats WHERE tablename = 'pedido' AND attname = 'fecha_hora';
+-- resultado real: 0.013024098
+```
+
+**Decisión: DESCARTADO sin crearlo.** Un índice BRIN depende de que los
+valores estén físicamente correlacionados con el orden de las páginas
+en disco. Con correlación ~0 (el `seed_masivo.sql` genera `fecha_hora`
+con `random()`, sin relación con el orden de inserción por `id`), cada
+rango de páginas contiene fechas de todo el año mezcladas — el BRIN no
+podría descartar casi ninguna. Se documenta el descarte con evidencia
+estadística, sin gastar tiempo en crear y medir algo que ya se sabe
+que no va a servir.
+
+### Candidato 2 — B-tree simple sobre `fecha_hora`
+
+```sql
+CREATE INDEX idx_pedido_fecha_hora_btree ON pedido (fecha_hora DESC);
+```
+
+Probado con OpenCode dentro de `BEGIN...ROLLBACK` (no se aplicó en
+firme). A diferencia del BRIN, este sí había que medirlo — el riesgo
+(pérdida de paralelismo) no se puede descartar solo con estadísticas.
+
+**Resultado real:** el planificador **sí usó** el índice (`Bitmap
+Index Scan` + `Bitmap Heap Scan`), pero el tiempo **empeoró**:
+658.299 ms → **921.482 ms**. El filtro retiene ~47% de la tabla
+`pedido` — selectividad demasiado baja para que valga la pena
+abandonar el `Parallel Seq Scan`. Mismo patrón exacto ya documentado en
+TP3-Q3 con un índice equivalente sobre la misma columna.
+
+**Decisión: DESCARTADO con evidencia empírica.**
+
+### Intervención aceptada — `SET LOCAL work_mem = '16MB'`
+
+Ya confirmada en TP4-Parte 4 sobre esta misma consulta: elimina el
+spill a disco del `HashAggregate`, con mejora real medible. No se
+repite la medición en detalle acá para no duplicar lo ya documentado
+en `TP4_Reportes_Analiticos/Parte4/analisis_optimizacion.md`.
+
+**Cierre del Caso 3:** dos tipos de descarte distintos — uno resuelto
+con estadísticas previas (BRIN, sin necesidad de crear ni medir), otro
+que exigió crear y medir para confirmar el riesgo (B-tree, donde el
+optimizador *sí* lo usó pero el tiempo real empeoró de todas formas).
+Ningún índice ayuda a esta consulta; la única intervención efectiva
+sigue siendo `work_mem`, consistente con TP4.
+
 ## Punto 5 — Costo de los índices sobre la escritura
 
 **Prueba:** insertar 500 filas en `detalle_pedido` dentro de una

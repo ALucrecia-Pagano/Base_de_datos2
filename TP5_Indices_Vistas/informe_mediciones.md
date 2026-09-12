@@ -72,3 +72,63 @@ requiere ningún índice ni cambio de esquema — se aplica por sesión.
 
 *(Siguientes casos se agregan a continuación a medida que se resuelven
 las Partes A, B y C.)*
+
+## Caso 2 — Q6: Productos con precio superior al promedio de su categoría
+
+**Consulta:**
+```sql
+SELECT p.nombre, p.precio_lista
+FROM producto p
+JOIN categoria cat ON cat.id = p.id_categoria AND cat.activo = TRUE
+WHERE p.activo = TRUE
+  AND p.precio_lista > (
+      SELECT AVG(p2.precio_lista)
+      FROM producto p2
+      WHERE p2.activo = TRUE AND p2.id_categoria = p.id_categoria
+  )
+ORDER BY cat.id, p.precio_lista DESC;
+```
+
+**Plan "antes":** `plan_q6_antes.txt`. Execution Time: **271.205 s**
+(~4.5 minutos). Nodo relevante: `Nested Loop` con `SubPlan 1` ejecutado
+**50.003 veces** (una por producto), cada una con `Bitmap Heap Scan`
+sobre `producto` filtrando por `id_categoria` — patrón O(n²).
+
+### Candidato — `idx_producto_categoria_precio_activo (id_categoria, precio_lista DESC) WHERE activo = TRUE`
+
+Propuesto por Kiro (`specs/spec_02_producto_categoria_precio.md`),
+probado con OpenCode dentro de `BEGIN...ROLLBACK`.
+
+**Resultado:** Execution Time con índice: **220.899 s**. Mejora: ~19%.
+El plan confirma `Index Only Scan` con `Heap Fetches: 0` — el índice
+sí se usa y resuelve el `AVG` sin volver al heap.
+
+### Decisión: **ACEPTADO, con salvedad importante**
+
+El índice funciona correctamente pero **no resuelve el problema real**
+de esta consulta: la subconsulta correlacionada sigue ejecutándose
+50.003 veces, sin importar cuánto más rápido sea cada ejecución
+individual. El cuello de botella es la *cantidad de ejecuciones* del
+`SubPlan`, no el costo de cada una — ningún índice puede corregir eso
+por sí solo.
+
+La solución real ya existe: en **TP4-Parte 3** (`consulta_b_subconsulta.sql`,
+versión V2) se reescribió esta misma consulta reemplazando la
+subconsulta correlacionada por una tabla derivada que pre-agrega el
+promedio una sola vez por categoría (JOIN en vez de subconsulta por
+fila), resolviendo en segundos en vez de minutos — mismo resultado,
+verificado por equivalencia con `EXCEPT` en aquel momento.
+
+Se acepta el índice de todas formas porque:
+- No es redundante con `idx_productos_categoria_activo` (ese no
+  incluye `precio_lista`, no sirve para el `ORDER BY` ni el `AVG`).
+- Aporta una mejora real, aunque modesta (~19%).
+- Sirve para acelerar cualquier consulta futura que ordene productos
+  activos por precio dentro de una categoría — no es un índice de un
+  solo uso.
+
+**Lección para la defensa oral:** un índice puede funcionar
+perfectamente (usarse, evitar ir al heap) y aun así no ser la
+herramienta correcta para el problema — cuando el cuello de botella es
+la *estructura* de la consulta (ejecutar algo N veces en vez de una),
+hay que reescribir, no indexar.

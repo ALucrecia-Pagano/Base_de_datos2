@@ -1,0 +1,84 @@
+# DUIA — TP5 (Unidad 3, Semana 5: Índices, vistas y vistas materializadas)
+
+**Materia:** Base de Datos II
+**Proyecto:** Food Store — continúa el esquema de TP1/TP3/TP4
+**Base de trabajo:** `foodstore_tp3_carga`
+**Herramientas obligatorias:** Kiro (especificación) + OpenCode (generación y ejecución) + Git
+
+Esta bitácora registra, para cada pieza del trabajo, qué herramienta se
+usó, con qué propósito, el spec/prompt entregado, qué propuso la IA, y
+qué se aceptó/modificó/descartó con su justificación técnica.
+
+---
+
+## Parte A — Plan de indexado asistido por IA
+
+### Caso 1 — Q5: Ranking de clientes por gasto total
+
+| Campo | Detalle |
+|---|---|
+| Herramienta | Kiro |
+| Propósito | Especificar y proponer índice a partir de `specs/spec_01_pedido_estado_detalle_join.md` |
+| Spec entregado | Ver `specs/spec_01_pedido_estado_detalle_join.md` — consulta con filtro `estado <> 'CANCELADO'` y join a `detalle_pedido` sin índice sobre `id_pedido` |
+| Qué propuso | Dos candidatos: (A) `idx_pedido_no_cancelado_cliente (id_cliente) WHERE estado <> 'CANCELADO'`, (B) `idx_detalle_pedido_id_pedido (id_pedido)` — recomendó probar A primero |
+| Herramienta | OpenCode |
+| Propósito | Generar y ejecutar el `CREATE INDEX` candidato A, y una alternativa de `work_mem`, dentro de `BEGIN...ROLLBACK` |
+| Qué se aceptó | `SET LOCAL work_mem = '16MB'` — control de ruido con 9 corridas intercaladas (3 escenarios x 3 rondas): promedio 526.5 ms (baseline) → 447.2 ms (work_mem), −15.1% |
+| Qué se descartó y por qué | Candidato A: el planificador lo ignoró en las 9/9 corridas (`Índice ignorado` en el plan, siempre). Causa: `estado <> 'CANCELADO'` retiene ~75% de la tabla `pedido` — selectividad demasiado baja para que un índice parcial compita con `Seq Scan` paralelo. **Este es el caso de descarte por sobreindexación exigido por la consigna** (columna con condición parcial de baja selectividad) |
+
+### Caso 2 — Q6: Productos con precio superior al promedio de su categoría
+
+| Campo | Detalle |
+|---|---|
+| Herramienta | Kiro |
+| Propósito | Proponer índice a partir de `specs/spec_02_producto_categoria_precio.md` |
+| Qué propuso | `idx_producto_categoria_precio_activo (id_categoria, precio_lista DESC) WHERE activo = TRUE` — covering index parcial |
+| Herramienta | OpenCode |
+| Propósito | Ejecutar el índice dentro de `BEGIN...ROLLBACK` y medir contra el baseline de 271.205 s |
+| Qué se aceptó | El índice: **APLICADO EN FIRME**. Mejora real 271.2s → 220.9s (~19%), confirmado `Index Only Scan` con `Heap Fetches: 0` |
+| Modificación / salvedad | Se aceptó con la salvedad de que **no resuelve el problema real** (patrón O(n²) de la subconsulta correlacionada, ejecutada 50.003 veces). La solución real ya existe en TP4-Parte3 (reescritura con tabla derivada pre-agregada). Se acepta el índice igual porque no es redundante con el existente y aporta mejora real, aunque modesta |
+
+### Caso 3 — Q4: Top 3 productos por facturación por categoría
+
+| Campo | Detalle |
+|---|---|
+| Herramienta | Kiro |
+| Propósito | Proponer índice a partir de `specs/spec_03_pedido_fecha_brin.md`, comparando explícitamente B-tree vs. BRIN |
+| Qué propuso | (1) B-tree `idx_pedido_fecha_hora_btree (fecha_hora DESC)`, (2) BRIN `idx_pedido_fecha_hora_brin (fecha_hora) WITH (pages_per_range=32)` — con advertencia propia de que ambos corren riesgo real, y recomendación de verificar `pg_stats.correlation` antes de crear el BRIN |
+| Verificación previa | `SELECT correlation FROM pg_stats WHERE tablename='pedido' AND attname='fecha_hora'` → `0.013` (prácticamente nula) |
+| Qué se descartó y por qué (BRIN) | **Descartado sin crearlo.** Con correlación ~0, un BRIN no puede eliminar rangos de páginas — evidencia estadística, no fue necesario medir |
+| Herramienta | OpenCode |
+| Propósito | Ejecutar y medir el B-tree dentro de `BEGIN...ROLLBACK` (no descartable solo con estadística) |
+| Qué se descartó y por qué (B-tree) | **Descartado con evidencia empírica.** El planificador sí lo usó (`Bitmap Index Scan`), pero el tiempo empeoró: 658.3 ms → 921.5 ms. El filtro retiene ~47% de `pedido`, muy poco selectivo. Mismo patrón ya visto en TP3-Q3 |
+| Qué se aceptó | `SET LOCAL work_mem = '16MB'` — ya confirmado en TP4-Parte4 sobre esta misma consulta, no se repitió la medición para no duplicar trabajo |
+
+### Punto 5 — Costo de los índices sobre la escritura
+
+| Campo | Detalle |
+|---|---|
+| Herramienta | Ninguna (medición directa con `psql` + `time`) |
+| Hallazgo intermedio | El primer intento de generar 500 `INSERT` de prueba usó subconsultas escalares no correlacionadas (mismo bug de TP3: Postgres las resuelve una sola vez, no por fila). Resultado: `INSERT 0 1` en vez de `INSERT 0 500`. Corregido con la técnica de array + índice aleatorio por fila ya usada en TP3 |
+| Medición | Antes (sin índices nuevos): 1.036 s. Después (con `idx_producto_categoria_precio_activo` aplicado): 0.888 s — sin diferencia significativa, esperado porque ese índice vive en `producto`, no en `detalle_pedido` |
+
+---
+
+## Parte B — Vistas para los reportes del sistema
+
+**Estado: pendiente.**
+
+## Parte C — Vista materializada
+
+**Estado: pendiente.**
+
+---
+
+## Resumen de aceptado/descartado (Parte A)
+
+| Pieza | Decisión | Motivo |
+|---|---|---|
+| `idx_pedido_no_cancelado_cliente` | Descartado | Ignorado por el planificador (baja selectividad, ~75%) |
+| `SET LOCAL work_mem = '16MB'` (Q5) | Aceptado | −15.1% real, confirmado con 9 corridas |
+| `idx_producto_categoria_precio_activo` | **Aceptado (aplicado en firme)** | +19% real, con salvedad de que no resuelve el O(n²) de fondo |
+| `idx_pedido_fecha_hora_brin` | Descartado sin crear | Correlación física ~0 |
+| `idx_pedido_fecha_hora_btree` | Descartado | Empeoró el tiempo real (658→921 ms), pese a ser usado por el planificador |
+| `SET LOCAL work_mem = '16MB'` (Q4) | Aceptado | Ya confirmado en TP4 sobre la misma consulta |

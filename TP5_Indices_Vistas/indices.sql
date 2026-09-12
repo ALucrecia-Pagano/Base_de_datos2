@@ -100,23 +100,34 @@ CREATE INDEX idx_producto_categoria_precio_activo
 -- un gasto de tiempo para confirmar algo que la estadistica ya
 -- garantiza: no va a servir.
 
--- Candidato B-tree — CREADO Y MEDIDO, DESCARTADO
--- CREATE INDEX idx_pedido_fecha_hora_btree
---     ON pedido (fecha_hora DESC);
--- (dejado comentado a proposito: NO se aplica en firme)
+-- Candidato B-tree — CREADO Y APLICADO EN FIRME (tras corregir una
+-- conclusion erronea de una medicion aislada)
+CREATE INDEX idx_pedido_fecha_hora_btree ON pedido (fecha_hora DESC);
 --
--- Este si se creo y se midio (dentro de BEGIN...ROLLBACK), porque a
--- diferencia del BRIN no habia forma de descartarlo solo con
--- estadisticas -- el riesgo (perdida de paralelismo) solo se confirma
--- ejecutando. Resultado real: el planificador SI lo uso (Bitmap Index
--- Scan + Bitmap Heap Scan), pero el tiempo empeoro: 658.299 ms (sin
--- indice, Parallel Seq Scan) -> 921.482 ms (con indice, Bitmap Heap
--- Scan serializado). El filtro retiene ~47% de la tabla pedido -- muy
--- poco selectivo para justificar abandonar el Seq Scan paralelo.
--- Mismo patron ya documentado en TP3-Q3 con un indice equivalente.
+-- Historial de la decision (documentado completo, no se oculta el
+-- cambio de conclusion):
+-- 1) Primera medicion (corrida unica): parecio empeorar el tiempo
+--    (658 ms sin indice -> 921 ms con indice). Con esa sola corrida se
+--    habia descartado el indice.
+-- 2) Al re-auditar, se detecto que esa conclusion venia de UNA sola
+--    corrida de cada lado, sin control de ruido -- el mismo error
+--    metodologico que ya se habia evitado en el Caso 1. Se repitio la
+--    prueba con 3 rondas intercaladas (Baseline-Btree-Baseline-Btree-
+--    Baseline-Btree), todo dentro de BEGIN...ROLLBACK:
+--      Baseline: 380.800 / 390.572 / 343.204 ms -> promedio 371.5 ms
+--      B-tree:   358.550 / 327.330 / 329.518 ms -> promedio 338.5 ms
+--    El indice gano en las 3 de 3 rondas (direccion consistente, a
+--    diferencia del Candidato A del Caso 1) -- mejora real de ~8.9%.
+-- 3) Conclusion final: ACEPTADO Y APLICADO EN FIRME. La primera
+--    medicion aislada llevaba a una conclusion equivocada; el control
+--    riguroso la revirtio. Se documenta el cambio completo porque es
+--    la evidencia de que el proceso de medicion (no solo el resultado)
+--    es lo que hay que poder defender.
 
--- Intervencion aceptada — SET LOCAL work_mem (igual que en Caso 1 y en TP4)
+-- Intervencion complementaria — SET LOCAL work_mem (igual que en Caso 1 y en TP4)
 --   SET LOCAL work_mem = '16MB';
 -- Ya confirmado en TP4-Parte4 que resuelve el spill a disco del
--- HashAggregate de esta misma consulta. No repetido en detalle aca
--- para no duplicar la medicion ya documentada en TP4.
+-- HashAggregate de esta misma consulta. Es una intervencion distinta
+-- y compatible con el indice de arriba (uno ataca el filtro de fecha,
+-- el otro el spill del agregado) -- no se remidio la combinacion de
+-- ambas en este TP, queda como posible mejora adicional a futuro.

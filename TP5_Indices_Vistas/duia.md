@@ -49,8 +49,10 @@ qué se aceptó/modificó/descartó con su justificación técnica.
 | Qué se descartó y por qué (BRIN) | **Descartado sin crearlo.** Con correlación ~0, un BRIN no puede eliminar rangos de páginas — evidencia estadística, no fue necesario medir |
 | Herramienta | OpenCode |
 | Propósito | Ejecutar y medir el B-tree dentro de `BEGIN...ROLLBACK` (no descartable solo con estadística) |
-| Qué se descartó y por qué (B-tree) | **Descartado con evidencia empírica.** El planificador sí lo usó (`Bitmap Index Scan`), pero el tiempo empeoró: 658.3 ms → 921.5 ms. El filtro retiene ~47% de `pedido`, muy poco selectivo. Mismo patrón ya visto en TP3-Q3 |
-| Qué se aceptó | `SET LOCAL work_mem = '16MB'` — ya confirmado en TP4-Parte4 sobre esta misma consulta, no se repitió la medición para no duplicar trabajo |
+| Primera medición (revertida) | Una corrida única sugirió que el índice empeoraba (658 ms → 921 ms). Con ese único dato se había descartado |
+| Corrección con control de ruido | Re-auditoría detectó que era una sola corrida por lado (mismo error metodológico ya evitado en Caso 1). Se repitió con 3 rondas intercaladas: Baseline promedio 371.5 ms, B-tree promedio 338.5 ms — el índice ganó en 3/3 rondas, dirección consistente |
+| Qué se aceptó (decisión final) | **`idx_pedido_fecha_hora_btree`: ACEPTADO Y APLICADO EN FIRME**, revirtiendo la conclusión inicial errónea. Mejora real ~8.9%. Se documenta el cambio de conclusión completo, no se oculta el error metodológico inicial |
+| Intervención complementaria | `SET LOCAL work_mem = '16MB'` — ya confirmado en TP4-Parte4 sobre esta misma consulta (ataca el spill del `HashAggregate`, distinto del filtro de fecha que ataca el índice de arriba). No remedido el efecto combinado |
 
 ### Punto 5 — Costo de los índices sobre la escritura
 
@@ -58,7 +60,7 @@ qué se aceptó/modificó/descartó con su justificación técnica.
 |---|---|
 | Herramienta | Ninguna (medición directa con `psql` + `time`) |
 | Hallazgo intermedio | El primer intento de generar 500 `INSERT` de prueba usó subconsultas escalares no correlacionadas (mismo bug de TP3: Postgres las resuelve una sola vez, no por fila). Resultado: `INSERT 0 1` en vez de `INSERT 0 500`. Corregido con la técnica de array + índice aleatorio por fila ya usada en TP3 |
-| Medición | Antes (sin índices nuevos): 1.036 s. Después (con `idx_producto_categoria_precio_activo` aplicado): 0.888 s — sin diferencia significativa, esperado porque ese índice vive en `producto`, no en `detalle_pedido` |
+| Medición | Prueba 1 (sobre `detalle_pedido`, tabla sin índices nuevos): 1.036 s → 0.888 s, sin diferencia significativa — resultado trivial porque el índice de esa etapa vivía en `producto`, no en `detalle_pedido`. Prueba 2, corregida (sobre `producto`, la tabla donde vive el índice): `DROP INDEX` → medir sin índice (0.101 s) → recrear índice → medir con índice (0.267 s). **El costo de escritura sí aumenta con el índice presente** (~2.6x en este caso, aunque en términos absolutos ambos siguen siendo rápidos) |
 
 ---
 
@@ -80,5 +82,5 @@ qué se aceptó/modificó/descartó con su justificación técnica.
 | `SET LOCAL work_mem = '16MB'` (Q5) | Aceptado | −15.1% real, confirmado con 9 corridas |
 | `idx_producto_categoria_precio_activo` | **Aceptado (aplicado en firme)** | +19% real, con salvedad de que no resuelve el O(n²) de fondo |
 | `idx_pedido_fecha_hora_brin` | Descartado sin crear | Correlación física ~0 |
-| `idx_pedido_fecha_hora_btree` | Descartado | Empeoró el tiempo real (658→921 ms), pese a ser usado por el planificador |
-| `SET LOCAL work_mem = '16MB'` (Q4) | Aceptado | Ya confirmado en TP4 sobre la misma consulta |
+| `idx_pedido_fecha_hora_btree` | **Aceptado (aplicado en firme)** | Primera corrida sugería descarte (658→921ms); control de 3 rondas intercaladas lo revirtió: +8.9% real, 3/3 rondas consistentes |
+| `SET LOCAL work_mem = '16MB'` (Q4) | Aceptado (complementario) | Ya confirmado en TP4 sobre la misma consulta; ataca un cuello de botella distinto al del índice |

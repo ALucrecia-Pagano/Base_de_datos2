@@ -139,11 +139,20 @@ hay que reescribir, no indexar.
 ventana, ya trabajada en TP4-Parte4 pero nunca desde el ángulo de
 índices.
 
-**Plan "antes":** `plan_q4_antes.txt`. Execution Time: **658.299 ms**.
-Mismo patrón que en TP4: `Sort ... external merge Disk` (spill a
-disco) como cuello de botella principal, y filtro
+**Plan "antes" de referencia:** `plan_q4_antes.txt` (378.669 ms, una
+corrida individual — el número oficial de comparación es el promedio
+de 3 rondas de control, ver más abajo). Mismo patrón que en TP4:
+`Sort ... external merge Disk` (spill a disco), y filtro
 `estado <> 'CANCELADO' AND fecha_hora >= now() - interval '6 months'`
-sobre `pedido`, reteniendo ~35.5% de las filas.
+sobre `pedido`, reteniendo ~35-47% de las filas según la corrida.
+
+**Nota metodológica:** esta consulta se midió varias veces a lo largo
+de la sesión de trabajo (658, 910, 365, 384, 378 ms en distintos
+momentos, siempre sin ningún índice nuevo aplicado), con variación
+significativa por el estado del caché de PostgreSQL/SO durante una
+sesión larga. Esto llevó a que la primera comparación contra el B-tree
+(un solo baseline vs. una sola corrida con índice) diera una
+conclusión que después se revirtió con control de ruido — ver abajo.
 
 ### Candidato 1 — BRIN sobre `fecha_hora`
 
@@ -159,9 +168,7 @@ valores estén físicamente correlacionados con el orden de las páginas
 en disco. Con correlación ~0 (el `seed_masivo.sql` genera `fecha_hora`
 con `random()`, sin relación con el orden de inserción por `id`), cada
 rango de páginas contiene fechas de todo el año mezcladas — el BRIN no
-podría descartar casi ninguna. Se documenta el descarte con evidencia
-estadística, sin gastar tiempo en crear y medir algo que ya se sabe
-que no va a servir.
+podría descartar casi ninguna.
 
 ### Candidato 2 — B-tree simple sobre `fecha_hora`
 
@@ -169,37 +176,54 @@ que no va a servir.
 CREATE INDEX idx_pedido_fecha_hora_btree ON pedido (fecha_hora DESC);
 ```
 
-Probado con OpenCode dentro de `BEGIN...ROLLBACK` (no se aplicó en
-firme). A diferencia del BRIN, este sí había que medirlo — el riesgo
-(pérdida de paralelismo) no se puede descartar solo con estadísticas.
+**Primera medición (corrida única, luego revertida):** una comparación
+aislada de una corrida de cada lado sugirió que el índice empeoraba el
+tiempo (~658 ms sin índice → ~921 ms con índice), aparentemente por
+pérdida de paralelismo — el mismo patrón que en TP3-Q3. Con ese único
+dato, el índice se había descartado.
 
-**Resultado real:** el planificador **sí usó** el índice (`Bitmap
-Index Scan` + `Bitmap Heap Scan`), pero el tiempo **empeoró**:
-658.299 ms → **921.482 ms**. El filtro retiene ~47% de la tabla
-`pedido` — selectividad demasiado baja para que valga la pena
-abandonar el `Parallel Seq Scan`. Mismo patrón exacto ya documentado en
-TP3-Q3 con un índice equivalente sobre la misma columna.
+**Corrección con control de ruido (3 rondas intercaladas):** al
+re-auditar, se detectó que esa conclusión salía de una sola corrida de
+cada escenario — el mismo error metodológico ya evitado en el Caso 1.
+Se repitió con 3 rondas intercaladas (Baseline-B-tree-Baseline-B-tree-
+Baseline-B-tree), todas dentro de `BEGIN...ROLLBACK`:
 
-**Decisión: DESCARTADO con evidencia empírica.**
+| Ronda | Baseline (ms) | B-tree (ms) |
+|---|---|---|
+| 1 | 380.800 | 358.550 |
+| 2 | 390.572 | 327.330 |
+| 3 | 343.204 | 329.518 |
+| **Promedio** | **371.5** | **338.5** |
 
-### Intervención aceptada — `SET LOCAL work_mem = '16MB'`
+El índice ganó en **3 de 3 rondas**, con dirección consistente (a
+diferencia del Índice A del Caso 1, que no la tenía) — mejora real de
+**~8.9%**.
 
-Ya confirmada en TP4-Parte 4 sobre esta misma consulta: elimina el
-spill a disco del `HashAggregate`, con mejora real medible. No se
-repite la medición en detalle acá para no duplicar lo ya documentado
-en `TP4_Reportes_Analiticos/Parte4/analisis_optimizacion.md`.
+**Decisión final: ACEPTADO y APLICADO EN FIRME**, revirtiendo la
+conclusión inicial. Se documenta el cambio completo (no se oculta la
+primera conclusión errónea) porque es un buen ejemplo de por qué una
+sola medición no alcanza para decidir, incluso cuando "tiene sentido"
+en teoría (pérdida de paralelismo es un riesgo real y documentado en
+TP3, pero acá no se concretó con este nivel de selectividad y control).
 
-**Cierre del Caso 3:** dos tipos de descarte distintos — uno resuelto
-con estadísticas previas (BRIN, sin necesidad de crear ni medir), otro
-que exigió crear y medir para confirmar el riesgo (B-tree, donde el
-optimizador *sí* lo usó pero el tiempo real empeoró de todas formas).
-Ningún índice ayuda a esta consulta; la única intervención efectiva
-sigue siendo `work_mem`, consistente con TP4.
+### Intervención complementaria — `SET LOCAL work_mem = '16MB'`
+
+Confirmada en TP4-Parte 4 sobre esta misma consulta: elimina el spill
+a disco del `HashAggregate`. Es una intervención distinta y compatible
+con el índice de arriba (uno ataca el filtro de fecha, el otro el
+spill del agregado) — no se remidió el efecto combinado en este TP,
+queda como posible mejora adicional a futuro.
+
+**Cierre del Caso 3:** un descarte sin necesidad de medir (BRIN, por
+estadística), un candidato que casi se descarta por error metodológico
+y terminó aceptado tras control riguroso (B-tree), y una intervención
+complementaria ya confirmada en otro TP (`work_mem`). Buen ejemplo de
+que el proceso de medición importa tanto como el resultado.
 
 ## Punto 5 — Costo de los índices sobre la escritura
 
-**Prueba:** insertar 500 filas en `detalle_pedido` dentro de una
-transacción con `ROLLBACK` (para medir sin persistir), midiendo el
+**Prueba 1 (inicial, sobre `detalle_pedido`):** insertar 500 filas en
+`detalle_pedido` dentro de una transacción con `ROLLBACK`, midiendo el
 tiempo total con `time` sobre el comando `psql`.
 
 **Hallazgo previo a la medición:** el primer intento de generar las
@@ -211,17 +235,47 @@ sentencia, no una vez por fila. Resultado: `INSERT 0 1` en vez de
 índice de array aleatorio por fila), confirmando `INSERT 0 500` antes
 de medir el tiempo real.
 
-| Momento | Índices nuevos aplicados | Tiempo real (`INSERT` 500 filas) |
+| Momento | Índices nuevos aplicados | Tiempo real (`INSERT` 500 filas en `detalle_pedido`) |
 |---|---|---|
 | Antes | Ninguno | 1.036 s |
 | Después | `idx_producto_categoria_precio_activo` (sobre `producto`) | 0.888 s |
 
-**Conclusión:** el tiempo de escritura en `detalle_pedido` no cambió de
-forma significativa (diferencia dentro del ruido normal entre
-corridas). Esto es el resultado **esperado**: el único índice que se
-aplicó en firme hasta este punto vive en la tabla `producto`, no en
-`detalle_pedido` — el costo de mantenimiento de un índice solo se paga
-en la tabla donde ese índice existe. Si en la Parte A se llegara a
-aceptar algún índice sobre `pedido` o `detalle_pedido` directamente,
-ahí sí correspondería repetir esta medición para ver el costo real de
-escritura en esa tabla puntual.
+**Observación (detectada en re-auditoría con Kiro):** esta primera
+prueba no mide el escenario más relevante — el único índice aplicado
+en firme vive en `producto`, no en `detalle_pedido`, así que el
+resultado "sin cambio significativo" es esperable pero trivial: no
+prueba el costo real de mantener un índice en la tabla donde
+efectivamente se escribe.
+
+**Prueba 2 (corregida, sobre `producto`, la tabla donde vive el
+índice):** insertar 500 filas en `producto` (misma técnica de
+`array_agg`, sin el bug de aleatoriedad ya que solo depende de
+`categoria`, con apenas 2 filas — impacto insignificante), midiendo
+antes de crear el índice y después, sobre la misma sesión:
+
+```bash
+psql ... -c "DROP INDEX idx_producto_categoria_precio_activo;"
+time psql ... -c "BEGIN; INSERT INTO producto (...) SELECT ... FROM generate_series(1,500)...; ROLLBACK;"
+psql ... -c "CREATE INDEX idx_producto_categoria_precio_activo ...;"
+```
+
+| Momento | Índice sobre `producto` | Tiempo real (`INSERT` 500 filas en `producto`) |
+|---|---|---|
+| Antes | Sin `idx_producto_categoria_precio_activo` | 0.101 s |
+| Después | Con `idx_producto_categoria_precio_activo` | 0.267 s |
+
+**Conclusión real:** al medir sobre la tabla correcta, el costo de
+escritura **sí aumenta** con el índice presente (~2.6x más lento en
+este caso, aunque en términos absolutos sigue siendo rápido:
+milisegundos, no segundos). Esto es exactamente el comportamiento
+esperado y el que pide demostrar la consigna: cada índice que se
+agrega tiene un costo real de mantenimiento en cada `INSERT`/`UPDATE`
+sobre esa tabla, que hay que sopesar contra el beneficio de lectura
+que aporta (en este caso, ~19% de mejora en la Q6 del Caso 2 — un
+trade-off razonable dado que `producto` se escribe con mucha menos
+frecuencia de la que se lee en reportes analíticos).
+
+La Prueba 1 se conserva en el informe (no se borra) porque documenta
+un hallazgo metodológico real: medir el costo de escritura en una
+tabla sin índices nuevos da un resultado trivial y no debe confundirse
+con "los índices no tienen costo de escritura".

@@ -132,3 +132,33 @@ perfectamente (usarse, evitar ir al heap) y aun así no ser la
 herramienta correcta para el problema — cuando el cuello de botella es
 la *estructura* de la consulta (ejecutar algo N veces en vez de una),
 hay que reescribir, no indexar.
+
+## Punto 5 — Costo de los índices sobre la escritura
+
+**Prueba:** insertar 500 filas en `detalle_pedido` dentro de una
+transacción con `ROLLBACK` (para medir sin persistir), midiendo el
+tiempo total con `time` sobre el comando `psql`.
+
+**Hallazgo previo a la medición:** el primer intento de generar las
+500 filas usó subconsultas escalares no correlacionadas
+(`(SELECT id FROM pedido ORDER BY random() LIMIT 1)`), el mismo bug ya
+documentado en TP3 — PostgreSQL las resuelve una sola vez para toda la
+sentencia, no una vez por fila. Resultado: `INSERT 0 1` en vez de
+`INSERT 0 500`. Corregido con la misma técnica de TP3 (array_agg +
+índice de array aleatorio por fila), confirmando `INSERT 0 500` antes
+de medir el tiempo real.
+
+| Momento | Índices nuevos aplicados | Tiempo real (`INSERT` 500 filas) |
+|---|---|---|
+| Antes | Ninguno | 1.036 s |
+| Después | `idx_producto_categoria_precio_activo` (sobre `producto`) | 0.888 s |
+
+**Conclusión:** el tiempo de escritura en `detalle_pedido` no cambió de
+forma significativa (diferencia dentro del ruido normal entre
+corridas). Esto es el resultado **esperado**: el único índice que se
+aplicó en firme hasta este punto vive en la tabla `producto`, no en
+`detalle_pedido` — el costo de mantenimiento de un índice solo se paga
+en la tabla donde ese índice existe. Si en la Parte A se llegara a
+aceptar algún índice sobre `pedido` o `detalle_pedido` directamente,
+ahí sí correspondería repetir esta medición para ver el costo real de
+escritura en esa tabla puntual.

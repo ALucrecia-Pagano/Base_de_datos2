@@ -2,7 +2,7 @@
 
 **Base de prueba:** `foodstore_tp3_carga` (~200.000 pedidos, ~498.000 líneas de detalle)  
 **Motor:** PostgreSQL 17  
-**Estado:** prueba ejecutada y documentada. La vista fue creada, medida y eliminada con `DROP MATERIALIZED VIEW` al finalizar la prueba; no quedó aplicada en la base.
+**Estado:** implementada y aplicada en firme sobre `foodstore_tp3_carga`.
 
 ---
 
@@ -31,7 +31,7 @@ JOIN producto pr        ON pr.id = dp.id_producto
 JOIN categoria c        ON c.id = pr.id_categoria
 WHERE p.estado <> 'CANCELADO'
 GROUP BY c.id, c.nombre, date_trunc('month', p.fecha_hora)
-WITH NO DATA;
+WITH DATA;
 ```
 
 **Índice sobre la vista:**

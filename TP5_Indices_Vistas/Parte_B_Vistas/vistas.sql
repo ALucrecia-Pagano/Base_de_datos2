@@ -55,3 +55,17 @@ FROM detalle_pedido AS dp
 JOIN producto AS pr ON pr.id = dp.id_producto;
 
 COMMENT ON VIEW v_detalle_pedido_producto IS 'Detalle de pedido con el nombre del producto, para reportes.';
+
+CREATE OR REPLACE VIEW v_pedido_cliente AS
+SELECT
+    p.id AS pedido_id,
+    p.fecha_hora,
+    p.forma_pago,
+    p.estado,
+    c.id AS cliente_id,
+    c.nombre_completo,
+    c.email
+FROM pedido AS p
+JOIN cliente AS c ON c.id = p.id_cliente;
+
+COMMENT ON VIEW v_pedido_cliente IS 'Pedidos con los datos del cliente, fila a fila (punto 1 de la consigna). v_reporte_ventas_cliente queda como reporte agregado complementario.';

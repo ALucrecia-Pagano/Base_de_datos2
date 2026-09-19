@@ -97,7 +97,33 @@ psql -U postgres -d foodstore_tp3_carga -c "SELECT tablename, indexname FROM pg_
 ## Flujo de trabajo con IA
 
 Todo el proceso siguió el flujo obligatorio: **Kiro especifica y
-propone** (a partir de un spec en `specs/`) → **OpenCode genera y
-ejecuta** dentro de `BEGIN...ROLLBACK` → se lee y verifica el
-resultado real antes de decidir → se documenta en `duia.md` y
-`informe_mediciones.md`, se acepte o se descarte la propuesta.
+propone** (specs en `Parte_A_Indices/specs/`, `Parte_B_Vistas/specs/`
+y `Parte_C_Vista_Materializada/specs/`, uno por pieza) → **OpenCode
+genera y ejecuta** dentro de `BEGIN...ROLLBACK` cuando aplica → se lee
+y verifica el resultado real antes de decidir → se documenta en
+`duia.md` y `informe_mediciones.md`, se acepte o se descarte la
+propuesta.
+
+## Cómo reproducir/verificar Parte B
+
+```bash
+psql -U postgres -d foodstore_tp3_carga -f Parte_B_Vistas/usuarios.sql
+psql -U postgres -d foodstore_tp3_carga -f Parte_B_Vistas/vistas.sql
+psql -U postgres -d foodstore_tp3_carga -f Parte_B_Vistas/seguridad_roles.sql
+psql -U postgres -d foodstore_tp3_carga -f Parte_B_Vistas/verificacion_vistas.sql
+```
+
+El último script debe: mostrar las columnas de `v_usuario_publico`
+sin `contrasena`, devolver 0 filas en cada bloque de equivalencia
+(punto 3 de la consigna), y fallar solo en la consulta comentada
+final (`SELECT * FROM usuario` bajo `SET ROLE`).
+
+## Cómo reproducir Parte C
+
+```bash
+psql -U postgres -d foodstore_tp3_carga -f Parte_C_Vista_Materializada/vista_materializada.sql
+```
+
+Para comparar tiempos, correr `EXPLAIN ANALYZE` de la consulta base
+(ver `Parte_C_Vista_Materializada/README.md`) contra
+`SELECT * FROM mv_resumen_ventas_categoria_mes;`.

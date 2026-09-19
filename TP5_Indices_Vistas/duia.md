@@ -100,7 +100,8 @@ Consultado el profesor sobre este punto, indicó agregar una tabla
 reemplazar `cliente` ni afectar las consultas ya existentes — así se
 implementó en `usuarios.sql`.
 
-`vistas.sql` define las cuatro vistas:
+`vistas.sql` define las cuatro vistas, especificadas en
+`specs/spec_04_vistas_reportes.md`:
 
 - `v_catalogo_productos` — productos vigentes (`activo = TRUE`) con su categoría.
 - `v_reporte_ventas_cliente` — pedidos no cancelados agregados por cliente.
@@ -111,10 +112,17 @@ implementó en `usuarios.sql`.
 `seguridad_roles.sql` crea el rol grupal `tp5_reportes` (NOLOGIN),
 revoca todo permiso sobre las tablas base y concede `SELECT`
 únicamente sobre las vistas (incluida la vista materializada de la
-Parte C). La verificación queda en `verificacion_vistas.sql`: se
-comprueban las columnas expuestas por `v_usuario_publico`, se
-consultan las vistas con `SET ROLE tp5_reportes`, y se confirma que la
-consulta directa sobre `usuario` falla por falta de privilegios.
+Parte C). La verificación queda en `verificacion_vistas.sql`, con dos
+partes: (1) se comprueban las columnas expuestas por
+`v_usuario_publico`, se consultan las vistas con
+`SET ROLE tp5_reportes`, y se confirma que la consulta directa sobre
+`usuario` falla por falta de privilegios; (2) **verificación de
+equivalencia (punto 3 de la consigna)**: cada una de las 4 vistas se
+compara, con `EXCEPT` en ambos sentidos, contra una consulta manual
+escrita de forma independiente — `v_reporte_ventas_cliente` en
+particular se verificó contra una versión con subconsultas escalares,
+deliberadamente distinta a la forma con `JOIN + GROUP BY` de la vista,
+para que la comparación sea real. Los 4 bloques devuelven 0 filas.
 
 ## Parte C — Vista materializada
 
@@ -123,14 +131,12 @@ consulta directa sobre `usuario` falla por falta de privilegios.
 | Campo | Detalle |
 |---|---|
 | Herramienta | Kiro |
-| Propósito | Elegir el reporte agregado costoso a materializar y especificar la vista: facturación, pedidos y unidades vendidas por categoría y mes |
+| Propósito | Elegir el reporte agregado costoso a materializar y especificar la vista a partir de `specs/spec_05_resumen_ventas_categoria_mes.md`: facturación, pedidos y unidades vendidas por categoría y mes |
 | Qué propuso | `mv_resumen_ventas_categoria_mes`, creada con `WITH DATA` más un índice único sobre `(id_categoria, mes)` para habilitar a futuro `REFRESH MATERIALIZED VIEW CONCURRENTLY` |
 | Qué se hizo | Se creó la vista con los datos cargados en el mismo `CREATE`, se creó el índice único, y se midió con `EXPLAIN ANALYZE` la consulta sobre las tablas base y sobre la vista materializada |
 | Resultados | Consulta sobre tablas base: **618.156 ms** (4 Hash Join + Seq Scans sobre ~498k filas de `detalle_pedido` + Sort con spill a disco). Consulta sobre la vista: **0.073 ms** (Seq Scan sobre 26 filas + quicksort en memoria). Mejora ~8.467x |
 | Frecuencia de refresh recomendada | El reporte es mensual y los datos no necesitan estar al segundo: se recomienda un `REFRESH` diario (por ejemplo, por cron nocturno) en vez de por cada `INSERT`/`UPDATE` de `pedido`/`detalle_pedido` — el costo del `REFRESH` (~600 ms, equivalente a la consulta base) se paga una sola vez y no impacta las lecturas del resto del día |
 | Qué se aceptó | La vista queda **aplicada en firme** en `foodstore_tp3_carga`, con el índice único que habilita `REFRESH CONCURRENTLY` a futuro |
-
-------
 
 ## Resumen de aceptado/descartado (Parte A)
 

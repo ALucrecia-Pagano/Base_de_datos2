@@ -134,8 +134,7 @@ de aceptar cada pieza.
   intercaladas — el cambio de conclusión queda documentado, no
   oculto.
 
-- **Parte B** (trabajo de Lucas, adaptada e integrada)
-  — 4 vistas (`vistas.sql`): productos vigentes con categoría, ventas
+- **Parte B** (Lucas) — 4 vistas (`vistas.sql`): productos vigentes con categoría, ventas
   agregadas por cliente, detalle de pedido con nombre de producto, y
   una vista de seguridad (`v_usuario_publico`) que expone `usuario`
   sin la columna `contrasena`. El esquema heredado usa `cliente` sin
@@ -146,8 +145,8 @@ de aceptar cada pieza.
   una consulta manual equivalente con `EXCEPT`
   (`verificacion_vistas.sql`).
 
-- **Parte C** (trabajo de Mateo, adaptada e integrada) —
-  vista materializada `mv_resumen_ventas_categoria_mes` (facturación,
+- **Parte C** (Mateo) — vista materializada
+  `mv_resumen_ventas_categoria_mes` (facturación,
   pedidos y unidades por categoría y mes), con `WITH DATA` e índice
   único para habilitar `REFRESH CONCURRENTLY` a futuro. Mejora
   medida: 618ms → 0.073ms (~8.467x) contra la consulta directa sobre

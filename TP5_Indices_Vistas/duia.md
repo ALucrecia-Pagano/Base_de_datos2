@@ -100,6 +100,8 @@ Consultado el profesor sobre este punto, indicó agregar una tabla
 reemplazar `cliente` ni afectar las consultas ya existentes — así se
 implementó en `usuarios.sql`.
 
+Kiro especificó las vistas en `specs/spec_04_vistas_reportes.md`; OpenCode generó `usuarios.sql` y `vistas.sql` a partir de esa especificación, dentro del flujo obligatorio especificar → generar → verificar.
+
 `vistas.sql` define las cuatro vistas, especificadas en
 `specs/spec_04_vistas_reportes.md`:
 

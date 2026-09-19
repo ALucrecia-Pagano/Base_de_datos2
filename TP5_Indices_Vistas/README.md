@@ -27,17 +27,23 @@ TP5_Indices_Vistas/
 ├── Parte_A_Indices/
 │   ├── indices.sql
 │   ├── plan_q4_antes.txt
+│   ├── plan_q4_despues.txt
 │   ├── plan_q5_antes.txt
+│   ├── plan_q5_despues_workmem.txt
+│   ├── plan_q5_despues_indice_descartado.txt
 │   ├── plan_q6_antes.txt
+│   ├── plan_q6_despues.txt
 │   └── specs/
 ├── Parte_B_Vistas/
 │   ├── usuarios.sql
 │   ├── vistas.sql
 │   ├── seguridad_roles.sql
-│   └── verificacion_vistas.sql
+│   ├── verificacion_vistas.sql
+│   └── specs/
 └── Parte_C_Vista_Materializada/
     ├── vista_materializada.sql
-    └── README.md
+    ├── README.md
+    └── specs/
 
 ## Cómo reproducir las pruebas de la Parte A
 

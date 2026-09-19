@@ -42,3 +42,16 @@ WHERE p.activo = TRUE
 COMMENT ON VIEW v_usuario_publico IS 'Vista segura: omite deliberadamente usuario.contrasena.';
 COMMENT ON VIEW v_reporte_ventas_cliente IS 'Reporte de ventas por cliente sin exponer credenciales.';
 COMMENT ON VIEW v_catalogo_productos IS 'Catalogo operativo de productos y categorias activas.';
+
+CREATE OR REPLACE VIEW v_detalle_pedido_producto AS
+SELECT
+    dp.id_pedido,
+    dp.id_producto,
+    pr.nombre AS producto,
+    dp.cantidad,
+    dp.precio_unitario,
+    dp.subtotal
+FROM detalle_pedido AS dp
+JOIN producto AS pr ON pr.id = dp.id_producto;
+
+COMMENT ON VIEW v_detalle_pedido_producto IS 'Detalle de pedido con el nombre del producto, para reportes.';

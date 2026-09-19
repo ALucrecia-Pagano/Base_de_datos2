@@ -89,13 +89,48 @@ antes de decidir no crear el índice).
 
 ## Parte B — Vistas para los reportes del sistema
 
-**Estado: pendiente.**
+**Estado: implementada.**
+
+La consigna pide tres vistas (productos vigentes con categoría, pedidos
+con datos del cliente, detalle de pedido con nombre de producto) más
+una vista que aplique el criterio de seguridad visto en la teoría. El
+esquema heredado de TP1-TP4 usa `cliente`, sin tabla de autenticación.
+Consultado el profesor sobre este punto, indicó agregar una tabla
+`usuario` nueva (con contraseña como hash y un enum de rol), sin
+reemplazar `cliente` ni afectar las consultas ya existentes — así se
+implementó en `usuarios.sql`.
+
+`vistas.sql` define las cuatro vistas:
+
+- `v_catalogo_productos` — productos vigentes (`activo = TRUE`) con su categoría.
+- `v_reporte_ventas_cliente` — pedidos no cancelados agregados por cliente.
+- `v_detalle_pedido_producto` — detalle de pedido con el nombre del producto.
+- `v_usuario_publico` — vista de seguridad: expone `usuario` sin la
+  columna `contrasena`, cumpliendo el punto 4 de la consigna.
+
+`seguridad_roles.sql` crea el rol grupal `tp5_reportes` (NOLOGIN),
+revoca todo permiso sobre las tablas base y concede `SELECT`
+únicamente sobre las vistas (incluida la vista materializada de la
+Parte C). La verificación queda en `verificacion_vistas.sql`: se
+comprueban las columnas expuestas por `v_usuario_publico`, se
+consultan las vistas con `SET ROLE tp5_reportes`, y se confirma que la
+consulta directa sobre `usuario` falla por falta de privilegios.
 
 ## Parte C — Vista materializada
 
-**Estado: pendiente.**
+**Estado: implementada y aplicada en firme.**
 
----
+| Campo | Detalle |
+|---|---|
+| Herramienta | Kiro |
+| Propósito | Elegir el reporte agregado costoso a materializar y especificar la vista: facturación, pedidos y unidades vendidas por categoría y mes |
+| Qué propuso | `mv_resumen_ventas_categoria_mes`, creada con `WITH DATA` más un índice único sobre `(id_categoria, mes)` para habilitar a futuro `REFRESH MATERIALIZED VIEW CONCURRENTLY` |
+| Qué se hizo | Se creó la vista con los datos cargados en el mismo `CREATE`, se creó el índice único, y se midió con `EXPLAIN ANALYZE` la consulta sobre las tablas base y sobre la vista materializada |
+| Resultados | Consulta sobre tablas base: **618.156 ms** (4 Hash Join + Seq Scans sobre ~498k filas de `detalle_pedido` + Sort con spill a disco). Consulta sobre la vista: **0.073 ms** (Seq Scan sobre 26 filas + quicksort en memoria). Mejora ~8.467x |
+| Frecuencia de refresh recomendada | El reporte es mensual y los datos no necesitan estar al segundo: se recomienda un `REFRESH` diario (por ejemplo, por cron nocturno) en vez de por cada `INSERT`/`UPDATE` de `pedido`/`detalle_pedido` — el costo del `REFRESH` (~600 ms, equivalente a la consulta base) se paga una sola vez y no impacta las lecturas del resto del día |
+| Qué se aceptó | La vista queda **aplicada en firme** en `foodstore_tp3_carga`, con el índice único que habilita `REFRESH CONCURRENTLY` a futuro |
+
+------
 
 ## Resumen de aceptado/descartado (Parte A)
 

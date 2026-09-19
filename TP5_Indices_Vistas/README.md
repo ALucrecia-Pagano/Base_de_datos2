@@ -9,27 +9,35 @@ líneas de detalle).
 - ✅ **Parte A** (plan de indexado) — completa: 3 casos medidos (Q5,
   Q6, Q4), punto 5 (costo de escritura) y punto 6 (descarte por
   sobreindexación) resueltos.
-- ⏳ **Parte B** (vistas) — pendiente.
-- ⏳ **Parte C** (vista materializada) — pendiente.
+- ✅ **Parte B** (vistas y seguridad por roles) — completa: 4 vistas
+  en `vistas.sql`, rol `tp5_reportes` en `seguridad_roles.sql`,
+  verificación en `verificacion_vistas.sql`.
+- ✅ **Parte C** (vista materializada) — completa: `mv_resumen_ventas_categoria_mes`
+  aplicada en firme, mejora medida ~8.467x (618ms → 0.073ms).
 
 ## Estructura
 
-```
 TP5_Indices_Vistas/
-├── schema.sql                # heredado de TP1, sin modificar
-├── data.sql                  # referencia al script de carga de TP3
-├── queries.sql               # consultas reales de TP3/TP4 usadas como carga de trabajo
-├── indices.sql               # CREATE INDEX aceptados y descartados, comentados
-├── informe_mediciones.md     # EXPLAIN ANALYZE antes/después de cada caso
-├── duia.md                   # bitácora de uso de IA
-├── plan_q5_antes.txt         # plan real, Caso 1
-├── plan_q6_antes.txt         # plan real, Caso 2
-├── plan_q4_antes.txt         # plan real, Caso 3
-└── specs/                    # especificaciones entregadas a Kiro
-    ├── spec_01_pedido_estado_detalle_join.md
-    ├── spec_02_producto_categoria_precio.md
-    └── spec_03_pedido_fecha_brin.md
-```
+├── schema.sql                    # heredado de TP1, sin modificar
+├── data.sql                      # referencia al script de carga de TP3
+├── queries.sql                   # consultas reales de TP3/TP4
+├── duia.md                       # bitácora de uso de IA
+├── informe_mediciones.md         # EXPLAIN ANALYZE antes/después (Parte A)
+├── README.md
+├── Parte_A_Indices/
+│   ├── indices.sql
+│   ├── plan_q4_antes.txt
+│   ├── plan_q5_antes.txt
+│   ├── plan_q6_antes.txt
+│   └── specs/
+├── Parte_B_Vistas/
+│   ├── usuarios.sql
+│   ├── vistas.sql
+│   ├── seguridad_roles.sql
+│   └── verificacion_vistas.sql
+└── Parte_C_Vista_Materializada/
+    ├── vista_materializada.sql
+    └── README.md
 
 ## Cómo reproducir las pruebas de la Parte A
 

@@ -110,6 +110,10 @@ Kiro especificó las vistas en `specs/spec_04_vistas_reportes.md`; OpenCode gene
 - `v_detalle_pedido_producto` — detalle de pedido con el nombre del producto.
 - `v_usuario_publico` — vista de seguridad: expone `usuario` sin la
   columna `contrasena`, cumpliendo el punto 4 de la consigna.
+- `v_pedido_cliente` — pedidos con los datos del cliente, fila a fila,
+  cumpliendo literalmente el punto 1 de la consigna (agregada tras una
+  auditoria que detecto que `v_reporte_ventas_cliente` era un agregado,
+  no la vista plana que pide el enunciado).
 
 `seguridad_roles.sql` crea el rol grupal `tp5_reportes` (NOLOGIN),
 revoca todo permiso sobre las tablas base y concede `SELECT`
@@ -119,12 +123,12 @@ partes: (1) se comprueban las columnas expuestas por
 `v_usuario_publico`, se consultan las vistas con
 `SET ROLE tp5_reportes`, y se confirma que la consulta directa sobre
 `usuario` falla por falta de privilegios; (2) **verificación de
-equivalencia (punto 3 de la consigna)**: cada una de las 4 vistas se
+equivalencia (punto 3 de la consigna)**: cada una de las 5 vistas se
 compara, con `EXCEPT` en ambos sentidos, contra una consulta manual
 escrita de forma independiente — `v_reporte_ventas_cliente` en
 particular se verificó contra una versión con subconsultas escalares,
 deliberadamente distinta a la forma con `JOIN + GROUP BY` de la vista,
-para que la comparación sea real. Los 4 bloques devuelven 0 filas.
+para que la comparación sea real. `v_pedido_cliente` se verifico contra un JOIN directo pedido-cliente. Los 5 bloques devuelven 0 filas.
 
 ## Parte C — Vista materializada
 

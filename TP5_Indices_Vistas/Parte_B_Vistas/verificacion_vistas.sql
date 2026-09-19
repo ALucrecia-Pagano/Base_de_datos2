@@ -122,3 +122,22 @@ UNION ALL
     SELECT id, nombre, apellido, mail, celular, rol, created_at
     FROM v_usuario_publico
 );
+
+-- v_pedido_cliente
+(
+    SELECT pedido_id, fecha_hora, forma_pago, estado, cliente_id, nombre_completo, email
+    FROM v_pedido_cliente
+    EXCEPT
+    SELECT p.id, p.fecha_hora, p.forma_pago, p.estado, c.id, c.nombre_completo, c.email
+    FROM pedido AS p
+    JOIN cliente AS c ON c.id = p.id_cliente
+)
+UNION ALL
+(
+    SELECT p.id, p.fecha_hora, p.forma_pago, p.estado, c.id, c.nombre_completo, c.email
+    FROM pedido AS p
+    JOIN cliente AS c ON c.id = p.id_cliente
+    EXCEPT
+    SELECT pedido_id, fecha_hora, forma_pago, estado, cliente_id, nombre_completo, email
+    FROM v_pedido_cliente
+);

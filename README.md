@@ -51,7 +51,8 @@ Practicos/
 │   ├── Parte_B_Vistas/                    # Lucas — vistas y seguridad por roles
 │   └── Parte_C_Vista_Materializada/       # Mateo — vista materializada
 └── .kiro/steering/                        # Documentos de contexto generados con Kiro
-```               # Documentos de contexto generados con Kiro
+
+```               
 
 ## TP1 — FoodStore (modelado y DDL)
 

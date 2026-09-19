@@ -19,8 +19,7 @@ ORDER BY puesto;
 Time inicial: 527.637 ms. Nodo relevante: `Finalize HashAggregate` con
 `Batches: 5, Disk Usage: 1568kB` (spill a disco), y `Parallel Seq Scan
 on pedido` con `Filter: estado <> 'CANCELADO'`, descartando ~25% de las
-filas (selectividad real ~75%, no el ~83% que había estimado la IA
-antes de medir).
+filas (selectividad real ~75%, no el ~83% que había estimado la IA antes de medir — la estimación inicial de Kiro se corrigió tras medir la selectividad real con `pg_stats`).
 
 ### Candidato propuesto 1 — `idx_pedido_no_cancelado_cliente (id_cliente) WHERE estado <> 'CANCELADO'`
 
@@ -89,7 +88,7 @@ WHERE p.activo = TRUE
 ORDER BY cat.id, p.precio_lista DESC;
 ```
 
-**Plan "antes":** `plan_q6_antes.txt`. Execution Time: **271.205 s**
+**Plan "antes":** `plan_q6_antes.txt`. Execution Time: **271.205 s** (271205.318 ms según `plan_q6_antes.txt`)
 (~4.5 minutos). Nodo relevante: `Nested Loop` con `SubPlan 1` ejecutado
 **50.003 veces** (una por producto), cada una con `Bitmap Heap Scan`
 sobre `producto` filtrando por `id_categoria` — patrón O(n²).

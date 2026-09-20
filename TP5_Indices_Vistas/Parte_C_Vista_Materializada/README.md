@@ -88,7 +88,7 @@ Buffers: shared hit=4
 | Consulta general sobre vista | Seq Scan (26 filas) + quicksort | **0.073 ms** | 0 |
 | Consulta filtrada por categoría | Seq Scan (26 filas) + filtro | **0.073 ms** | 0 |
 
-**Mejora:** ~**8.467x** en tiempo de lectura.
+**Mejora:** ~**8468x** en tiempo de lectura.
 
 ---
 

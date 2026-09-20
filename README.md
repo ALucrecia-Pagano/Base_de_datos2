@@ -149,7 +149,7 @@ de aceptar cada pieza.
   `mv_resumen_ventas_categoria_mes` (facturación,
   pedidos y unidades por categoría y mes), con `WITH DATA` e índice
   único para habilitar `REFRESH CONCURRENTLY` a futuro. Mejora
-  medida: 618ms → 0.073ms (~8.467x) contra la consulta directa sobre
+  medida: 618ms → 0.073ms (~8468x) contra la consulta directa sobre
   las tablas base. Aplicada en firme.
 
 DUIA consolidada en `TP5_Indices_Vistas/duia.md`.

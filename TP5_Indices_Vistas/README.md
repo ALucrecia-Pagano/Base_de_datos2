@@ -13,7 +13,7 @@ líneas de detalle).
   en `vistas.sql`, rol `tp5_reportes` en `seguridad_roles.sql`,
   verificación en `verificacion_vistas.sql`.
 - ✅ **Parte C** (vista materializada) — completa: `mv_resumen_ventas_categoria_mes`
-  aplicada en firme, mejora medida ~8.467x (618ms → 0.073ms).
+  aplicada en firme, mejora medida ~8468x (618ms → 0.073ms).
 
 ## Estructura
 

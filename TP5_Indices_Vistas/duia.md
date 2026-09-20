@@ -112,7 +112,7 @@ Kiro especificó las vistas en `specs/spec_04_vistas_reportes.md`; OpenCode gene
   columna `contrasena`, cumpliendo el punto 4 de la consigna.
 - `v_pedido_cliente` — pedidos con los datos del cliente, fila a fila,
   cumpliendo literalmente el punto 1 de la consigna (agregada tras una
-  auditoria que detecto que `v_reporte_ventas_cliente` era un agregado,
+  auditoria que detectó que `v_reporte_ventas_cliente` era un agregado,
   no la vista plana que pide el enunciado).
 
 `seguridad_roles.sql` crea el rol grupal `tp5_reportes` (NOLOGIN),
@@ -128,7 +128,7 @@ compara, con `EXCEPT` en ambos sentidos, contra una consulta manual
 escrita de forma independiente — `v_reporte_ventas_cliente` en
 particular se verificó contra una versión con subconsultas escalares,
 deliberadamente distinta a la forma con `JOIN + GROUP BY` de la vista,
-para que la comparación sea real. `v_pedido_cliente` se verifico contra un JOIN directo pedido-cliente. Los 5 bloques devuelven 0 filas.
+para que la comparación sea real. `v_pedido_cliente` se verificó contra un JOIN directo pedido-cliente. Los 5 bloques devuelven 0 filas.
 
 ## Parte C — Vista materializada
 

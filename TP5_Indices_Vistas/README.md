@@ -84,7 +84,8 @@ firme (ver `indices.sql` y `duia.md` para el detalle completo de por
 qué se aceptaron y por qué los demás se descartaron):
 
 ```sql
--- Caso 2 (Q6): covering index parcial, mejora ~19% real
+-- Caso 2 (Q6): covering index parcial, mejora final ~41% real (271.2s -> 158.7s tras
+-- VACUUM ANALYZE; medicion inicial fue ~19%)
 CREATE INDEX idx_producto_categoria_precio_activo
     ON producto (id_categoria, precio_lista DESC)
     WHERE activo = TRUE;

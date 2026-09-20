@@ -132,7 +132,9 @@ verificado por equivalencia con `EXCEPT` en aquel momento.
 Se acepta el índice de todas formas porque:
 - No es redundante con `idx_productos_categoria_activo` (ese no
   incluye `precio_lista`, no sirve para el `ORDER BY` ni el `AVG`).
-- Aporta una mejora real, aunque modesta (~19%).
+- Aporta una mejora real: ~19% en la medicion provisional, ~41%
+en la medicion final aplicada en firme (ver Nota de trazabilidad
+arriba).
 - Sirve para acelerar cualquier consulta futura que ordene productos
   activos por precio dentro de una categoría — no es un índice de un
   solo uso.
@@ -288,7 +290,7 @@ milisegundos, no segundos). Esto es exactamente el comportamiento
 esperado y el que pide demostrar la consigna: cada índice que se
 agrega tiene un costo real de mantenimiento en cada `INSERT`/`UPDATE`
 sobre esa tabla, que hay que sopesar contra el beneficio de lectura
-que aporta (en este caso, ~19% de mejora en la Q6 del Caso 2 — un
+que aporta (en este caso, ~41% de mejora en la Q6 del Caso 2 — un
 trade-off razonable dado que `producto` se escribe con mucha menos
 frecuencia de la que se lee en reportes analíticos).
 

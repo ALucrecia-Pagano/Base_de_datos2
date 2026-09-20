@@ -125,6 +125,11 @@ cuando la propia consigna exige, en otro punto, una funcionalidad que
 solo esa tabla puede sostener.
 
 Kiro especificó las vistas en `specs/spec_04_vistas_reportes.md`; OpenCode generó `usuarios.sql` y `vistas.sql` a partir de esa especificación, dentro del flujo obligatorio especificar → generar → verificar.
+El SQL generado por OpenCode (`usuarios.sql`, `vistas.sql`,
+`seguridad_roles.sql`) se revisó contra lo pedido en
+`specs/spec_04_vistas_reportes.md` antes de ejecutarlo; la corrección
+del resultado se confirmó después con la verificación de equivalencia
+bidireccional descrita más abajo.
 
 `vistas.sql` define las cinco vistas, especificadas en
 `specs/spec_04_vistas_reportes.md`:
@@ -185,6 +190,7 @@ firme.
 | Frecuencia de refresh recomendada | El reporte es mensual y los datos no necesitan estar al segundo: se recomienda un `REFRESH` diario (por ejemplo, por cron nocturno) en vez de por cada `INSERT`/`UPDATE` de `pedido`/`detalle_pedido` — el costo del `REFRESH` (~600 ms, equivalente a la consulta base) se paga una sola vez y no impacta las lecturas del resto del día |
 | Qué se aceptó | La vista queda **aplicada en firme** en `foodstore_tp3_carga`, con el índice único que habilita `REFRESH CONCURRENTLY` a futuro |
 | Prueba reversible previa | Antes de aplicarse en firme, se validó como prueba de concepto: se creó la vista con `WITH NO DATA`, se cargó con `REFRESH MATERIALIZED VIEW`, se midió con `EXPLAIN ANALYZE`, y se eliminó con `DROP MATERIALIZED VIEW` sin dejar nada aplicado. Confirmado el resultado, se volvió a crear con `WITH DATA` para la aplicación en firme (equivalente al `BEGIN...ROLLBACK` de Parte A, adaptado a que un `REFRESH` de vista materializada no se prueba dentro de una transacción de forma útil) |
+| Lectura previa | El SQL generado (`CREATE MATERIALIZED VIEW`, el índice único, el `REFRESH`) se revisó contra lo pedido en `specs/spec_05_resumen_ventas_categoria_mes.md` antes de ejecutarlo; la corrección del resultado se confirmó después con la medición `EXPLAIN ANALYZE` y con la prueba `WITH NO DATA`/`DROP` descrita arriba |
 
 ## Resumen de aceptado/descartado (Parte A)
 

@@ -1,7 +1,7 @@
 # TP5 — Índices, Vistas y Vistas Materializadas (Unidad 3, Semana 5)
 
 Continúa el proyecto integrador **Food Store** sobre la base masiva
-`foodstore_tp3_carga` (poblada en TP3, ~200.000 pedidos, ~500.000
+`foodstore_tp3_carga` (poblada en TP3, ~200.000 pedidos, 499.571
 líneas de detalle).
 
 ## Estado actual

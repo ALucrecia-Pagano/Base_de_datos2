@@ -23,6 +23,7 @@ SELECT * FROM v_detalle_pedido_producto LIMIT 5;
 SELECT * FROM mv_resumen_ventas_categoria_mes LIMIT 5;
 -- Esta consulta debe fallar por falta de privilegios:
 -- SELECT * FROM usuario;
+-- Evidencia real capturada de este fallo (ERROR: permiso denegado a la tabla usuario): ver Parte_B_Vistas/evidencia_permiso_denegado.txt
 RESET ROLE;
 
 -- 5) Verificacion de equivalencia: cada vista contra su consulta manual.

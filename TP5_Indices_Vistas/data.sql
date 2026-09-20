@@ -13,8 +13,8 @@
 --   producto:        50.000 filas (+3 de datos base de TP1)
 --   cliente:         20.000 filas (+3 de datos base de TP1)
 --   pedido:         200.000 filas (+5 de datos base de TP1)
---   detalle_pedido: ~499.500 filas (numero no determinista, ver nota en
---                   TP3/parte1/verificacion_carga.sql)
+--   detalle_pedido: 499.571 filas (valor exacto verificado con count(*);
+--                   el numero puede variar levemente entre cargas, ver nota en
 --
 -- Este volumen ya es "suficiente para que las diferencias de plan y de
 -- tiempo sean observables" segun pide la consigna de este TP -- no hace

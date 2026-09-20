@@ -86,7 +86,7 @@ Trabajo práctico de laboratorio grupal sobre el mismo esquema FoodStore. Cubre 
 
 ## TP3 — Optimización de consultas asistida por IA
 
-Trabajo práctico sobre la misma base FoodStore, ahora poblada masivamente (~200.000 pedidos, ~500.000 líneas de detalle), para medir y optimizar con `EXPLAIN ANALYZE`. Cinco partes repartidas entre el equipo.
+Trabajo práctico sobre la misma base FoodStore, ahora poblada masivamente (~200.000 pedidos, 499.571 líneas de detalle), para medir y optimizar con `EXPLAIN ANALYZE`. Cinco partes repartidas entre el equipo.
 
 - **Parte 1** (Amanda) — Carga masiva de datos con un generador de la cátedra (`seed_masivo.sql`). Durante el proceso se detectó y corrigió un bug real de aleatorización no correlacionada en el script original (subconsultas tipo `ORDER BY random() LIMIT 1` que PostgreSQL resolvía una sola vez para toda la sentencia, degenerando la distribución de claves foráneas). Documentado en detalle en `DUIA_COMPLETA.md` y en la carpeta de la parte.
 
@@ -118,7 +118,7 @@ DUIA consolidada de las 4 partes en `DUIA_TP4.md`.
 ## TP5 — Índices, vistas y vista materializada
 
 Continuación de la base masiva de TP3/TP4 (`foodstore_tp3_carga`,
-~200.000 pedidos, ~500.000 líneas de detalle). El trabajo se armó
+~200.000 pedidos, 499.571 líneas de detalle). El trabajo se armó
 integrando el aporte de cada integrante del equipo sobre la misma
 base heredada, con specs propios en Kiro y verificación propia antes
 de aceptar cada pieza.

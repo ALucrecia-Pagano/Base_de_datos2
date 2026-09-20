@@ -122,7 +122,7 @@ Parte C). La verificación queda en `verificacion_vistas.sql`, con dos
 partes: (1) se comprueban las columnas expuestas por
 `v_usuario_publico`, se consultan las vistas con
 `SET ROLE tp5_reportes`, y se confirma que la consulta directa sobre
-`usuario` falla por falta de privilegios; (2) **verificación de
+`usuario` falla por falta de privilegios (evidencia real capturada en `Parte_B_Vistas/evidencia_permiso_denegado.txt`); (2) **verificación de
 equivalencia (punto 3 de la consigna)**: cada una de las 5 vistas se
 compara, con `EXCEPT` en ambos sentidos, contra una consulta manual
 escrita de forma independiente — `v_reporte_ventas_cliente` en

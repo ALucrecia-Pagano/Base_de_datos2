@@ -154,6 +154,21 @@ particular se verificó contra una versión con subconsultas escalares,
 deliberadamente distinta a la forma con `JOIN + GROUP BY` de la vista,
 para que la comparación sea real. `v_pedido_cliente` se verificó contra un JOIN directo pedido-cliente. Los 5 bloques devuelven 0 filas.
 
+**Sobre la prueba reversible (punto 3 del flujo obligatorio):** a
+diferencia de los índices de Parte A —que se probaron dentro de
+`BEGIN...ROLLBACK` porque reconstruir un índice sobre una tabla de
+cientos de miles de filas es costoso y su descarte debía quedar sin
+rastro—, `usuarios.sql`, `vistas.sql` y `seguridad_roles.sql` son
+operaciones no destructivas y de costo trivial: `CREATE VIEW`,
+`CREATE TABLE` y `GRANT`/`REVOKE` no modifican datos existentes y se
+deshacen al instante con `DROP VIEW`, `DROP TABLE` o revocando el rol,
+sin necesidad de envolverlas en una transacción de prueba. La
+verificación de corrección se hizo antes de darlas por definitivas:
+cada vista se validó con el bloque `EXCEPT` bidireccional de
+`verificacion_vistas.sql` (ver más arriba), y solo después de que las
+5 comparaciones devolvieran 0 filas se consideraron aplicadas en
+firme.
+
 ## Parte C — Vista materializada
 
 **Estado: implementada y aplicada en firme.**
@@ -162,11 +177,14 @@ para que la comparación sea real. `v_pedido_cliente` se verificó contra un JOI
 |---|---|
 | Herramienta | Kiro |
 | Propósito | Elegir el reporte agregado costoso a materializar y especificar la vista a partir de `specs/spec_05_resumen_ventas_categoria_mes.md`: facturación, pedidos y unidades vendidas por categoría y mes |
+| Herramienta | GitHub Copilot (agente de VS Code) |
+| Propósito | Generar y ejecutar `vista_materializada.sql`: crear la vista, el índice único, y correr `REFRESH MATERIALIZED VIEW` |
 | Qué propuso | `mv_resumen_ventas_categoria_mes`, creada con `WITH DATA` más un índice único sobre `(id_categoria, mes)` para habilitar a futuro `REFRESH MATERIALIZED VIEW CONCURRENTLY` |
 | Qué se hizo | Se creó la vista con los datos cargados en el mismo `CREATE`, se creó el índice único, y se midió con `EXPLAIN ANALYZE` la consulta sobre las tablas base y sobre la vista materializada |
 | Resultados | Consulta sobre tablas base: **618.156 ms** (4 Hash Join + Seq Scans sobre 499.571 filas de `detalle_pedido` + Sort con spill a disco). Consulta sobre la vista: **0.073 ms** (Seq Scan sobre 26 filas + quicksort en memoria). Mejora ~8.467x |
 | Frecuencia de refresh recomendada | El reporte es mensual y los datos no necesitan estar al segundo: se recomienda un `REFRESH` diario (por ejemplo, por cron nocturno) en vez de por cada `INSERT`/`UPDATE` de `pedido`/`detalle_pedido` — el costo del `REFRESH` (~600 ms, equivalente a la consulta base) se paga una sola vez y no impacta las lecturas del resto del día |
 | Qué se aceptó | La vista queda **aplicada en firme** en `foodstore_tp3_carga`, con el índice único que habilita `REFRESH CONCURRENTLY` a futuro |
+| Prueba reversible previa | Antes de aplicarse en firme, se validó como prueba de concepto: se creó la vista con `WITH NO DATA`, se cargó con `REFRESH MATERIALIZED VIEW`, se midió con `EXPLAIN ANALYZE`, y se eliminó con `DROP MATERIALIZED VIEW` sin dejar nada aplicado. Confirmado el resultado, se volvió a crear con `WITH DATA` para la aplicación en firme (equivalente al `BEGIN...ROLLBACK` de Parte A, adaptado a que un `REFRESH` de vista materializada no se prueba dentro de una transacción de forma útil) |
 
 ## Resumen de aceptado/descartado (Parte A)
 

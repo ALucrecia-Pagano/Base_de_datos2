@@ -100,11 +100,38 @@ antes de decidir no crear el índice).
 
 **Estado: implementada.**
 
-| Pieza | Herramienta | Propósito | Qué propuso | Qué se aceptó |
-|---|---|---|---|---|
-| `usuarios.sql` | Kiro → OpenCode | Kiro especificó en `spec_04_vistas_reportes.md` la necesidad de una tabla de autenticación (el esquema heredado no tenía una); OpenCode generó el DDL | `CREATE TYPE rol_usuario` (enum) + `CREATE TABLE usuario` con `contrasena` como hash, sin modificar `cliente` ni ninguna tabla heredada | Aceptado tal cual: tabla nueva e independiente (ver justificación de por qué esto no viola "no modificar el modelo de datos" más abajo) |
-| `vistas.sql` | Kiro → OpenCode | Kiro especificó las 5 vistas en `spec_04_vistas_reportes.md`; OpenCode generó el DDL de cada una | `v_catalogo_productos`, `v_reporte_ventas_cliente`, `v_detalle_pedido_producto`, `v_usuario_publico`, `v_pedido_cliente` (esta última agregada tras una auditoría posterior, ver más abajo) | Aceptadas las 5, verificadas con `EXCEPT` bidireccional contra consultas manuales independientes (ver Punto 3 más abajo) |
-| `seguridad_roles.sql` | Kiro → OpenCode | Kiro especificó el rol de seguridad exigido por el punto 4 de la consigna; OpenCode generó el rol y los `GRANT`/`REVOKE` | Rol `tp5_reportes` (`NOLOGIN`), `REVOKE ALL` sobre las tablas base, `GRANT SELECT` solo sobre las vistas (incluida la materializada de Parte C) | Aceptado, verificado con `SET ROLE` + intento fallido real sobre `usuario` (ver `evidencia_permiso_denegado.txt`) |
+### `usuarios.sql`
+
+| Campo | Detalle |
+|---|---|
+| Herramienta | Kiro |
+| Propósito | Especificar en `spec_04_vistas_reportes.md` la necesidad de una tabla de autenticación, ya que el esquema heredado no tenía ninguna |
+| Herramienta | OpenCode |
+| Propósito | Generar el DDL de `usuarios.sql` a partir de la especificación |
+| Qué propuso | `CREATE TYPE rol_usuario` (enum) + `CREATE TABLE usuario` con `contrasena` como hash, sin modificar `cliente` ni ninguna tabla heredada |
+| Qué se aceptó | Tal cual: tabla nueva e independiente (ver justificación de por qué esto no viola "no modificar el modelo de datos" más abajo) |
+
+### `vistas.sql`
+
+| Campo | Detalle |
+|---|---|
+| Herramienta | Kiro |
+| Propósito | Especificar las 5 vistas en `spec_04_vistas_reportes.md` |
+| Herramienta | OpenCode |
+| Propósito | Generar el DDL de cada vista en `vistas.sql` |
+| Qué propuso | `v_catalogo_productos`, `v_reporte_ventas_cliente`, `v_detalle_pedido_producto`, `v_usuario_publico`, `v_pedido_cliente` (esta última agregada tras una auditoría posterior, ver más abajo) |
+| Qué se aceptó | Las 5, verificadas con `EXCEPT` bidireccional contra consultas manuales independientes (ver Punto 3 más abajo) |
+
+### `seguridad_roles.sql`
+
+| Campo | Detalle |
+|---|---|
+| Herramienta | Kiro |
+| Propósito | Especificar el rol de seguridad exigido por el punto 4 de la consigna |
+| Herramienta | OpenCode |
+| Propósito | Generar el rol y los `GRANT`/`REVOKE` en `seguridad_roles.sql` |
+| Qué propuso | Rol `tp5_reportes` (`NOLOGIN`), `REVOKE ALL` sobre las tablas base, `GRANT SELECT` solo sobre las vistas (incluida la materializada de Parte C) |
+| Qué se aceptó | Verificado con `SET ROLE` + intento fallido real sobre `usuario` (ver `evidencia_permiso_denegado.txt`) |
 
 La consigna pide tres vistas (productos vigentes con categoría, pedidos
 con datos del cliente, detalle de pedido con nombre de producto) más

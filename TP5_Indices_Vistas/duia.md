@@ -95,14 +95,14 @@ La consigna pide tres vistas (productos vigentes con categoría, pedidos
 con datos del cliente, detalle de pedido con nombre de producto) más
 una vista que aplique el criterio de seguridad visto en la teoría. El
 esquema heredado de TP1-TP4 usa `cliente`, sin tabla de autenticación.
-Consultado el profesor sobre este punto, indicó agregar una tabla
+Se agregó una tabla
 `usuario` nueva (con contraseña como hash y un enum de rol), sin
 reemplazar `cliente` ni afectar las consultas ya existentes — así se
 implementó en `usuarios.sql`.
 
 Kiro especificó las vistas en `specs/spec_04_vistas_reportes.md`; OpenCode generó `usuarios.sql` y `vistas.sql` a partir de esa especificación, dentro del flujo obligatorio especificar → generar → verificar.
 
-`vistas.sql` define las cuatro vistas, especificadas en
+`vistas.sql` define las cinco vistas, especificadas en
 `specs/spec_04_vistas_reportes.md`:
 
 - `v_catalogo_productos` — productos vigentes (`activo = TRUE`) con su categoría.

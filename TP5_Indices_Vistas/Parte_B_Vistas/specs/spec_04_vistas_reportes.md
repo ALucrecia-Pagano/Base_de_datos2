@@ -27,3 +27,13 @@ el esquema heredado (schema.sql + usuarios.sql), y sus resultados
 deben coincidir exactamente con una consulta manual equivalente
 escrita de forma independiente (ver
 Parte_B_Vistas/verificacion_vistas.sql).
+Vista agregada tras una auditoría posterior (cubre el punto 1 de la
+consigna de forma literal, ya que v_reporte_ventas_cliente es un
+agregado y no una vista plana fila a fila):
+
+5. v_pedido_cliente — pedidos con los datos del cliente, sin agregar
+   (fecha_hora, forma_pago, estado, y datos del cliente asociado).
+
+Mismo criterio de aceptación que las anteriores: correr sin error y
+coincidir exactamente con una consulta manual (ver
+Parte_B_Vistas/verificacion_vistas.sql).

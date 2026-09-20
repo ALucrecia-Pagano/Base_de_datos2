@@ -134,11 +134,11 @@ de aceptar cada pieza.
   intercaladas — el cambio de conclusión queda documentado, no
   oculto.
 
-- **Parte B** (Lucas) — 4 vistas (`vistas.sql`): productos vigentes con categoría, ventas
-  agregadas por cliente, detalle de pedido con nombre de producto, y
+- **Parte B** (Lucas) — 5 vistas (`vistas.sql`): productos vigentes con categoría, ventas
+  agregadas por cliente, pedidos con los datos del cliente, detalle de pedido con nombre de producto, y
   una vista de seguridad (`v_usuario_publico`) que expone `usuario`
   sin la columna `contrasena`. El esquema heredado usa `cliente` sin
-  tabla de autenticación; consultado el profesor, indicó agregar una
+  tabla de autenticación; se agregó una
   tabla `usuario` nueva sin tocar `cliente` (`usuarios.sql`). Un rol
   de solo lectura (`seguridad_roles.sql`) tiene `SELECT` sobre las
   vistas pero no sobre las tablas base. Cada vista se verificó contra

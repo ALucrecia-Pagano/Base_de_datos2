@@ -9,7 +9,7 @@ líneas de detalle).
 - ✅ **Parte A** (plan de indexado) — completa: 3 casos medidos (Q5,
   Q6, Q4), punto 5 (costo de escritura) y punto 6 (descarte por
   sobreindexación) resueltos.
-- ✅ **Parte B** (vistas y seguridad por roles) — completa: 4 vistas
+- ✅ **Parte B** (vistas y seguridad por roles) — completa: 5 vistas
   en `vistas.sql`, rol `tp5_reportes` en `seguridad_roles.sql`,
   verificación en `verificacion_vistas.sql`.
 - ✅ **Parte C** (vista materializada) — completa: `mv_resumen_ventas_categoria_mes`

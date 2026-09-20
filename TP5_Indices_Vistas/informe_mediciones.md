@@ -99,6 +99,17 @@ Propuesto por Kiro (`specs/spec_02_producto_categoria_precio.md`),
 probado con OpenCode dentro de `BEGIN...ROLLBACK`.
 
 **Resultado:** Execution Time con índice: **220.899 s**. Mejora: ~19%.
+
+**Nota de trazabilidad:** los 220.899 s de arriba son la medición hecha
+dentro de `BEGIN...ROLLBACK` al probar el candidato por primera vez (ya
+con `Index Only Scan`, `Heap Fetches: 0`). La medición final, sobre el
+índice ya aplicado en firme, quedó en `Parte_A_Indices/plan_q6_despues.txt`:
+**158.728 s**, capturada después de correr `VACUUM ANALYZE producto;`
+(ver Caso 3, Punto 5, donde el mapa de visibilidad se había desactualizado
+por los INSERT de prueba y forzaba temporalmente un `Index Scan` con
+fetches al heap). Ese último número —no el 220.899 s— es el que refleja
+el estado real de la base entregada: mejora de **271.205 s → 158.728 s
+(~41%)**, mayor a la estimada inicialmente en esta sección.
 El plan confirma `Index Only Scan` con `Heap Fetches: 0` — el índice
 sí se usa y resuelve el `AVG` sin volver al heap.
 

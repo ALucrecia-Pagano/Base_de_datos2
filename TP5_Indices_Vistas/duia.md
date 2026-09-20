@@ -3,7 +3,7 @@
 **Materia:** Base de Datos II
 **Proyecto:** Food Store — continúa el esquema de TP1/TP3/TP4
 **Base de trabajo:** `foodstore_tp3_carga`
-**Herramientas obligatorias:** Kiro (especificación) + OpenCode (generación y ejecución) + Git
+**Herramientas obligatorias:** Kiro (especificación) + un agente de generación y ejecución de código (OpenCode en Parte A y B; GitHub Copilot en Parte C, según la herramienta de cada integrante) + Git
 
 Esta bitácora registra, para cada pieza del trabajo, qué herramienta se
 usó, con qué propósito, el spec/prompt entregado, qué propuso la IA, y

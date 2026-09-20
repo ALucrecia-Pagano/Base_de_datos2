@@ -100,6 +100,21 @@ Se agregó una tabla
 reemplazar `cliente` ni afectar las consultas ya existentes — así se
 implementó en `usuarios.sql`.
 
+Esta adición es la única modificación al modelo de datos heredado, y
+está acotada a un requisito puntual de la propia consigna: el punto 4
+exige una vista de seguridad que oculte la columna `contrasena`, pero
+ninguna tabla del esquema heredado (`cliente`, `pedido`, `producto`,
+`categoria`, `detalle_pedido`) tiene una columna de autenticación con
+ese propósito. Cumplir literalmente ese punto sin agregar una tabla
+nueva es imposible: no hay contraseña que ocultar si no existe la
+columna. La restricción de "no modificar el modelo de datos" se
+interpretó, por lo tanto, como protección de las tablas y relaciones
+ya existentes (no se modificó ninguna columna, tipo ni restricción de
+`cliente`, `pedido`, `producto`, `categoria` ni `detalle_pedido`), y
+no como una prohibición de agregar una tabla nueva e independiente
+cuando la propia consigna exige, en otro punto, una funcionalidad que
+solo esa tabla puede sostener.
+
 Kiro especificó las vistas en `specs/spec_04_vistas_reportes.md`; OpenCode generó `usuarios.sql` y `vistas.sql` a partir de esa especificación, dentro del flujo obligatorio especificar → generar → verificar.
 
 `vistas.sql` define las cinco vistas, especificadas en

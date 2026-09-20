@@ -9,6 +9,15 @@ Esta bitácora registra, para cada pieza del trabajo, qué herramienta se
 usó, con qué propósito, el spec/prompt entregado, qué propuso la IA, y
 qué se aceptó/modificó/descartó con su justificación técnica.
 
+**Paso 4 del flujo obligatorio (commits descriptivos):** cada pieza de
+este TP5 se subió en commits separados y descriptivos, uno por caso o
+corrección — por ejemplo los tres casos de Parte A, la incorporación
+de vistas y seguridad de Parte B, la vista materializada de Parte C, y
+cada corrección posterior (trazabilidad de Q6, verificación de
+equivalencia faltante, hipótesis de correlación en spec_03, volumen de
+datos, evidencia de permisos). El historial completo es verificable
+con `git log --oneline -- TP5_Indices_Vistas/`.
+
 ---
 
 ## Parte A — Plan de indexado asistido por IA
@@ -155,7 +164,7 @@ para que la comparación sea real. `v_pedido_cliente` se verificó contra un JOI
 | Propósito | Elegir el reporte agregado costoso a materializar y especificar la vista a partir de `specs/spec_05_resumen_ventas_categoria_mes.md`: facturación, pedidos y unidades vendidas por categoría y mes |
 | Qué propuso | `mv_resumen_ventas_categoria_mes`, creada con `WITH DATA` más un índice único sobre `(id_categoria, mes)` para habilitar a futuro `REFRESH MATERIALIZED VIEW CONCURRENTLY` |
 | Qué se hizo | Se creó la vista con los datos cargados en el mismo `CREATE`, se creó el índice único, y se midió con `EXPLAIN ANALYZE` la consulta sobre las tablas base y sobre la vista materializada |
-| Resultados | Consulta sobre tablas base: **618.156 ms** (4 Hash Join + Seq Scans sobre ~498k filas de `detalle_pedido` + Sort con spill a disco). Consulta sobre la vista: **0.073 ms** (Seq Scan sobre 26 filas + quicksort en memoria). Mejora ~8.467x |
+| Resultados | Consulta sobre tablas base: **618.156 ms** (4 Hash Join + Seq Scans sobre 499.571 filas de `detalle_pedido` + Sort con spill a disco). Consulta sobre la vista: **0.073 ms** (Seq Scan sobre 26 filas + quicksort en memoria). Mejora ~8.467x |
 | Frecuencia de refresh recomendada | El reporte es mensual y los datos no necesitan estar al segundo: se recomienda un `REFRESH` diario (por ejemplo, por cron nocturno) en vez de por cada `INSERT`/`UPDATE` de `pedido`/`detalle_pedido` — el costo del `REFRESH` (~600 ms, equivalente a la consulta base) se paga una sola vez y no impacta las lecturas del resto del día |
 | Qué se aceptó | La vista queda **aplicada en firme** en `foodstore_tp3_carga`, con el índice único que habilita `REFRESH CONCURRENTLY` a futuro |
 

@@ -3,7 +3,7 @@
 Objetivo: acelerar el reporte de facturación, pedidos y unidades
 vendidas por categoría y mes, que hoy cruza pedido + detalle_pedido +
 producto + categoria y demora varios cientos de ms sobre el volumen
-masivo de TP3 (~500k filas en detalle_pedido).
+masivo de TP3 (499.571 filas en detalle_pedido).
 
 Consulta afectada: agregación de dp.cantidad, dp.subtotal y
 COUNT(DISTINCT p.id), agrupada por categoria.id, categoria.nombre y

@@ -58,7 +58,7 @@ antes de decidir no crear el índice).
 | Qué propuso | `idx_producto_categoria_precio_activo (id_categoria, precio_lista DESC) WHERE activo = TRUE` — covering index parcial |
 | Herramienta | OpenCode |
 | Propósito | Ejecutar el índice dentro de `BEGIN...ROLLBACK` y medir contra el baseline de 271.205 s |
-| Qué se aceptó | El índice: **APLICADO EN FIRME**. Mejora real 271.2s → 220.9s (~19%), confirmado `Index Only Scan` con `Heap Fetches: 0` |
+| Qué se aceptó | El índice: **APLICADO EN FIRME**. Medición inicial (dentro de BEGIN...ROLLBACK): 271.2s -> 220.9s (~19%). Medición final, tras aplicar el indice en firme y VACUUM ANALYZE (ver plan_q6_despues.txt): 271.2s -> 158.7s (~41%), confirmado `Index Only Scan` con `Heap Fetches: 0` |
 | Modificación / salvedad | Se aceptó con la salvedad de que **no resuelve el problema real** (patrón O(n²) de la subconsulta correlacionada, ejecutada 50.003 veces). La solución real ya existe en TP4-Parte3 (reescritura con tabla derivada pre-agregada). Se acepta el índice igual porque no es redundante con el existente y aporta mejora real, aunque modesta |
 
 ### Caso 3 — Q4: Top 3 productos por facturación por categoría
@@ -150,7 +150,7 @@ para que la comparación sea real. `v_pedido_cliente` se verificó contra un JOI
 |---|---|---|
 | `idx_pedido_no_cancelado_cliente` | Descartado | Ignorado por el planificador (baja selectividad, ~75%) |
 | `SET LOCAL work_mem = '16MB'` (Q5) | Aceptado | −15.1% real, confirmado con 9 corridas |
-| `idx_producto_categoria_precio_activo` | **Aceptado (aplicado en firme)** | +19% real, con salvedad de que no resuelve el O(n²) de fondo |
+| `idx_producto_categoria_precio_activo` | **Aceptado (aplicado en firme)** | Mejora real ~41% (271.2s -> 158.7s, medicion final tras VACUUM ANALYZE; ver informe_mediciones.md Caso 2), con salvedad de que no resuelve el O(n²) de fondo |
 | `idx_pedido_fecha_hora_brin` | Descartado sin crear | Correlación física ~0 |
 | `idx_pedido_fecha_hora_btree` | **Aceptado (aplicado en firme)** | Primera corrida sugería descarte (658→921ms); control de 3 rondas intercaladas lo revirtió: +8.9% real, 3/3 rondas consistentes |
 | `SET LOCAL work_mem = '16MB'` (Q4) | Aceptado (complementario) | Ya confirmado en TP4 sobre la misma consulta; ataca un cuello de botella distinto al del índice |

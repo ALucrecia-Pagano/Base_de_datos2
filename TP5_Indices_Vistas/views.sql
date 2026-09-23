@@ -11,8 +11,9 @@
 -- Pensado para armar una base desde cero, despues de schema.sql.
 -- Ejecutar desde la carpeta TP5_Indices_Vistas:
 --   psql -U postgres -d foodstore_tp3_carga -f views.sql
--- En una base que ya tiene todo aplicado no hace falta correrlo: el
--- CREATE MATERIALIZED VIEW de la Parte C falla si la vista ya existe.
+-- En una base que ya tiene todo aplicado, el CREATE MATERIALIZED VIEW
+-- y su indice dan "already exists" (el resto sigue) y se vuelven a
+-- ejecutar los REFRESH de la Parte C.
 -- ============================================================================
 \ir Parte_B_Vistas/usuarios.sql
 \ir Parte_B_Vistas/usuarios_datos.sql

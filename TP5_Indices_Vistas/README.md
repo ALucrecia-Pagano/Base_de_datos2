@@ -197,7 +197,7 @@ vista materializada tiene que existir antes. Si se corren los archivos
 de a uno, hay que respetar ese mismo orden. En una base que ya tiene
 todo aplicado, el `CREATE MATERIALIZED VIEW` y su índice dan
 `already exists` y se pueden ignorar: el resto se vuelve a aplicar sin
-problema.
+problema, incluidos los `REFRESH` de la vista materializada.
 
 El último script muestra las columnas de `v_usuario_publico` (sin
 `contrasena`), consulta las vistas con `SET ROLE tp5_reportes` y

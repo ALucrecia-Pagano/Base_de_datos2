@@ -47,6 +47,7 @@ Practicos/
 ├── TP5_Indices_Vistas/                    # TP5: índices, vistas y vista materializada
 │   ├── schema.sql / data.sql / queries.sql   # heredados
 │   ├── duia.md / informe_mediciones.md / README.md
+│   ├── indices.sql / views.sql / specs/   # puntos de entrada (sección 7 de la consigna)
 │   ├── Parte_A_Indices/                   # Amanda — plan de indexado
 │   ├── Parte_B_Vistas/                    # Lucas — vistas y seguridad por roles
 │   └── Parte_C_Vista_Materializada/       # Mateo — vista materializada

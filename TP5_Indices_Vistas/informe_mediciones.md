@@ -88,8 +88,9 @@ ignora), y `work_mem` baja el `HashAggregate` de `Batches: 5` a
 
 ### Decisión — Índice A: **DESCARTADO**
 
-El plan confirma "Índice ignorado" en las 9 de 9 corridas, sin
-excepción — no es un efecto de ruido, es una decisión estructural del
+En todas las corridas con el Índice A, el plan sigue leyendo `pedido`
+con `Parallel Seq Scan` y el índice no aparece: en las 3 archivadas de
+la remedición y en las de la primera tanda, sin archivar. No es un efecto de ruido, es una decisión estructural del
 optimizador. Causa: la condición `estado <> 'CANCELADO'` retiene ~75%
 de la tabla `pedido`, una selectividad demasiado baja para que un
 índice parcial sobre esa condición compita con un `Seq Scan` paralelo.
@@ -101,8 +102,9 @@ la Parte A (columna/condición de baja selectividad).
 
 Elimina el spill a disco del `HashAggregate` final en las 3 rondas sin
 excepción (`Batches: 5 → 1`, `Disk Usage → 0`). La mejora de tiempo
-varía por ronda (más marcada en las rondas 2 y 3, con caché más
-caliente), pero el cambio estructural en el plan es consistente. No
+varía por ronda (en la remedición archivada, la mayor diferencia es la
+de la ronda 1, inflada por el arranque en frío del Baseline; en las
+rondas 2 y 3 es de ~26%), pero el cambio estructural en el plan es consistente. No
 requiere ningún índice ni cambio de esquema — se aplica por sesión.
 
 ### Candidato B — `idx_detalle_pedido_id_pedido (id_pedido)`: **DESCARTADO por redundante**

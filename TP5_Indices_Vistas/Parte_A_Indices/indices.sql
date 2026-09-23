@@ -16,7 +16,7 @@
 -- Candidato A — DESCARTADO
 -- Propuesto por Kiro para atacar el filtro "estado <> 'CANCELADO'" en el
 -- join pedido-cliente. NO SE CREA EN FIRME: el planificador lo ignoro en
--- las 9 de 9 corridas de control (3 escenarios x 3 rondas intercaladas),
+-- todas las corridas con el indice (primera tanda de control, sin archivar),
 -- manteniendo Parallel Seq Scan on pedido en todos los casos.
 -- Remedido con salida archivada tras la devolucion (medir_q5_rondas.sql
 -- -> plan_q5_rondas_salida.txt): el indice no aparece en ninguno de los

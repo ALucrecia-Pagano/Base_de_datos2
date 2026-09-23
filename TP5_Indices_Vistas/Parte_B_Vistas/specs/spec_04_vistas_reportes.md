@@ -17,6 +17,9 @@ Vistas requeridas:
    solo su id.
 4. v_usuario_publico — todos los datos de usuario excepto
    contrasena, filtrando eliminado = FALSE.
+   NOTA DE CORRECCION (23/09, no se borra el texto original): la vista
+   omite contrasena (por seguridad) y también eliminado, que se usa
+   solo como filtro. Ver vistas.sql y la lista de columnas más abajo.
 
 Restricción de seguridad (punto 4 de la consigna): v_usuario_publico
 es la vista que debe poder otorgarse via GRANT sin dar acceso a la

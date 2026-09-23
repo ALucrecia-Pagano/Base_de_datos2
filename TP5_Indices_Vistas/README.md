@@ -164,10 +164,12 @@ y `Parte_C_Vista_Materializada/specs/`, uno por pieza) → **OpenCode
 genera y ejecuta** dentro de `BEGIN...ROLLBACK` cuando aplica → se lee
 y verifica el resultado real antes de decidir → se documenta en
 `duia.md` y `informe_mediciones.md`, se acepte o se descarte la
-propuesta. En la corrección posterior a la devolución de la cátedra
-(remedición de Q4, caso Q2 y costo de escritura con los dos índices de
-`producto`) se usó Claude Code; `duia.md` registra el prompt literal de
-cada pieza.
+propuesta. En la corrección posterior a la devolución de la cátedra se
+usó Claude Code (remedición de Q4, caso Q2 y costo de escritura en
+`producto`) y Claude como asistente de chat (auditoría del repositorio,
+datos de `usuario`, verificación de vistas, costo de escritura en
+`detalle_pedido`, descarte por la PK y remedición de Q5); `duia.md`
+registra el prompt de cada pieza.
 
 ## Cómo reproducir/verificar Parte B
 

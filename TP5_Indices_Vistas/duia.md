@@ -3,7 +3,7 @@
 **Materia:** Base de Datos II
 **Proyecto:** Food Store — continúa el esquema de TP1/TP3/TP4
 **Base de trabajo:** `foodstore_tp3_carga`
-**Herramientas obligatorias:** Kiro (especificación) + un agente de generación y ejecución de código (OpenCode en Parte A y B; GitHub Copilot en Parte C, según la herramienta de cada integrante; Claude Code en la corrección de Q4 y el caso Q2, posteriores a la devolución de la cátedra) + Git
+**Herramientas obligatorias:** Kiro (especificación) + un agente de generación y ejecución de código (OpenCode en Parte A y B; GitHub Copilot en Parte C, según la herramienta de cada integrante; Claude Code en la primera tanda de correcciones posteriores a la devolución (Q4, Q2 y costo de escritura en `producto`), y Claude como asistente de chat en la auditoría del repositorio y las correcciones siguientes) + Git
 
 Esta bitácora registra, para cada pieza del trabajo, qué herramienta se
 usó, con qué propósito, el spec/prompt entregado, qué propuso la IA, y
@@ -69,7 +69,7 @@ antes de decidir no crear el índice).
 |---|---|
 | Herramienta | Kiro |
 | Propósito | Especificar y proponer índice a partir de `specs/spec_01_pedido_estado_detalle_join.md` |
-| Spec entregado | Ver `specs/spec_01_pedido_estado_detalle_join.md` — consulta con filtro `estado <> 'CANCELADO'` y join a `detalle_pedido` sin índice sobre `id_pedido` |
+| Spec entregado | Ver `specs/spec_01_pedido_estado_detalle_join.md` — consulta con filtro `estado <> 'CANCELADO'` y join a `detalle_pedido` sin índice sobre `id_pedido` (afirmación errónea del spec, corregida después: la PK `(id_pedido, id_producto)` ya cubre `id_pedido`; ver Candidato B) |
 | Qué propuso | Dos candidatos: (A) `idx_pedido_no_cancelado_cliente (id_cliente) WHERE estado <> 'CANCELADO'`, (B) `idx_detalle_pedido_id_pedido (id_pedido)` — recomendó probar A primero |
 | Herramienta | OpenCode |
 | Propósito | Generar y ejecutar el `CREATE INDEX` candidato A, y una alternativa de `work_mem`, dentro de `BEGIN...ROLLBACK` |
@@ -177,6 +177,15 @@ antes de decidir no crear el índice).
 | Propósito | Generar el rol y los `GRANT`/`REVOKE` en `seguridad_roles.sql` |
 | Qué propuso | Rol `tp5_reportes` (`NOLOGIN`), `REVOKE ALL` sobre las tablas base, `GRANT SELECT` solo sobre las vistas (incluida la materializada de Parte C) |
 | Qué se aceptó | Verificado con `SET ROLE` + intento fallido real sobre `usuario` (ver `evidencia_permiso_denegado.txt`) |
+
+### Corrección posterior a la devolución: datos de `usuario` y verificación
+
+| Campo | Detalle |
+|---|---|
+| Herramienta | Claude (asistente de chat), a partir de una auditoría del repositorio contra la consigna y la devolución |
+| Prompt entregado | "Vamos, del punto uno al diez", sobre los puntos 3 y 4 de la auditoría: "Datos de usuario en el repo (Admin, Vero, más un caso con eliminado = TRUE)" y "Verificación de las vistas con count(*) y salida archivada" |
+| Qué propuso | `usuarios_datos.sql` (versiona Admin y Vero, que se habían cargado a mano, y agrega un usuario dado de baja; idempotente con `ON CONFLICT (mail) DO NOTHING`) y una sección 6 en `verificacion_vistas.sql` que compara, por vista, las diferencias con `EXCEPT` y la cantidad de filas de cada lado |
+| Qué se aceptó | Las dos cosas, después de leer el SQL y correrlo sobre `foodstore_tp3_carga`: `v_usuario_publico` muestra 2 de los 3 usuarios (oculta al dado de baja) y las 5 vistas dan 0 diferencias y la misma cantidad de filas que su consulta manual. Salida archivada en `Parte_B_Vistas/verificacion_vistas_salida.txt` |
 
 La consigna pide tres vistas (productos vigentes con categoría, pedidos
 con datos del cliente, detalle de pedido con nombre de producto) más

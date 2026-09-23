@@ -333,3 +333,31 @@ pedidos o cambios de categoría posteriores al último `REFRESH` no van
 a reflejarse hasta la próxima ejecución. Para un reporte gerencial
 mensual esto es aceptable; no lo sería para un dashboard operativo que
 necesite ver ventas en tiempo real.
+
+## Punto 5 (continuación) — Costo de escritura de `idx_pedido_fecha_hora_btree`
+
+La Prueba 2 del Punto 5 midió el costo de escritura del índice aplicado
+sobre `producto`. Faltaba medir el del segundo índice aplicado en
+firme, `idx_pedido_fecha_hora_btree` (sobre `pedido`).
+
+**Prueba (sobre `pedido`):** insertar 500 filas dentro de una
+transacción con `ROLLBACK`, con la misma técnica de `array_agg` para
+evitar el bug de aleatorización no correlacionada. Con el error del
+Caso 3 (Q4) todavía fresco, se midió directamente con **3 rondas
+intercaladas** en vez de una sola corrida:
+
+| Ronda | Sin índice | Con índice |
+|---|---|---|
+| 1 | 0.207 s | 0.202 s |
+| 2 | 0.149 s | 0.197 s |
+| 3 | 0.148 s | 0.153 s |
+| **Promedio** | **0.168 s** | **0.184 s** |
+
+**Conclusión:** el índice agrega ~9,5% de costo de escritura sobre
+`pedido` (dirección consistente en 2 de 3 rondas; la primera ronda
+está dentro del margen de ruido). Confirma el mismo comportamiento
+esperado que en la Prueba 2 sobre `producto`: todo índice tiene un
+costo real de mantenimiento en cada `INSERT`, que se sopesa contra la
+mejora de lectura que aporta (en este caso, ~8,9% de mejora en Q4 —
+ver Caso 3 — un trade-off razonable dado que `pedido` se lee con mucha
+más frecuencia de la que se escribe en el flujo analítico de este TP).

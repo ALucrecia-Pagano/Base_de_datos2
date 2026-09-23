@@ -40,6 +40,12 @@ directamente con pg_stats.correlation antes de crear el BRIN:
   WHERE tablename = 'pedido' AND attname = 'fecha_hora';
   -> resultado real: 0.013024098 (practicamente nula)
 
+NOTA DE CORRECCION (23/09, no se borra el valor original): el
+0.013024098 no quedo archivado. Se volvio a medir con salida archivada
+(Parte_A_Indices/correlacion_fecha_hora_salida.txt): 0.0071880464. El
+valor cambia con cada ANALYZE porque sale de una muestra; en los dos
+casos es ~0 y la conclusion no cambia.
+
 fecha_hora en realidad se genero con random() en el seed masivo (ver
 TP3), no correlacionada con el orden fisico de insercion como asumia
 esta spec original. Por eso el criterio de aceptacion original (medir

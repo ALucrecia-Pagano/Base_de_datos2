@@ -239,8 +239,15 @@ conclusión que después se revirtió con control de ruido — ver abajo.
 correlación física de la columna:
 ```sql
 SELECT correlation FROM pg_stats WHERE tablename = 'pedido' AND attname = 'fecha_hora';
--- resultado real: 0.013024098
+-- resultado al decidir: 0.013024098 (sin salida archivada)
+-- remedido el 23/09 con salida archivada: 0.0071880464
 ```
+
+La salida del segundo valor está en
+`Parte_A_Indices/correlacion_fecha_hora_salida.txt` (script:
+`correlacion_fecha_hora.sql`). El número cambia con cada `ANALYZE`
+porque sale de una muestra de la tabla; en los dos casos es ~0, que es
+lo que sostiene la decisión.
 
 **Decisión: DESCARTADO sin crearlo.** Un índice BRIN depende de que los
 valores estén físicamente correlacionados con el orden de las páginas

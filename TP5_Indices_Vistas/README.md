@@ -35,6 +35,8 @@ TP5_Indices_Vistas/
 │   ├── plan_q4_despues.txt
 │   ├── medir_q4_rondas.sql
 │   ├── plan_q4_rondas_salida.txt
+│   ├── correlacion_fecha_hora.sql
+│   ├── correlacion_fecha_hora_salida.txt
 │   ├── plan_q5_antes.txt
 │   ├── plan_q5_despues_workmem.txt
 │   ├── plan_q5_despues_indice_descartado.txt

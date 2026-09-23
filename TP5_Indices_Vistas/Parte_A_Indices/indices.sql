@@ -119,7 +119,10 @@ CREATE INDEX IF NOT EXISTS idx_producto_categoria_precio_activo
 -- Descartado antes de crearlo, con evidencia estadistica:
 --   SELECT correlation FROM pg_stats
 --   WHERE tablename = 'pedido' AND attname = 'fecha_hora';
---   -> resultado real: 0.013024098 (practicamente nula)
+--   -> resultado al decidir: 0.013024098 (practicamente nula, sin salida
+--      archivada). Remedido el 23/09 con salida archivada
+--      (correlacion_fecha_hora_salida.txt): 0.0071880464. Cambia con cada
+--      ANALYZE porque sale de una muestra; en los dos casos es ~0.
 --
 -- Un BRIN funciona eliminando rangos de paginas cuyo [min,max] no
 -- intersecta el filtro. Con correlacion ~0, cada rango de paginas

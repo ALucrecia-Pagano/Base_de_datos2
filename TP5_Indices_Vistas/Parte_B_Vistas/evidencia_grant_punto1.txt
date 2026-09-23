@@ -1,0 +1,18 @@
+--- 1) SET ROLE tp5_reportes ---
+SET
+--- 2) Lectura de la vista materializada (debe funcionar) ---
+ filas_visibles 
+----------------
+             26
+(1 fila)
+
+--- 3) Lectura de v_pedido_usuario (debe funcionar) ---
+ filas_visibles 
+----------------
+              0
+(1 fila)
+
+--- 4) Acceso directo a tabla base usuario (debe fallar) ---
+ERROR:  permiso denegado a la tabla usuario
+--- 5) RESET ROLE ---
+RESET

@@ -361,3 +361,27 @@ costo real de mantenimiento en cada `INSERT`, que se sopesa contra la
 mejora de lectura que aporta (en este caso, ~8,9% de mejora en Q4 —
 ver Caso 3 — un trade-off razonable dado que `pedido` se lee con mucha
 más frecuencia de la que se escribe en el flujo analítico de este TP).
+
+## Punto 5 — Medición corregida sobre `detalle_pedido`
+
+La consigna exige medir específicamente una carga de varios cientos de
+`INSERT` en `detalle_pedido`. La prueba reproducible quedó en
+`Parte_A_Indices/medir_escritura_detalle.sql`: construye 500 pares
+válidos, ejecuta tres rondas intercaladas y revierte cada carga con
+`ROLLBACK`. El índice usado para aislar el costo de mantenimiento es
+temporal y se elimina al finalizar; no modifica los índices aceptados
+del TP ni la Parte C.
+
+| Ronda | Sin índice (ms) | Con índice temporal (ms) |
+|---|---:|---:|
+| 1 | 16.308 | 18.915 |
+| 2 | 16.464 | 18.875 |
+| 3 | 16.257 | 17.175 |
+| **Promedio** | **16.343** | **18.322** |
+
+El índice temporal aumentó el tiempo promedio de escritura en
+aproximadamente **12,1%**. Las tres rondas confirmaron `INSERT 0 500`;
+la salida completa se obtuvo sobre `foodstore_tp3_carga`, previamente
+respaldada, y el índice temporal fue eliminado al terminar.
+
+Salida archivada: `Parte_A_Indices/medicion_escritura_detalle_salida.txt`.

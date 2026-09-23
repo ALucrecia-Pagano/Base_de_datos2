@@ -24,5 +24,5 @@ GRANT SELECT ON
     v_catalogo_productos,
     v_detalle_pedido_producto,
     v_pedido_cliente,
-    mv_resumen_ventas_categoria_mes
+    v_pedido_usuario
     TO tp5_reportes;

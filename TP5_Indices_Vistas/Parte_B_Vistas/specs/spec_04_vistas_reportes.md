@@ -34,6 +34,12 @@ agregado y no una vista plana fila a fila):
 5. v_pedido_cliente — pedidos con los datos del cliente, sin agregar
    (fecha_hora, forma_pago, estado, y datos del cliente asociado).
 
+6. v_pedido_usuario — pedidos con los datos del usuario autenticado
+   (pedido_id, fecha_hora, forma_pago, estado, usuario_id, nombre,
+   apellido y mail). Como el esquema heredado no tiene FK entre pedido y
+   usuario, la especificacion usa el mail del cliente como identidad
+   compartida y filtra usuarios no eliminados.
+
 Mismo criterio de aceptación que las anteriores: correr sin error y
 coincidir exactamente con una consulta manual (ver
 Parte_B_Vistas/verificacion_vistas.sql).

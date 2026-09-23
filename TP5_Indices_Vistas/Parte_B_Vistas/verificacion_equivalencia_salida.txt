@@ -1,0 +1,14 @@
+Base: foodstore_copia_trabajo
+Comando: psql -U postgres -d foodstore_copia_trabajo -v ON_ERROR_STOP=1 -f verificacion_equivalencia.sql
+
+           vista           | diferencias
+---------------------------+-------------
+ v_catalogo_productos      |           0
+ v_detalle_pedido_producto |           0
+ v_pedido_cliente          |           0
+ v_pedido_usuario          |           0
+ v_reporte_ventas_cliente  |           0
+ v_usuario_publico         |           0
+(6 rows)
+
+Resultado: el bloque DO finalizo correctamente y las seis vistas no presentaron diferencias.

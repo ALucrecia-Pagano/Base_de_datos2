@@ -6,14 +6,12 @@ líneas de detalle).
 
 ## Estado actual
 
-- ✅ **Parte A** (plan de indexado) — completa: 3 casos medidos (Q5,
-  Q6, Q4), punto 5 (costo de escritura) y punto 6 (descarte por
-  sobreindexación) resueltos.
-- ✅ **Parte B** (vistas y seguridad por roles) — completa: 5 vistas
-  en `vistas.sql`, rol `tp5_reportes` en `seguridad_roles.sql`,
-  verificación en `verificacion_vistas.sql`.
-- ✅ **Parte C** (vista materializada) — completa: `mv_resumen_ventas_categoria_mes`
-  aplicada en firme, mejora medida ~8468x (618ms → 0.073ms).
+- **Parte A**: tres casos de planes archivados, descarte por baja
+  selectividad y scripts reproducibles de costo de escritura.
+- **Parte B**: vistas, seguridad por roles y verificación ejecutable de
+  equivalencia.
+- **Parte C**: `mv_resumen_ventas_categoria_mes` con `WITH DATA`, índice único
+  y medición documentada.
 
 ## Estructura
 
@@ -21,8 +19,11 @@ TP5_Indices_Vistas/
 ├── schema.sql                    # heredado de TP1, sin modificar
 ├── data.sql                      # referencia al script de carga de TP3
 ├── queries.sql                   # consultas reales de TP3/TP4
+├── indices.sql                   # wrapper del entregable de la Parte A
+├── views.sql                     # wrapper de las Partes B y C
+├── specs/                        # indice de las especificaciones Kiro
 ├── duia.md                       # bitácora de uso de IA
-├── informe_mediciones.md         # EXPLAIN ANALYZE antes/después (Parte A)
+├── informe_mediciones.md         # planes, escritura y materializada
 ├── README.md
 ├── Parte_A_Indices/
 │   ├── indices.sql
@@ -33,11 +34,15 @@ TP5_Indices_Vistas/
 │   ├── plan_q5_despues_indice_descartado.txt
 │   ├── plan_q6_antes.txt
 │   ├── plan_q6_despues.txt
+│   ├── medir_escritura_detalle.sql
+│   ├── medicion_escritura_detalle_salida.txt
 │   └── specs/
 ├── Parte_B_Vistas/
 │   ├── usuarios.sql
 │   ├── vistas.sql
 │   ├── seguridad_roles.sql
+│   ├── verificacion_equivalencia.sql
+│   ├── verificacion_equivalencia_salida.txt
 │   ├── verificacion_vistas.sql
 │   └── specs/
 └── Parte_C_Vista_Materializada/
@@ -103,13 +108,12 @@ psql -U postgres -d foodstore_tp3_carga -c "SELECT tablename, indexname FROM pg_
 
 ## Flujo de trabajo con IA
 
-Todo el proceso siguió el flujo obligatorio: **Kiro especifica y
-propone** (specs en `Parte_A_Indices/specs/`, `Parte_B_Vistas/specs/`
-y `Parte_C_Vista_Materializada/specs/`, uno por pieza) → **OpenCode
-genera y ejecuta** dentro de `BEGIN...ROLLBACK` cuando aplica → se lee
-y verifica el resultado real antes de decidir → se documenta en
-`duia.md` y `informe_mediciones.md`, se acepte o se descarte la
-propuesta.
+El repositorio conserva las specs de Kiro junto a cada parte. Los scripts
+reversibles de medicion y equivalencia son los artefactos ejecutables que
+permiten verificar el resultado sin depender de una afirmacion en la DUIA.
+La DUIA identifica la herramienta usada en cada parte; en particular, la
+vista materializada fue generada con GitHub Copilot y no debe presentarse
+como generada por OpenCode.
 
 ## Cómo reproducir/verificar Parte B
 
@@ -120,10 +124,25 @@ psql -U postgres -d foodstore_tp3_carga -f Parte_B_Vistas/seguridad_roles.sql
 psql -U postgres -d foodstore_tp3_carga -f Parte_B_Vistas/verificacion_vistas.sql
 ```
 
-El último script debe: mostrar las columnas de `v_usuario_publico`
-sin `contrasena`, devolver 0 filas en cada bloque de equivalencia
-(punto 3 de la consigna), y fallar solo en la consulta comentada
-final (`SELECT * FROM usuario` bajo `SET ROLE`).
+El último script muestra las columnas de `v_usuario_publico` sin
+`contrasena`, ejecuta `verificacion_equivalencia.sql` y falla si alguna
+vista devuelve diferencias. La salida final debe mostrar `diferencias = 0`
+para cada vista. La consulta de acceso directo a `usuario` se prueba por
+separado bajo `SET ROLE` y debe fallar por falta de privilegios.
+
+### Medir escritura en `detalle_pedido`
+
+Sobre una base de trabajo autorizada, ejecutar:
+
+```bash
+psql -U postgres -d foodstore_tp3_carga -f Parte_A_Indices/medir_escritura_detalle.sql
+```
+
+El script construye una muestra de 500 pares válidos, mide la inserción
+dentro de transacciones con y sin un índice de prueba sobre
+`detalle_pedido(cantidad)`, y elimina ese índice al finalizar. Registrar
+las dos salidas de `\timing` en `informe_mediciones.md`; no reutilizar la
+medición anterior sobre `producto` como evidencia de esta prueba.
 
 ## Cómo reproducir Parte C
 

@@ -21,6 +21,7 @@ SELECT * FROM v_reporte_ventas_cliente LIMIT 5;
 SELECT * FROM v_catalogo_productos LIMIT 5;
 SELECT * FROM v_detalle_pedido_producto LIMIT 5;
 SELECT * FROM mv_resumen_ventas_categoria_mes LIMIT 5;
+SELECT * FROM v_pedido_usuario LIMIT 5;
 -- Esta consulta debe fallar por falta de privilegios:
 -- SELECT * FROM usuario;
 -- Evidencia real capturada de este fallo (ERROR: permiso denegado a la tabla usuario): ver Parte_B_Vistas/evidencia_permiso_denegado.txt
@@ -142,3 +143,9 @@ UNION ALL
     SELECT pedido_id, fecha_hora, forma_pago, estado, cliente_id, nombre_completo, email
     FROM v_pedido_cliente
 );
+
+-- v_pedido_usuario se verifica en verificacion_equivalencia.sql.
+
+-- Repetir la verificacion con una asercion ejecutable: el script falla si
+-- alguna vista devuelve diferencias. La salida esperada es diferencias = 0.
+\ir verificacion_equivalencia.sql

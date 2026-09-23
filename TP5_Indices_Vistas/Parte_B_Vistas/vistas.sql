@@ -69,3 +69,22 @@ FROM pedido AS p
 JOIN cliente AS c ON c.id = p.id_cliente;
 
 COMMENT ON VIEW v_pedido_cliente IS 'Pedidos con los datos del cliente, fila a fila (punto 1 de la consigna). v_reporte_ventas_cliente queda como reporte agregado complementario.';
+
+-- El esquema heredado relaciona pedido con cliente, no con usuario.
+-- Se usa el mail como identidad compartida sin alterar las tablas base.
+CREATE OR REPLACE VIEW v_pedido_usuario AS
+SELECT
+    p.id AS pedido_id,
+    p.fecha_hora,
+    p.forma_pago,
+    p.estado,
+    u.id AS usuario_id,
+    u.nombre,
+    u.apellido,
+    u.mail
+FROM pedido AS p
+JOIN cliente AS c ON c.id = p.id_cliente
+JOIN usuario AS u ON lower(u.mail) = lower(c.email)
+WHERE u.eliminado = FALSE;
+
+COMMENT ON VIEW v_pedido_usuario IS 'Pedidos con datos de usuario; vinculo por mail porque el esquema heredado no tiene FK pedido-usuario.';

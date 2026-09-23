@@ -9,14 +9,13 @@ Esta bitácora registra, para cada pieza del trabajo, qué herramienta se
 usó, con qué propósito, el spec/prompt entregado, qué propuso la IA, y
 qué se aceptó/modificó/descartó con su justificación técnica.
 
-**Paso 4 del flujo obligatorio (commits descriptivos):** cada pieza de
-este TP5 se subió en commits separados y descriptivos, uno por caso o
-corrección — por ejemplo los tres casos de Parte A, la incorporación
-de vistas y seguridad de Parte B, la vista materializada de Parte C, y
-cada corrección posterior (trazabilidad de Q6, verificación de
-equivalencia faltante, hipótesis de correlación en spec_03, volumen de
-datos, evidencia de permisos). El historial completo es verificable
-con `git log --oneline -- TP5_Indices_Vistas/`.
+**Paso 4 del flujo obligatorio (commits descriptivos):** el historial
+contiene commits descriptivos por caso y por parte. La auditoria detecto
+que algunos commits historicos agrupan mas de una pieza, por ejemplo las
+vistas y la vista materializada; los nuevos cambios deben conservarse en
+commits separados por pieza, sin afirmar retrospectivamente que el
+historial anterior ya cumplia esa separacion. El historial completo es
+verificable con `git log --oneline -- TP5_Indices_Vistas/`.
 
 ---
 
@@ -94,7 +93,6 @@ antes de decidir no crear el índice).
 | Hallazgo intermedio | El primer intento de generar 500 `INSERT` de prueba usó subconsultas escalares no correlacionadas (mismo bug de TP3: Postgres las resuelve una sola vez, no por fila). Resultado: `INSERT 0 1` en vez de `INSERT 0 500`. Corregido con la técnica de array + índice aleatorio por fila ya usada en TP3 |
 | Medición | Prueba 1 (sobre `detalle_pedido`, tabla sin índices nuevos): 1.036 s → 0.888 s, sin diferencia significativa — resultado trivial porque el índice de esa etapa vivía en `producto`, no en `detalle_pedido`. Prueba 2, corregida (sobre `producto`, la tabla donde vive el índice): `DROP INDEX` → medir sin índice (0.101 s) → recrear índice → medir con índice (0.267 s). **El costo de escritura sí aumenta con el índice presente** (~2.6x en este caso, aunque en términos absolutos ambos siguen siendo rápidos) |
 
----
 
 ## Parte B — Vistas para los reportes del sistema
 
@@ -116,11 +114,11 @@ antes de decidir no crear el índice).
 | Campo | Detalle |
 |---|---|
 | Herramienta | Kiro |
-| Propósito | Especificar las 5 vistas en `spec_04_vistas_reportes.md` |
-| Herramienta | OpenCode |
-| Propósito | Generar el DDL de cada vista en `vistas.sql` |
-| Qué propuso | `v_catalogo_productos`, `v_reporte_ventas_cliente`, `v_detalle_pedido_producto`, `v_usuario_publico`, `v_pedido_cliente` (esta última agregada tras una auditoría posterior, ver más abajo) |
-| Qué se aceptó | Las 5, verificadas con `EXCEPT` bidireccional contra consultas manuales independientes (ver Punto 3 más abajo) |
+| Propósito | Especificar las 6 vistas en `spec_04_vistas_reportes.md` |
+| Herramienta | OpenCode para las cinco vistas originales; correccion posterior documentada en el spec individual para `v_pedido_usuario` |
+| Propósito | Generar el DDL de las vistas en `vistas.sql` |
+| Qué propuso | `v_catalogo_productos`, `v_reporte_ventas_cliente`, `v_detalle_pedido_producto`, `v_usuario_publico`, `v_pedido_cliente` y, posteriormente, `v_pedido_usuario` |
+| Qué se aceptó | Las 6, verificadas con `EXCEPT` bidireccional contra consultas manuales independientes; `verificacion_equivalencia.sql` falla si alguna diferencia es distinta de cero |
 
 ### `seguridad_roles.sql`
 
@@ -157,25 +155,19 @@ no como una prohibición de agregar una tabla nueva e independiente
 cuando la propia consigna exige, en otro punto, una funcionalidad que
 solo esa tabla puede sostener.
 
-Kiro especificó las vistas en `specs/spec_04_vistas_reportes.md`; OpenCode generó `usuarios.sql` y `vistas.sql` a partir de esa especificación, dentro del flujo obligatorio especificar → generar → verificar.
-El SQL generado por OpenCode (`usuarios.sql`, `vistas.sql`,
-`seguridad_roles.sql`) se revisó contra lo pedido en
-`specs/spec_04_vistas_reportes.md` antes de ejecutarlo; la corrección
-del resultado se confirmó después con la verificación de equivalencia
-bidireccional descrita más abajo.
+Kiro especificó las vistas en `specs/spec_04_vistas_reportes.md`; OpenCode
+generó las cinco vistas originales y sus scripts asociados. La vista
+`v_pedido_usuario` se incorporó posteriormente con su spec individual y
+debe conservarse como corrección separada y trazable.
 
-`vistas.sql` define las cinco vistas, especificadas en
-`specs/spec_04_vistas_reportes.md`:
+`vistas.sql` define las seis vistas:
 
-- `v_catalogo_productos` — productos vigentes (`activo = TRUE`) con su categoría.
-- `v_reporte_ventas_cliente` — pedidos no cancelados agregados por cliente.
-- `v_detalle_pedido_producto` — detalle de pedido con el nombre del producto.
-- `v_usuario_publico` — vista de seguridad: expone `usuario` sin la
-  columna `contrasena`, cumpliendo el punto 4 de la consigna.
-- `v_pedido_cliente` — pedidos con los datos del cliente, fila a fila,
-  cumpliendo literalmente el punto 1 de la consigna (agregada tras una
-  auditoria que detectó que `v_reporte_ventas_cliente` era un agregado,
-  no la vista plana que pide el enunciado).
+- `v_catalogo_productos`: productos vigentes con categoría.
+- `v_reporte_ventas_cliente`: pedidos no cancelados agregados por cliente.
+- `v_detalle_pedido_producto`: detalle con nombre del producto.
+- `v_usuario_publico`: usuario sin la columna `contrasena`.
+- `v_pedido_cliente`: pedidos con datos del cliente.
+- `v_pedido_usuario`: pedidos con datos de usuario, vinculados por mail.
 
 `seguridad_roles.sql` crea el rol grupal `tp5_reportes` (NOLOGIN),
 revoca todo permiso sobre las tablas base y concede `SELECT`
@@ -185,12 +177,11 @@ partes: (1) se comprueban las columnas expuestas por
 `v_usuario_publico`, se consultan las vistas con
 `SET ROLE tp5_reportes`, y se confirma que la consulta directa sobre
 `usuario` falla por falta de privilegios (evidencia real capturada en `Parte_B_Vistas/evidencia_permiso_denegado.txt`); (2) **verificación de
-equivalencia (punto 3 de la consigna)**: cada una de las 5 vistas se
-compara, con `EXCEPT` en ambos sentidos, contra una consulta manual
-escrita de forma independiente — `v_reporte_ventas_cliente` en
-particular se verificó contra una versión con subconsultas escalares,
-deliberadamente distinta a la forma con `JOIN + GROUP BY` de la vista,
-para que la comparación sea real. `v_pedido_cliente` se verificó contra un JOIN directo pedido-cliente. Los 5 bloques devuelven 0 filas.
+equivalencia (punto 3 de la consigna)**: `verificacion_equivalencia.sql`
+compara cada una de las 6 vistas, con `EXCEPT` en ambos sentidos, contra
+una consulta manual independiente y falla si alguna diferencia es
+distinta de cero. La salida esperada son seis filas con `diferencias = 0`;
+debe capturarse al ejecutar el script sobre la base de trabajo.
 
 **Sobre la prueba reversible (punto 3 del flujo obligatorio):** a
 diferencia de los índices de Parte A —que se probaron dentro de
@@ -201,11 +192,10 @@ operaciones no destructivas y de costo trivial: `CREATE VIEW`,
 `CREATE TABLE` y `GRANT`/`REVOKE` no modifican datos existentes y se
 deshacen al instante con `DROP VIEW`, `DROP TABLE` o revocando el rol,
 sin necesidad de envolverlas en una transacción de prueba. La
-verificación de corrección se hizo antes de darlas por definitivas:
-cada vista se validó con el bloque `EXCEPT` bidireccional de
-`verificacion_vistas.sql` (ver más arriba), y solo después de que las
-5 comparaciones devolvieran 0 filas se consideraron aplicadas en
-firme.
+  verificación de corrección se debe ejecutar antes de darlas por
+  definitivas: cada vista se valida con el bloque `EXCEPT` bidireccional
+  de `verificacion_equivalencia.sql`; la validación queda reproducible y
+  la salida debe capturarse antes de considerar aplicadas las correcciones.
 
 ## Parte C — Vista materializada
 

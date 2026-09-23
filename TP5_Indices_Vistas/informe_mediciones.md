@@ -298,3 +298,38 @@ La Prueba 1 se conserva en el informe (no se borra) porque documenta
 un hallazgo metodológico real: medir el costo de escritura en una
 tabla sin índices nuevos da un resultado trivial y no debe confundirse
 con "los índices no tienen costo de escritura".
+
+## Parte C — Vista materializada (referencia)
+
+La medición completa de la Parte C vive en
+`Parte_C_Vista_Materializada/README.md`, y se resume acá para que el
+entregable de la Sección 7 (medición en `informe_mediciones.md`) quede
+también en este archivo, no solo en el README de la parte.
+
+**Vista:** `mv_resumen_ventas_categoria_mes`, creada con `WITH DATA` e
+índice único sobre `(id_categoria, mes)` que habilita, a futuro, un
+`REFRESH CONCURRENTLY`.
+
+**Medición (`EXPLAIN ANALYZE`, mismo motor, misma base
+`foodstore_tp3_carga`):**
+
+| Consulta | Tiempo real |
+|---|---|
+| Directa sobre las tablas base (4 `Hash Join` + `Seq Scan` sobre 499.571 filas de `detalle_pedido`, con `Sort` con spill a disco) | 618,156 ms |
+| Sobre la vista materializada (`Seq Scan` sobre 26 filas, `quicksort` en memoria) | 0,073 ms |
+
+Mejora: ~8468x.
+
+**Frecuencia de refresh recomendada:** el reporte es mensual y no
+necesita estar actualizado al segundo, así que se recomienda un
+`REFRESH` diario (por ejemplo, por cron nocturno) en vez de por cada
+`INSERT`/`UPDATE` de `pedido`/`detalle_pedido`. El costo del `REFRESH`
+(~600 ms, equivalente a la consulta base) se paga una sola vez por día
+y no impacta las lecturas del resto del día.
+
+**Implicancia para los usuarios:** entre un `REFRESH` y el siguiente,
+el reporte puede mostrar datos de hasta 24 horas de antigüedad —
+pedidos o cambios de categoría posteriores al último `REFRESH` no van
+a reflejarse hasta la próxima ejecución. Para un reporte gerencial
+mensual esto es aceptable; no lo sería para un dashboard operativo que
+necesite ver ventas en tiempo real.

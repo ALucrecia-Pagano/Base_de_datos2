@@ -55,7 +55,7 @@ el resultado real de cada verificación).
 | Herramienta | Para qué se usó | Prompt / spec (resumen) | Se aceptó / se descartó |
 |---|---|---|---|
 | Kiro | Diagnosticar el nodo más costoso del plan real de la consulta de competencia (top 3 productos por facturación por categoría, últimos 6 meses) | Plan completo de EXPLAIN ANALYZE pegado, pidiendo identificar el nodo más costoso por tiempo real (no por cost estimado) | Se identificó un `Sort` con `external merge Disk` (spill a disco) como cuello de botella real, no ningún `Seq Scan` |
-| Kiro | Probar `SET LOCAL work_mem = '8MB'` como alternativa sin tocar índices, dentro de `BEGIN...ROLLBACK` | — | **Aceptada:** el Sort dejó de spillear (`quicksort Memory` en vez de `external merge Disk`); mejora confirmada con promedio de 3 corridas (621.0ms → 571.4ms, ~13%) |
+| Kiro | Probar `SET LOCAL work_mem = '8MB'` como alternativa sin tocar índices, dentro de `BEGIN...ROLLBACK` | — | **Aceptada:** el Sort dejó de spillear (`quicksort Memory` en vez de `external merge Disk`); mejora confirmada con promedio de 3 corridas (621.0ms → 539.1ms, ~13%; en la comparación intercalada posterior, solo `work_mem` promedió 571.4ms) |
 | Kiro | Probar un índice parcial `idx_pedido_fecha_no_cancelado (fecha_hora DESC) WHERE estado <> 'CANCELADO'`, combinado con `work_mem` | — | **Descartada tras control de sesgo de orden:** una primera medición en bloques (AAA-BBB) mostró al índice ganando por 48ms, pero al intercalar el orden de las corridas (A-B-A-B-A-B) los promedios empataron exactamente (571.4ms vs. 571.4ms), sin dirección consistente par a par. La ventaja inicial era enteramente efecto de caché acumulado por el orden de ejecución, no del índice |
 
 **Ver también:** `Parte4/DUIA_Parte4.md`,

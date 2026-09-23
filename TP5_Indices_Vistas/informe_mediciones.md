@@ -12,8 +12,9 @@ filtran con `estado <> 'CANCELADO'`, una desigualdad que el B-tree no
 puede usar como punto de entrada (sirve para `estado = ...`), y
 `fecha_hora`, que Q4 también filtra, es la segunda columna del índice.
 Es el mismo análisis de TP4-Parte 4 (`analisis_optimizacion.md`). Los
-índices heredados de `detalle_pedido` y `producto` se tratan en el
-Caso 1 (Candidato B) y en el Punto 5.
+índices heredados de `detalle_pedido` (`pk_detalle_pedido` e
+`idx_detalle_pedido_producto_id`, de `schema.sql`) y de `producto` se
+tratan en el Caso 1 (Candidato B) y en el Punto 5.
 
 ## Caso 1 — Q5: Ranking de clientes por gasto total
 
@@ -531,7 +532,8 @@ base nunca queda sin ellos.
 En las 3 rondas, la carga con índices fue algo más lenta, pero la
 diferencia es de ~1,2 ms. No puede deberse a mantener los índices: los
 dos viven en `producto`, y un `INSERT` en `detalle_pedido` no los
-actualiza (solo mantiene la PK de `detalle_pedido` y verifica las FK
+actualiza (mantiene la PK de `detalle_pedido` y el índice heredado
+`idx_detalle_pedido_producto_id`, presentes en las dos condiciones, y verifica las FK
 contra las PK de `pedido` y `producto`). Una explicación posible, que
 no se verificó, es el orden fijo de las rondas: la ronda "con índices"
 corre justo después de una transacción que borró y restauró índices de

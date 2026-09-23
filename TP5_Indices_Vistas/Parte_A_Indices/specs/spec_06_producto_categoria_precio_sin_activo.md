@@ -18,7 +18,10 @@ categoria y rango de precio, tipico de una pantalla de busqueda).
 Medicion del plan actual (`Parte_A_Indices/plan_q2_antes.txt`):
 `Seq Scan on producto`, `Filter: (precio_lista BETWEEN 1000 AND 3000
 AND id_categoria = 1)`, `Rows Removed by Filter: 38955`, Execution Time
-29.229 ms.
+49.938 ms. (Correccion posterior: una primera corrida, no archivada,
+habia dado 29.229 ms y ese numero quedo por error en esta spec; se
+corrige al valor de la salida archivada. La comparacion de la decision
+no usa este plan sino las 3 rondas de plan_q2_rondas_salida.txt.)
 
 Por que los indices existentes no sirven: `idx_productos_categoria_activo
 (id_categoria, activo) WHERE activo = TRUE` e

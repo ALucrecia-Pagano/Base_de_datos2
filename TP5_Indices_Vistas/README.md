@@ -35,6 +35,8 @@ TP5_Indices_Vistas/
 │   ├── plan_q5_antes.txt
 │   ├── plan_q5_despues_workmem.txt
 │   ├── plan_q5_despues_indice_descartado.txt
+│   ├── medir_q5_rondas.sql
+│   ├── plan_q5_rondas_salida.txt
 │   ├── medir_indice_redundante_q5.sql
 │   ├── plan_q5_indice_redundante.txt
 │   ├── plan_detalle_por_id_pedido.txt
@@ -149,6 +151,10 @@ crean o borran índices:
   dentro de la misma transacción que el `INSERT` y se deshacen con el
   `ROLLBACK`, así que se puede correr sin preparar nada: la base queda
   igual que antes.
+- `medir_q5_rondas.sql` → `plan_q5_rondas_salida.txt`. Repite las 9
+  corridas del Caso 1 (Baseline, Índice A y `work_mem`, 3 rondas). No
+  modifica la base: el índice y el `work_mem` van dentro de
+  `BEGIN...ROLLBACK`.
 
 ## Flujo de trabajo con IA
 

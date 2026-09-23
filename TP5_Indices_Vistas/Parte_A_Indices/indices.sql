@@ -18,6 +18,9 @@
 -- join pedido-cliente. NO SE CREA EN FIRME: el planificador lo ignoro en
 -- las 9 de 9 corridas de control (3 escenarios x 3 rondas intercaladas),
 -- manteniendo Parallel Seq Scan on pedido en todos los casos.
+-- Remedido con salida archivada tras la devolucion (medir_q5_rondas.sql
+-- -> plan_q5_rondas_salida.txt): el indice no aparece en ninguno de los
+-- planes.
 --
 -- Motivo del descarte: la condicion "estado <> 'CANCELADO'" deja pasar
 -- ~75% de las filas de pedido (Rows Removed by Filter confirma esto en
@@ -59,6 +62,9 @@
 -- HashAggregate paso a 1 solo batch, 100% en RAM, en las 3 rondas de
 -- control sin excepcion. Mejora de tiempo real de ~15-29% segun la
 -- ronda (ver informe_mediciones.md).
+-- Remedicion archivada (plan_q5_rondas_salida.txt): ~26% menos en las
+-- rondas 2 y 3 (la ronda 1 del baseline paga el arranque en frio), y
+-- Batches: 5 -> 1 en las 3 rondas.
 --
 -- No requiere ningun CREATE INDEX ni cambio de schema. Se aplica por
 -- sesion antes de correr el reporte de ranking:

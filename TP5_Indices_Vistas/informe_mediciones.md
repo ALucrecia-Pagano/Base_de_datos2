@@ -49,6 +49,29 @@ Propuesto por Kiro a partir de `specs/spec_01_pedido_estado_detalle_join.md`.
 | Índice A | 516.7 ms | −1.8% (dentro del ruido) |
 | `work_mem = 16MB` | 447.2 ms | −15.1% |
 
+**Remedición con salida archivada (corrección posterior a la
+devolución):** las 9 corridas de arriba no habían quedado guardadas.
+Se repitieron con `Parte_A_Indices/medir_q5_rondas.sql`, con la salida
+completa en `Parte_A_Indices/plan_q5_rondas_salida.txt` (mismo orden en
+cada ronda: Baseline, Índice A y `work_mem`; el índice y el `work_mem`,
+dentro de `BEGIN...ROLLBACK`):
+
+| Ronda | Baseline (ms) | Índice A (ms) | `work_mem = 16MB` (ms) |
+|---|---|---|---|
+| 1 | 795.568 | 417.282 | 323.945 |
+| 2 | 433.272 | 409.968 | 306.372 |
+| 3 | 385.951 | 405.510 | 297.678 |
+
+La ronda 1 del Baseline (795.568 ms) es la primera consulta de la
+sesión y paga el arranque en frío, así que el promedio del Baseline con
+las 3 rondas (538.3 ms) queda inflado y haría parecer que el Índice A
+mejora. Comparando las rondas 2 y 3: Baseline 409.6 ms, Índice A
+407.7 ms (gana una ronda y pierde la otra: sin efecto) y `work_mem`
+302.0 ms (~26% menos; es el más rápido en las 3 rondas). En los 9
+planes, el Índice A no aparece como nodo de lectura (el planificador lo
+ignora), y `work_mem` baja el `HashAggregate` de `Batches: 5` a
+`Batches: 1`. La remedición confirma las dos decisiones de abajo.
+
 ### Decisión — Índice A: **DESCARTADO**
 
 El plan confirma "Índice ignorado" en las 9 de 9 corridas, sin
@@ -58,6 +81,7 @@ de la tabla `pedido`, una selectividad demasiado baja para que un
 índice parcial sobre esa condición compita con un `Seq Scan` paralelo.
 Documentado como el caso de descarte explícito por sobreindexación de
 la Parte A (columna/condición de baja selectividad).
+
 
 ### Decisión — `SET LOCAL work_mem = '16MB'`: **ACEPTADO**
 

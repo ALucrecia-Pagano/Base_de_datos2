@@ -36,6 +36,25 @@ correspondían (Q4, Q2 y costo de escritura), revisando cada archivo
 antes de commitearlo y sin tocar la Parte C. La rama queda como
 respaldo y registro de esa primera tanda; lo que se entrega es `main`.
 
+**Segunda ronda de correcciones (23/09, tarde):** con el trabajo ya
+corregido, se le pidió a Claude Code una auditoría de solo lectura del
+commit `b677c54`: verificar las correcciones anteriores, buscar errores
+nuevos y revisar una lista de detalles opcionales. Después, con el
+prompt "armame un plan de accion para solucionar tod, sin tocar ni
+modificar nada solo examina y arma el plan", armó un plan de un commit
+por tema. Claude Code no modificó ningún archivo. Cada hallazgo se
+verificó contra los archivos y las salidas archivadas antes de
+corregirlo, y las correcciones se hicieron con Claude (asistente de
+chat), un commit por tema, a partir de `2753343`: la cronología del
+`VACUUM` de Q6, la selectividad y el paralelismo de Q4, el índice
+heredado de `detalle_pedido`, las afirmaciones que salían de la tanda
+de Q5 sin archivar, la correlación de `fecha_hora` remedida con salida
+archivada, los encabezados de los scripts, la Parte C (con el OK de su
+responsable, ver la sección Parte C) y los textos generales. Se decidió
+no cambiar la fila "Qué propuso" de Claude Code en el Caso 3, porque
+registra lo que propuso en su momento, ni los `\echo` de los scripts
+cuyo texto ya está en salidas archivadas.
+
 ---
 
 ## Parte A — Plan de indexado asistido por IA

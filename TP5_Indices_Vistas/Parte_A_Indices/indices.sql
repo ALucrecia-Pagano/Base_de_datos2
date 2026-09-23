@@ -151,3 +151,35 @@ CREATE INDEX idx_producto_categoria_precio_activo
 -- y compatible con el indice de arriba (uno ataca el filtro de fecha,
 -- el otro el spill del agregado) -- no se remidio la combinacion de
 -- ambas en este TP, queda como posible mejora adicional a futuro.
+
+-- ----------------------------------------------------------------------------
+-- CASO 4 — Q5: segundo descarte por sobreindexacion (indice redundante con la PK)
+-- Spec: specs/spec_01_pedido_estado_detalle_join.md (nota de correccion)
+-- ----------------------------------------------------------------------------
+
+-- Candidato B (de la propuesta original de Kiro en Caso 1) — DESCARTADO
+-- CREATE INDEX idx_detalle_pedido_id_pedido ON detalle_pedido (id_pedido);
+-- (dejado comentado a proposito: NO se aplica)
+--
+-- Motivo del descarte: la spec original afirmaba que detalle_pedido no
+-- tenia ningun indice sobre id_pedido -- eso era falso. La PK de
+-- detalle_pedido es PRIMARY KEY (id_pedido, id_producto), y por ser
+-- id_pedido su primera columna, pk_detalle_pedido ya sirve como indice
+-- utilizable para busquedas y joins por id_pedido solo. Este candidato
+-- es redundante con un indice ya existente, el otro ejemplo de
+-- sobreindexacion que menciona la consigna (columna de baja
+-- cardinalidad sin condicion parcial, o indice redundante con otro ya
+-- existente -- este caso es el segundo).
+--
+-- Demostrado con EXPLAIN (ANALYZE, BUFFERS) de Q5 dentro de
+-- BEGIN...ROLLBACK (ver medir_indice_redundante_q5.sql y
+-- plan_q5_indice_redundante.txt): el plan es IDENTICO con y sin el
+-- candidato -- en ambos casos el planificador usa Parallel Seq Scan
+-- sobre detalle_pedido (615.6 ms con el candidato, 612.3 ms sin el,
+-- diferencia dentro del ruido). El optimizador ni siquiera considera
+-- usar la PK ni el candidato para este patron de acceso: la consulta
+-- necesita la mayoria de las filas de detalle_pedido de todas formas,
+-- asi que un Hash Join con Seq Scan es mas barato que cualquier acceso
+-- por indice. Crear el candidato solo agregaria costo de mantenimiento
+-- en cada INSERT/UPDATE/DELETE de detalle_pedido sin ningun beneficio
+-- de lectura medible.

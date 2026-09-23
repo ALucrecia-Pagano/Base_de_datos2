@@ -67,6 +67,42 @@ varía por ronda (más marcada en las rondas 2 y 3, con caché más
 caliente), pero el cambio estructural en el plan es consistente. No
 requiere ningún índice ni cambio de esquema — se aplica por sesión.
 
+### Segundo descarte por sobreindexación — Candidato B: `idx_detalle_pedido_id_pedido`
+
+`specs/spec_01_pedido_estado_detalle_join.md` (spec original de Kiro,
+Caso 1) proponía este índice afirmando que `detalle_pedido` no tenía
+ningún índice sobre `id_pedido`. Esa afirmación es **falsa**: la PK de
+`detalle_pedido` es `PRIMARY KEY (id_pedido, id_producto)`, y al ser
+`id_pedido` su primera columna, `pk_detalle_pedido` ya funciona como
+índice utilizable para filtros y joins por `id_pedido` solo (el mismo
+principio por el que un índice compuesto `(a, b)` sirve para filtrar
+por `a` solo). Verificado con:
+
+```sql
+SELECT indexname, indexdef FROM pg_indexes WHERE tablename = 'detalle_pedido';
+-- pk_detalle_pedido: PRIMARY KEY (id_pedido, id_producto)
+```
+
+**Demostración con EXPLAIN ANALYZE de Q5** (`Parte_A_Indices/medir_indice_redundante_q5.sql`,
+salida completa en `plan_q5_indice_redundante.txt`), dentro de
+`BEGIN...ROLLBACK`:
+
+| Escenario | Nodo sobre `detalle_pedido` | Execution Time |
+|---|---|---|
+| Con el candidato creado | `Parallel Seq Scan on detalle_pedido` | 615.608 ms |
+| Sin el candidato (solo PK) | `Parallel Seq Scan on detalle_pedido` | 612.285 ms |
+
+El plan es **idéntico** con y sin el candidato — el optimizador ni
+siquiera considera un acceso por índice a `detalle_pedido` para este
+patrón (la consulta necesita la mayoría de las filas de todas formas,
+así que `Hash Join` + `Seq Scan` paralelo es más barato que cualquier
+acceso indexado). La diferencia de tiempo (615.6 vs. 612.3 ms) está
+dentro del margen de ruido.
+
+**Decisión: DESCARTADO por sobreindexación (índice redundante con la
+PK).** Es el segundo descarte explícito por sobreindexación de la
+Parte A, además del `idx_pedido_no_cancelado_cliente` del Caso 1.
+
 ---
 
 *(Siguientes casos se agregan a continuación a medida que se resuelven

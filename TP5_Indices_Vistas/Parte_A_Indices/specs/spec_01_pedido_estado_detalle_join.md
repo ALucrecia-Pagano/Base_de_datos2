@@ -28,6 +28,22 @@ Columnas candidatas:
   EXISTE ningun indice sobre esta columna -- el unico indice de
   detalle_pedido es sobre id_producto).
 
+NOTA DE CORRECCION (auditoria 2026-09-23, no se borra el error
+original): la afirmacion de arriba es falsa. La PK de detalle_pedido es
+compuesta, PRIMARY KEY (id_pedido, id_producto), y por como Postgres
+construye el indice de una PK compuesta (B-tree sobre las columnas en
+ese orden), pk_detalle_pedido SI sirve como indice utilizable para
+busquedas y joins por id_pedido solo, porque es su primera columna
+(igual que un indice compuesto (a, b) sirve para filtrar por "a" solo).
+Verificado con:
+  SELECT indexname, indexdef FROM pg_indexes
+  WHERE tablename = 'detalle_pedido';
+  -> pk_detalle_pedido: PRIMARY KEY (id_pedido, id_producto)
+Cualquier candidato de indice nuevo sobre detalle_pedido(id_pedido) en
+solitario es redundante con esta PK, no un indice faltante. Ver el
+Caso 4 en indices.sql (segundo descarte por sobreindexacion) para la
+demostracion con EXPLAIN ANALYZE.
+
 Nota de contexto importante: en TP3 se probo un indice sobre
 detalle_pedido(id_pedido) para otra consulta con un join similar, y el
 planificador NO LO USO (siguio prefiriendo Hash Join + Seq Scan sobre

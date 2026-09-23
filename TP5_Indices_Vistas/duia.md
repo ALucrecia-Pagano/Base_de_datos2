@@ -55,7 +55,16 @@ antes de decidir no crear el índice).
 | Herramienta | OpenCode |
 | Propósito | Generar y ejecutar el `CREATE INDEX` candidato A, y una alternativa de `work_mem`, dentro de `BEGIN...ROLLBACK` |
 | Qué se aceptó | `SET LOCAL work_mem = '16MB'` — control de ruido con 9 corridas intercaladas (3 escenarios x 3 rondas): promedio 526.5 ms (baseline) → 447.2 ms (work_mem), −15.1% |
-| Qué se descartó y por qué | Candidato A: el planificador lo ignoró en las 9/9 corridas (`Índice ignorado` en el plan, siempre). Causa: `estado <> 'CANCELADO'` retiene ~75% de la tabla `pedido` — selectividad demasiado baja para que un índice parcial compita con `Seq Scan` paralelo. **Este es el caso de descarte por sobreindexación exigido por la consigna** (columna con condición parcial de baja selectividad) |
+| Qué se descartó y por qué | Candidato A: el planificador lo ignoró en las 9/9 corridas (`Índice ignorado` en el plan, siempre). Causa: `estado <> 'CANCELADO'` retiene ~75% de la tabla `pedido` — selectividad demasiado baja para que un índice parcial compita con `Seq Scan` paralelo. **Este es el primer caso de descarte por sobreindexación exigido por la consigna** (columna con condición parcial de baja selectividad) |
+
+### Caso 4 — Q5: segundo descarte por sobreindexación (Candidato B, corrección de spec_01)
+
+| Campo | Detalle |
+|---|---|
+| Herramienta | Claude Code |
+| Propósito | Auditoría (2026-09-23): la spec original de Kiro (`spec_01`) afirmaba que `detalle_pedido` no tenía ningún índice sobre `id_pedido` para justificar el Candidato B (`idx_detalle_pedido_id_pedido`). Esa afirmación es falsa: `pk_detalle_pedido` es `PRIMARY KEY (id_pedido, id_producto)`, y al ser `id_pedido` su primera columna, ya sirve como índice utilizable por esa columna sola |
+| Qué se hizo | Se corrigió `spec_01` con una nota de corrección (sin borrar el error original) y se demostró la redundancia con `EXPLAIN (ANALYZE, BUFFERS)` de Q5 dentro de `BEGIN...ROLLBACK` (`medir_indice_redundante_q5.sql`, salida en `plan_q5_indice_redundante.txt`) |
+| Qué se descartó y por qué | Candidato B (`idx_detalle_pedido_id_pedido`): el plan es **idéntico** con y sin el candidato (`Parallel Seq Scan on detalle_pedido` en ambos casos, 615.6 ms vs. 612.3 ms — dentro del ruido). El optimizador no usa ni la PK ni el candidato para este patrón de acceso. **Segundo caso de descarte por sobreindexación** (índice redundante con otro ya existente, el ejemplo específico que menciona la consigna) |
 
 ### Caso 2 — Q6: Productos con precio superior al promedio de su categoría
 
@@ -222,6 +231,7 @@ sin necesidad de envolverlas en una transacción de prueba. La
 | Pieza | Decisión | Motivo |
 |---|---|---|
 | `idx_pedido_no_cancelado_cliente` | Descartado | Ignorado por el planificador (baja selectividad, ~75%) |
+| `idx_detalle_pedido_id_pedido` | Descartado (segundo caso) | Redundante con `pk_detalle_pedido (id_pedido, id_producto)`; plan idéntico con y sin el candidato |
 | `SET LOCAL work_mem = '16MB'` (Q5) | Aceptado | −15.1% real, confirmado con 9 corridas |
 | `idx_producto_categoria_precio_activo` | **Aceptado (aplicado en firme)** | Mejora real ~41% (271.2s -> 158.7s, medicion final tras VACUUM ANALYZE; ver informe_mediciones.md Caso 2), con salvedad de que no resuelve el O(n²) de fondo |
 | `idx_pedido_fecha_hora_brin` | Descartado, medido igual | Correlación física ~0; medido dentro de BEGIN...ROLLBACK, confirmó Seq Scan sin usar el BRIN (571.1 ms) |

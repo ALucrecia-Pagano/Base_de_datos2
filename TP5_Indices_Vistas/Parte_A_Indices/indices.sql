@@ -149,10 +149,12 @@ CREATE INDEX IF NOT EXISTS idx_producto_categoria_precio_activo
 --      Con indice: 729.226 / 688.866 / 706.615 ms -> promedio 708.2 ms
 --    Direccion inconsistente (mejora en las rondas 1 y 2, empeora ~12%
 --    en la 3) y promedio levemente peor con el indice.
---    El plan explica por que: sin indice, pedido se lee con Parallel
---    Seq Scan repartido en varios procesos (loops=2 o 3); con indice
---    pasa a un Bitmap Heap Scan que corre en un solo proceso (loops=1).
---    Se gana en el filtro de fecha pero se pierde el paralelismo.
+--    Causa probable en el plan: sin indice, pedido se lee con Parallel
+--    Seq Scan repartido en varios procesos (loops=2 o 3); con indice, en
+--    las 3 rondas el Parallel Bitmap Heap Scan sobre pedido termino en un
+--    solo proceso (loops=1), aunque el resto del plan siguio en paralelo.
+--    No es fijo: en plan_q4_despues.txt ese nodo tuvo loops=3 y aun asi
+--    tardo mas que sin indice (414.220 ms contra 378.669 ms).
 -- 4) Conclusion final: DESCARTADO. Una mejora que no supera el ruido
 --    no justifica el costo de mantener el indice en cada INSERT/UPDATE
 --    sobre pedido.

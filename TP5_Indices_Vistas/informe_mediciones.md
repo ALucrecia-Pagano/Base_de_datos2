@@ -216,7 +216,10 @@ corrida individual — el número oficial de comparación es el promedio
 de 3 rondas de control, ver más abajo). Mismo patrón que en TP4:
 `Sort ... external merge Disk` (spill a disco), y filtro
 `estado <> 'CANCELADO' AND fecha_hora >= now() - interval '6 months'`
-sobre `pedido`, reteniendo ~35-47% de las filas según la corrida.
+sobre `pedido`, reteniendo ~33-35% de las filas según la corrida
+(35,5% en `plan_q4_antes.txt`: 35.482 filas × 2 procesos; 33,2% en
+`plan_q4_rondas_salida.txt`: 22.161 × 3; sobre 200.005 pedidos; la
+ventana de 6 meses se mueve con `now()`).
 
 **Nota metodológica:** esta consulta se midió varias veces a lo largo
 de la sesión de trabajo (658, 910, 365, 384, 378 ms en distintos
@@ -295,10 +298,14 @@ en cada ronda):
 
 La dirección es inconsistente: el índice mejora en las rondas 1 y 2 y
 empeora ~12% en la 3, y en promedio queda levemente peor. El plan
-explica por qué: sin índice, `pedido` se lee con `Parallel Seq Scan`
-repartido en varios procesos (`loops=2` o `3`); con índice pasa a un
-`Bitmap Heap Scan` que corre en un solo proceso (`loops=1`). Se gana en
-el filtro de fecha, pero se pierde el paralelismo.
+muestra una causa probable: sin índice, `pedido` se lee con
+`Parallel Seq Scan` repartido en varios procesos (`loops=2` o `3`); con
+índice, en las 3 rondas archivadas el `Parallel Bitmap Heap Scan` sobre
+`pedido` terminó en un solo proceso (`loops=1`), aunque el resto del
+plan siguió en paralelo (`Workers Launched: 2`). No es fijo: en
+`plan_q4_despues.txt` el mismo nodo se repartió en 3 procesos y aun así
+tardó más que sin índice (414.220 ms contra 378.669 ms). En ningún caso
+el índice dio una mejora que supere el ruido.
 
 **Decisión final: DESCARTADO.** Una mejora que no supera el ruido no
 justifica el costo de mantener el índice en cada `INSERT`/`UPDATE` de

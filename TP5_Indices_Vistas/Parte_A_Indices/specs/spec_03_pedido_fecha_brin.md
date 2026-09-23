@@ -8,6 +8,12 @@ de paralelismo).
 Consulta afectada: Q4 completa (top 3 productos por facturacion por
 categoria, ultimos 6 meses) -- ver queries.sql.
 
+Frecuencia (agregada en la correccion posterior a la devolucion; la
+spec original no la indicaba): reporte de ranking de productos por
+categoria sobre los ultimos 6 meses, de uso periodico (por ejemplo,
+una revision semanal o mensual del catalogo), no una consulta que se
+ejecute en cada operacion del sistema.
+
 Filtro relevante en pedido:
   WHERE estado <> 'CANCELADO' AND fecha_hora >= now() - interval '6 months'
 Selectividad real medida: retiene ~35.5% de las filas (23.655 de 66.668

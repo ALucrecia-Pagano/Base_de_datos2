@@ -152,8 +152,9 @@ de aceptar cada pieza.
 - **Parte C** (Mateo) — vista materializada
   `mv_resumen_ventas_categoria_mes` (facturación,
   pedidos y unidades por categoría y mes), con `WITH DATA` e índice
-  único para habilitar `REFRESH CONCURRENTLY` a futuro. Mejora
-  medida: 618ms → 0.073ms (~8468x) contra la consulta directa sobre
-  las tablas base. Aplicada en firme.
+  único que permite `REFRESH CONCURRENTLY`. Medición archivada: 976.1 ms
+  la consulta directa contra 0.054 ms la vista (3 rondas). Se ejecutó
+  y se midió `REFRESH CONCURRENTLY`, con el análisis de bloqueos, del
+  dato desactualizado y de la frecuencia de refresco. Aplicada en firme.
 
 DUIA consolidada en `TP5_Indices_Vistas/duia.md`.

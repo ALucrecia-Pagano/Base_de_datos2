@@ -15,7 +15,9 @@ líneas de detalle).
   en `vistas.sql`, rol `tp5_reportes` en `seguridad_roles.sql`,
   verificación en `verificacion_vistas.sql`.
 - ✅ **Parte C** (vista materializada) — completa: `mv_resumen_ventas_categoria_mes`
-  aplicada en firme, mejora medida ~8468x (618ms → 0.073ms).
+  aplicada en firme. Medición archivada: 976.1 ms la consulta directa
+  contra 0.054 ms la vista (3 rondas); `REFRESH CONCURRENTLY` ejecutado
+  y analizado (ver `informe_mediciones.md`, sección Parte C).
 
 ## Estructura
 
@@ -67,7 +69,8 @@ TP5_Indices_Vistas/
 │   └── specs/
 └── Parte_C_Vista_Materializada/
     ├── vista_materializada.sql
-    ├── README.md
+    ├── medir_refresh_parte_c.sql
+    ├── medir_refresh_parte_c_salida.txt
     └── specs/
 
 ## Cómo reproducir las pruebas de la Parte A
@@ -209,6 +212,9 @@ falta de privilegios quedó en `evidencia_permiso_denegado.txt`.
 psql -U postgres -d foodstore_tp3_carga -f Parte_C_Vista_Materializada/vista_materializada.sql
 ```
 
-Para comparar tiempos, correr `EXPLAIN ANALYZE` de la consulta base
-(ver `Parte_C_Vista_Materializada/README.md`) contra
-`SELECT * FROM mv_resumen_ventas_categoria_mes;`.
+Para medir, correr `Parte_C_Vista_Materializada/medir_refresh_parte_c.sql`:
+compara la consulta directa con la vista, el `REFRESH` normal con
+`REFRESH CONCURRENTLY`, muestra los bloqueos de cada uno y el dato
+desactualizado entre dos `REFRESH`, y deja la base igual que antes. La
+salida archivada está en `medir_refresh_parte_c_salida.txt` y el
+análisis, en `informe_mediciones.md`, sección Parte C.

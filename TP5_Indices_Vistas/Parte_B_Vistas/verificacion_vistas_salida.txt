@@ -74,6 +74,15 @@ SET
          4 |           3 | Coca 1.5L  |        4 |          800.00 |  3200.00
 (5 rows)
 
+ pedido_id |       fecha_hora       |  forma_pago   |  estado   | cliente_id | nombre_completo |         email          
+-----------+------------------------+---------------+-----------+------------+-----------------+------------------------
+         1 | 2026-03-01 20:30:00-03 | EFECTIVO      | ENTREGADO |          1 | Ana GÃ³mez      | ana.gomez@example.com
+         2 | 2026-03-01 21:15:00-03 | TARJETA       | ENTREGADO |          2 | Luis Paz        | luis.paz@example.com
+         3 | 2026-03-05 21:00:00-03 | TRANSFERENCIA | ENTREGADO |          1 | Ana GÃ³mez      | ana.gomez@example.com
+         4 | 2026-03-06 20:45:00-03 | EFECTIVO      | ENTREGADO |          3 | Marta Ruiz      | marta.ruiz@example.com
+         5 | 2026-03-07 22:00:00-03 | TARJETA       | ENTREGADO |          2 | Luis Paz        | luis.paz@example.com
+(5 rows)
+
  id_categoria | categoria |          mes           | cantidad_pedidos | unidades_vendidas | facturacion_total 
 --------------+-----------+------------------------+------------------+-------------------+-------------------
             1 | Pizzas    | 2025-09-01 00:00:00-03 |             9353 |             38348 |      105101710.91

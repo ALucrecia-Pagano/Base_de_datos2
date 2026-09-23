@@ -20,6 +20,7 @@ SELECT * FROM v_usuario_publico LIMIT 5;
 SELECT * FROM v_reporte_ventas_cliente LIMIT 5;
 SELECT * FROM v_catalogo_productos LIMIT 5;
 SELECT * FROM v_detalle_pedido_producto LIMIT 5;
+SELECT * FROM v_pedido_cliente LIMIT 5;
 SELECT * FROM mv_resumen_ventas_categoria_mes LIMIT 5;
 -- Esta consulta debe fallar por falta de privilegios:
 -- SELECT * FROM usuario;

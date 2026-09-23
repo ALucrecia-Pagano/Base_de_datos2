@@ -43,6 +43,8 @@ TP5_Indices_Vistas/
 │   ├── plan_q2_rondas_salida.txt
 │   ├── medir_escritura_producto_dos_indices.sql
 │   ├── medicion_escritura_producto_dos_indices_salida.txt
+│   ├── medir_escritura_detalle_pedido.sql
+│   ├── medicion_escritura_detalle_pedido_salida.txt
 │   └── specs/
 ├── Parte_B_Vistas/
 │   ├── usuarios.sql
@@ -139,6 +141,11 @@ crean o borran índices:
   crear los dos índices de `producto` en cada ronda y termina con los
   dos creados. Después conviene correr `VACUUM ANALYZE producto;` para
   que Q6 conserve el `Index Only Scan` sin ir al heap.
+- `medir_escritura_detalle_pedido.sql` →
+  `medicion_escritura_detalle_pedido_salida.txt`. Los `DROP INDEX` van
+  dentro de la misma transacción que el `INSERT` y se deshacen con el
+  `ROLLBACK`, así que se puede correr sin preparar nada: la base queda
+  igual que antes.
 
 ## Flujo de trabajo con IA
 

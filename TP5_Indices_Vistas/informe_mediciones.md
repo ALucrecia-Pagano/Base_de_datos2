@@ -427,3 +427,39 @@ por `activo`, y Q6 usa el parcial para resolver el `AVG` con
 que sigue eligiendo `idx_producto_categoria_precio_activo`
 (`Parte_A_Indices/plan_q6_con_dos_indices.txt`). El de TP1 no se toca,
 porque está en `schema.sql` y el modelo heredado no se modifica.
+
+
+### Prueba 4 — `detalle_pedido` con los dos índices aceptados
+
+La consigna pide medir el costo de escritura con `INSERT` en
+`detalle_pedido`. Script: `Parte_A_Indices/medir_escritura_detalle_pedido.sql`,
+con la salida completa en `Parte_A_Indices/medicion_escritura_detalle_pedido_salida.txt`.
+Son 500 `INSERT` en `detalle_pedido` (pares `id_pedido`/`id_producto`
+válidos que todavía no existen), con `ROLLBACK` en cada carga, una
+ronda de calentamiento y 3 rondas intercaladas, medidas con `\timing`.
+En las rondas "sin índices", los dos `DROP INDEX` van en la misma
+transacción que el `INSERT`, así que el `ROLLBACK` los restaura y la
+base nunca queda sin ellos.
+
+**Calentamiento:** 20.995 ms (no se cuenta).
+
+| Ronda | Sin los 2 índices (ms) | Con los 2 índices (ms) |
+|---|---|---|
+| 1 | 8.067 | 9.163 |
+| 2 | 7.195 | 8.876 |
+| 3 | 7.805 | 8.646 |
+| **Promedio** | **7.7** | **8.9** |
+
+En las 3 rondas, la carga con índices fue algo más lenta, pero la
+diferencia es de ~1,2 ms. No puede deberse a mantener los índices: los
+dos viven en `producto`, y un `INSERT` en `detalle_pedido` no los
+actualiza (solo mantiene la PK de `detalle_pedido` y verifica las FK
+contra las PK de `pedido` y `producto`). Una explicación posible, que
+no se verificó, es el orden fijo de las rondas: la ronda "con índices"
+corre justo después de una transacción que borró y restauró índices de
+`producto`, y PostgreSQL tiene que volver a cargar la información de
+esa tabla. Comparado con la Prueba 3 (en `producto`, donde los índices
+sí se mantienen: ~6 ms más sobre ~12 ms, un 47%), el efecto en
+`detalle_pedido` es chico. **Conclusión:** el costo de escritura de los
+índices aceptados se paga al escribir en `producto`, no en
+`detalle_pedido`.

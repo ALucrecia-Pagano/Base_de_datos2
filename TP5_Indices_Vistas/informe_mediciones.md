@@ -165,8 +165,8 @@ dentro de `BEGIN...ROLLBACK` al probar el candidato por primera vez (ya
 con `Index Only Scan`, `Heap Fetches: 0`). La medición final, sobre el
 índice ya aplicado en firme, quedó en `Parte_A_Indices/plan_q6_despues.txt`:
 **158.728 s**, capturada después de correr `VACUUM ANALYZE producto;`
-(ver Punto 5, Prueba 3, donde el mapa de visibilidad se había desactualizado
-por los INSERT de prueba y forzaba temporalmente un `Index Scan` con
+(los INSERT de la Prueba 2 del Punto 5, hechos antes de esta medición,
+habían desactualizado el mapa de visibilidad y forzaban temporalmente un `Index Scan` con
 fetches al heap). Ese último número —no el 220.899 s— es el que refleja
 el estado real de la base entregada: mejora de **271.205 s → 158.728 s
 (~41%)**, mayor a la estimada inicialmente en esta sección.
@@ -279,7 +279,7 @@ Los planes "después" completos de cada punto quedaron archivados en `Parte_A_In
 - `plan_q4_despues.txt` — 414.220 ms (uso de `idx_pedido_fecha_hora_btree`, `Bitmap Index Scan`). Es una corrida única y ya daba un tiempo **peor** que `plan_q4_antes.txt` (378.669 ms), lo que no coincidía con el promedio de la tabla de arriba.
 - `plan_q5_despues_workmem.txt` — 336.877 ms con `SET LOCAL work_mem = '16MB'`: el `HashAggregate` pasa de `Batches: 5` con `Disk Usage` a `Batches: 1` sin volcado a disco.
 - `plan_q5_despues_indice_descartado.txt` — 301.954 ms: se probó (dentro de `BEGIN...ROLLBACK`) un índice parcial `idx_pedido_no_cancelado_cliente ON pedido (id_cliente) WHERE estado <> 'CANCELADO'`. El planner **no lo usó** — siguió eligiendo `Seq Scan` sobre `pedido`, porque el filtro `estado <> 'CANCELADO'` descarta muy pocas filas (~25%: en `plan_q5_antes.txt` son 16.620 filas descartadas por proceso, con `loops=3`; en total ~49.860 de los 200.005 pedidos) y no es lo suficientemente selectivo para justificar el índice. Se documenta como índice evaluado y descartado, no aplicado en la base final.
-- `plan_q6_despues.txt` — 158.728 s (158728.129 ms según `plan_q6_despues.txt`), confirmado `Index Only Scan` con `Heap Fetches: 0` tras ejecutar `VACUUM ANALYZE producto;` (el mapa de visibilidad estaba desactualizado por los INSERT de prueba del punto anterior, lo que inicialmente forzaba `Index Scan` con fetches al heap).
+- `plan_q6_despues.txt` — 158.728 s (158728.129 ms según `plan_q6_despues.txt`), confirmado `Index Only Scan` con `Heap Fetches: 0` tras ejecutar `VACUUM ANALYZE producto;` (el mapa de visibilidad estaba desactualizado por los INSERT de la Prueba 2 del Punto 5, lo que inicialmente forzaba `Index Scan` con fetches al heap).
 
 **Tercera medición (3 rondas intercaladas, salida archivada):**
 `Parte_A_Indices/medir_q4_rondas.sql`, con la salida completa en

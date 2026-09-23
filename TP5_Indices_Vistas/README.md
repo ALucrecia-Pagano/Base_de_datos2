@@ -168,15 +168,18 @@ crean o borran índices:
 
 Todo el proceso siguió el flujo obligatorio: **Kiro especifica y
 propone** (specs en `Parte_A_Indices/specs/`, `Parte_B_Vistas/specs/`
-y `Parte_C_Vista_Materializada/specs/`, uno por pieza) → **OpenCode
-genera y ejecuta** dentro de `BEGIN...ROLLBACK` cuando aplica → se lee
+y `Parte_C_Vista_Materializada/specs/`, uno por pieza; `spec_06` la
+escribió Claude Code y el complemento de `spec_05`, Claude, en la
+corrección posterior) → **OpenCode genera y ejecuta** (GitHub Copilot
+en la Parte C) dentro de `BEGIN...ROLLBACK` cuando aplica → se lee
 y verifica el resultado real antes de decidir → se documenta en
 `duia.md` y `informe_mediciones.md`, se acepte o se descarte la
 propuesta. En la corrección posterior a la devolución de la cátedra se
 usó Claude Code (remedición de Q4, caso Q2 y costo de escritura en
 `producto`) y Claude como asistente de chat (auditoría del repositorio,
 datos de `usuario`, verificación de vistas, costo de escritura en
-`detalle_pedido`, descarte por la PK y remedición de Q5); `duia.md`
+`detalle_pedido`, descarte por la PK, remedición de Q5 y medición del
+`REFRESH` de la Parte C); `duia.md`
 registra el prompt de cada pieza.
 
 ## Cómo reproducir/verificar Parte B

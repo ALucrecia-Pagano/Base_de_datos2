@@ -103,34 +103,38 @@ CREATE INDEX idx_producto_categoria_precio_activo
 -- un gasto de tiempo para confirmar algo que la estadistica ya
 -- garantiza: no va a servir.
 
--- Candidato B-tree — CREADO Y APLICADO EN FIRME (tras corregir una
--- conclusion erronea de una medicion aislada)
-CREATE INDEX idx_pedido_fecha_hora_btree ON pedido (fecha_hora DESC);
+-- Candidato B-tree — DESCARTADO (tras remedir con salida archivada)
+-- CREATE INDEX idx_pedido_fecha_hora_btree ON pedido (fecha_hora DESC);
+-- (dejado comentado a proposito: NO se aplica. Se elimino de la base con
+--  DROP INDEX idx_pedido_fecha_hora_btree; ANALYZE pedido;)
 --
--- Historial de la decision (documentado completo, no se oculta el
+-- Historial de la decision (documentado completo, no se oculta ningun
 -- cambio de conclusion):
 -- 1) Primera medicion (corrida unica): parecio empeorar el tiempo
---    (658 ms sin indice -> 921 ms con indice). Con esa sola corrida se
---    habia descartado el indice.
--- 2) Al re-auditar, se detecto que esa conclusion venia de UNA sola
---    corrida de cada lado, sin control de ruido -- el mismo error
---    metodologico que ya se habia evitado en el Caso 1. Se repitio la
---    prueba con 3 rondas intercaladas (Baseline-Btree-Baseline-Btree-
---    Baseline-Btree), todo dentro de BEGIN...ROLLBACK:
---      Baseline: 380.800 / 390.572 / 343.204 ms -> promedio 371.5 ms
---      B-tree:   358.550 / 327.330 / 329.518 ms -> promedio 338.5 ms
---    El indice gano en las 3 de 3 rondas (direccion consistente, a
---    diferencia del Candidato A del Caso 1) -- mejora real de ~8.9%.
--- 3) Conclusion final: ACEPTADO Y APLICADO EN FIRME. La primera
---    medicion aislada llevaba a una conclusion equivocada; el control
---    riguroso la revirtio. Se documenta el cambio completo porque es
---    la evidencia de que el proceso de medicion (no solo el resultado)
---    es lo que hay que poder defender.
+--    (658 ms sin indice -> 921 ms con indice). Se descarto.
+-- 2) Control de ruido con 3 rondas intercaladas: 371.5 ms -> 338.5 ms
+--    (~8.9%). Se acepto. Esas 3 rondas NO quedaron archivadas, y la
+--    diferencia (33 ms) era menor que la variacion observada en la
+--    misma consulta sin ningun cambio (entre 365 y 910 ms).
+-- 3) Remedicion con salida archivada (medir_q4_rondas.sql ->
+--    plan_q4_rondas_salida.txt), 3 rondas intercaladas con
+--    EXPLAIN (ANALYZE, BUFFERS):
+--      Sin indice: 767.525 / 704.008 / 628.264 ms -> promedio 699.9 ms
+--      Con indice: 729.226 / 688.866 / 706.615 ms -> promedio 708.2 ms
+--    Direccion inconsistente (mejora en las rondas 1 y 2, empeora ~12%
+--    en la 3) y promedio levemente peor con el indice.
+--    El plan explica por que: sin indice, pedido se lee con Parallel
+--    Seq Scan repartido en varios procesos (loops=2 o 3); con indice
+--    pasa a un Bitmap Heap Scan que corre en un solo proceso (loops=1).
+--    Se gana en el filtro de fecha pero se pierde el paralelismo.
+-- 4) Conclusion final: DESCARTADO. Una mejora que no supera el ruido
+--    no justifica el costo de mantener el indice en cada INSERT/UPDATE
+--    sobre pedido.
 
 -- Intervencion complementaria — SET LOCAL work_mem (igual que en Caso 1 y en TP4)
 --   SET LOCAL work_mem = '16MB';
 -- Ya confirmado en TP4-Parte4 que resuelve el spill a disco del
 -- HashAggregate de esta misma consulta. Es una intervencion distinta
--- y compatible con el indice de arriba (uno ataca el filtro de fecha,
--- el otro el spill del agregado) -- no se remidio la combinacion de
--- ambas en este TP, queda como posible mejora adicional a futuro.
+-- y no depende de ningun indice: ataca el spill del agregado, no el
+-- filtro de fecha. Con el B-tree descartado, queda como la unica
+-- intervencion aplicable a Q4.

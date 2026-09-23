@@ -194,7 +194,7 @@ tiempo (~658 ms sin índice → ~921 ms con índice), aparentemente por
 pérdida de paralelismo — el mismo patrón que en TP3-Q3. Con ese único
 dato, el índice se había descartado.
 
-**Corrección con control de ruido (3 rondas intercaladas):** al
+**Segunda medición (3 rondas intercaladas, sin salida archivada):** al
 re-auditar, se detectó que esa conclusión salía de una sola corrida de
 cada escenario — el mismo error metodológico ya evitado en el Caso 1.
 Se repitió con 3 rondas intercaladas (Baseline-B-tree-Baseline-B-tree-
@@ -207,37 +207,58 @@ Baseline-B-tree), todas dentro de `BEGIN...ROLLBACK`:
 | 3 | 343.204 | 329.518 |
 | **Promedio** | **371.5** | **338.5** |
 
-El índice ganó en **3 de 3 rondas**, con dirección consistente (a
-diferencia del Índice A del Caso 1, que no la tenía) — mejora real de
-**~8.9%**.
+El índice ganó en 3 de 3 rondas (~8.9%) y en ese momento se aceptó.
+Pero esas rondas no quedaron archivadas, y la diferencia (33 ms) es
+menor que la variación de la misma consulta sin ningún cambio (entre
+365 y 910 ms, ver la Nota metodológica). Es exactamente lo que señaló
+la devolución de la cátedra: una mejora con un margen cercano al ruido.
 
 Los planes "después" completos de cada punto quedaron archivados en `Parte_A_Indices/`:
 
-- `plan_q4_despues.txt` — 414.220 ms (uso de `idx_pedido_fecha_hora_btree`, `Bitmap Index Scan`).
+- `plan_q4_despues.txt` — 414.220 ms (uso de `idx_pedido_fecha_hora_btree`, `Bitmap Index Scan`). Es una corrida única y ya daba un tiempo **peor** que `plan_q4_antes.txt` (378.669 ms), lo que no coincidía con el promedio de la tabla de arriba.
 - `plan_q5_despues_workmem.txt` — 336.877 ms con `SET LOCAL work_mem = '16MB'`: el `HashAggregate` pasa de `Batches: 5` con `Disk Usage` a `Batches: 1` sin volcado a disco.
 - `plan_q5_despues_indice_descartado.txt` — 301.954 ms: se probó (dentro de `BEGIN...ROLLBACK`) un índice parcial `idx_pedido_no_cancelado_cliente ON pedido (id_cliente) WHERE estado <> 'CANCELADO'`. El planner **no lo usó** — siguió eligiendo `Seq Scan` sobre `pedido`, porque el filtro `estado <> 'CANCELADO'` descarta muy pocas filas (16.620 de ~66.668, ~25%) y no es lo suficientemente selectivo para justificar el índice. Se documenta como índice evaluado y descartado, no aplicado en la base final.
 - `plan_q6_despues.txt` — 158.728 s (158728.129 ms según `plan_q6_despues.txt`), confirmado `Index Only Scan` con `Heap Fetches: 0` tras ejecutar `VACUUM ANALYZE producto;` (el mapa de visibilidad estaba desactualizado por los INSERT de prueba del punto anterior, lo que inicialmente forzaba `Index Scan` con fetches al heap).
 
-**Decisión final: ACEPTADO y APLICADO EN FIRME**, revirtiendo la
-conclusión inicial. Se documenta el cambio completo (no se oculta la
-primera conclusión errónea) porque es un buen ejemplo de por qué una
-sola medición no alcanza para decidir, incluso cuando "tiene sentido"
-en teoría (pérdida de paralelismo es un riesgo real y documentado en
-TP3, pero acá no se concretó con este nivel de selectividad y control).
+**Tercera medición (3 rondas intercaladas, salida archivada):**
+`Parte_A_Indices/medir_q4_rondas.sql`, con la salida completa en
+`Parte_A_Indices/plan_q4_rondas_salida.txt` (`EXPLAIN (ANALYZE, BUFFERS)`
+en cada ronda):
+
+| Ronda | Sin índice (ms) | Con índice (ms) |
+|---|---|---|
+| 1 | 767.525 | 729.226 |
+| 2 | 704.008 | 688.866 |
+| 3 | 628.264 | 706.615 |
+| **Promedio** | **699.9** | **708.2** |
+
+La dirección es inconsistente: el índice mejora en las rondas 1 y 2 y
+empeora ~12% en la 3, y en promedio queda levemente peor. El plan
+explica por qué: sin índice, `pedido` se lee con `Parallel Seq Scan`
+repartido en varios procesos (`loops=2` o `3`); con índice pasa a un
+`Bitmap Heap Scan` que corre en un solo proceso (`loops=1`). Se gana en
+el filtro de fecha, pero se pierde el paralelismo.
+
+**Decisión final: DESCARTADO.** Una mejora que no supera el ruido no
+justifica el costo de mantener el índice en cada `INSERT`/`UPDATE` de
+`pedido`. El índice se eliminó de la base
+(`DROP INDEX idx_pedido_fecha_hora_btree; ANALYZE pedido;`) y quedó
+comentado en `indices.sql` con el historial completo.
 
 ### Intervención complementaria — `SET LOCAL work_mem = '16MB'`
 
 Confirmada en TP4-Parte 4 sobre esta misma consulta: elimina el spill
-a disco del `HashAggregate`. Es una intervención distinta y compatible
-con el índice de arriba (uno ataca el filtro de fecha, el otro el
-spill del agregado) — no se remidió el efecto combinado en este TP,
-queda como posible mejora adicional a futuro.
+a disco del `HashAggregate`. No depende de ningún índice (ataca el
+spill del agregado, no el filtro de fecha), así que con el B-tree
+descartado queda como la única intervención aplicable a Q4.
 
-**Cierre del Caso 3:** un descarte sin necesidad de medir (BRIN, por
-estadística), un candidato que casi se descarta por error metodológico
-y terminó aceptado tras control riguroso (B-tree), y una intervención
-complementaria ya confirmada en otro TP (`work_mem`). Buen ejemplo de
-que el proceso de medición importa tanto como el resultado.
+**Cierre del Caso 3:** dos candidatos descartados por motivos
+distintos. El BRIN, por estadística (correlación ~0). El B-tree, por
+medición: una mejora de ~8.9% en rondas sin archivar no se sostuvo al
+remedir con la salida completa, y el plan mostró la pérdida de
+paralelismo. La conclusión cambió dos veces, y cada cambio quedó
+documentado: lo que se defiende es el proceso de medición, no un
+resultado aislado.
 
 ## Punto 5 — Costo de los índices sobre la escritura
 

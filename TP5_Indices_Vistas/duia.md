@@ -3,7 +3,7 @@
 **Materia:** Base de Datos II
 **Proyecto:** Food Store — continúa el esquema de TP1/TP3/TP4
 **Base de trabajo:** `foodstore_tp3_carga`
-**Herramientas obligatorias:** Kiro (especificación) + un agente de generación y ejecución de código (OpenCode en Parte A y B; GitHub Copilot en Parte C, según la herramienta de cada integrante) + Git
+**Herramientas obligatorias:** Kiro (especificación) + un agente de generación y ejecución de código (OpenCode en Parte A y B; GitHub Copilot en Parte C, según la herramienta de cada integrante; Claude Code en la corrección de Q4 posterior a la devolución de la cátedra) + Git
 
 Esta bitácora registra, para cada pieza del trabajo, qué herramienta se
 usó, con qué propósito, el spec/prompt entregado, qué propuso la IA, y
@@ -82,9 +82,14 @@ antes de decidir no crear el índice).
 | Herramienta | OpenCode |
 | Propósito | Ejecutar y medir el B-tree dentro de `BEGIN...ROLLBACK` (no descartable solo con estadística) |
 | Primera medición (revertida) | Una corrida única sugirió que el índice empeoraba (658 ms → 921 ms). Con ese único dato se había descartado |
-| Corrección con control de ruido | Re-auditoría detectó que era una sola corrida por lado (mismo error metodológico ya evitado en Caso 1). Se repitió con 3 rondas intercaladas: Baseline promedio 371.5 ms, B-tree promedio 338.5 ms — el índice ganó en 3/3 rondas, dirección consistente |
-| Qué se aceptó (decisión final) | **`idx_pedido_fecha_hora_btree`: ACEPTADO Y APLICADO EN FIRME**, revirtiendo la conclusión inicial errónea. Mejora real ~8.9%. Se documenta el cambio de conclusión completo, no se oculta el error metodológico inicial |
-| Intervención complementaria | `SET LOCAL work_mem = '16MB'` — ya confirmado en TP4-Parte4 sobre esta misma consulta (ataca el spill del `HashAggregate`, distinto del filtro de fecha que ataca el índice de arriba). No remedido el efecto combinado |
+| Segunda medición (sin salida archivada) | Re-auditoría detectó que era una sola corrida por lado. Se repitió con 3 rondas intercaladas: Baseline promedio 371.5 ms, B-tree promedio 338.5 ms (~8.9%). Se aceptó el índice, pero esas rondas no quedaron archivadas y la diferencia (33 ms) era menor que la variación de la misma consulta sin ningún cambio (365 a 910 ms) |
+| Devolución de la cátedra | Señaló que el 8,9% estaba en un margen cercano al ruido medido |
+| Herramienta | Claude Code (agente de codificación en la terminal), usado en la corrección posterior a la devolución |
+| Propósito | Generar un script reproducible de 3 rondas intercaladas con la salida completa archivada, y ejecutarlo sobre `foodstore_tp3_carga` con respaldo previo (`pg_dump`) |
+| Prompt entregado | "Contradicción en Q4. El informe dice que idx_pedido_fecha_hora_btree mejora un 8,9% (371,5 → 338,5 ms), pero plan_q4_antes.txt da 378 ms y plan_q4_despues.txt da 414 ms, y las 3 rondas no están archivadas. Creá Parte_A_Indices/medir_q4_rondas.sql que haga 3 rondas intercaladas (sin índice / con índice, usando DROP y CREATE del índice dentro de transacciones) con EXPLAIN (ANALYZE, BUFFERS), y archivá la salida completa. Con los resultados reales: si el índice mejora de forma consistente, actualizá los números del informe, la DUIA, indices.sql y el README; si no mejora, cambiá la decisión a descartado, sacá el índice de indices.sql (dejalo comentado con la justificación) y actualizá todos los documentos. En cualquiera de los dos casos, el informe tiene que explicar por qué los planes archivados antes no coincidían con el promedio." |
+| Qué propuso | `medir_q4_rondas.sql` y su salida `plan_q4_rondas_salida.txt`. Sin índice: 767.5 / 704.0 / 628.3 ms (promedio 699.9 ms). Con índice: 729.2 / 688.9 / 706.6 ms (promedio 708.2 ms). Propuso descartar el índice por dirección inconsistente y pérdida de paralelismo: sin índice, `Parallel Seq Scan` en varios procesos (`loops=2` o `3`); con índice, `Bitmap Heap Scan` en un solo proceso (`loops=1`) |
+| Qué se aceptó (decisión final) | Se leyeron el script y la salida completa, y se verificaron los 6 `Execution Time` y los nodos del plan antes de decidir. **`idx_pedido_fecha_hora_btree`: DESCARTADO.** El `DROP INDEX` en firme lo ejecutó la integrante a mano (`DROP INDEX idx_pedido_fecha_hora_btree; ANALYZE pedido;`); en `indices.sql` quedó comentado con el historial completo |
+| Intervención complementaria | `SET LOCAL work_mem = '16MB'` — ya confirmado en TP4-Parte4 sobre esta misma consulta. Ataca el spill del `HashAggregate` y no depende de ningún índice, así que con el B-tree descartado queda como la única intervención aplicable a Q4 |
 
 ### Punto 5 — Costo de los índices sobre la escritura
 
@@ -233,5 +238,5 @@ firme.
 | `SET LOCAL work_mem = '16MB'` (Q5) | Aceptado | −15.1% real, confirmado con 9 corridas |
 | `idx_producto_categoria_precio_activo` | **Aceptado (aplicado en firme)** | Mejora real ~41% (271.2s -> 158.7s, medicion final tras VACUUM ANALYZE; ver informe_mediciones.md Caso 2), con salvedad de que no resuelve el O(n²) de fondo |
 | `idx_pedido_fecha_hora_brin` | Descartado sin crear | Correlación física ~0 |
-| `idx_pedido_fecha_hora_btree` | **Aceptado (aplicado en firme)** | Primera corrida sugería descarte (658→921ms); control de 3 rondas intercaladas lo revirtió: +8.9% real, 3/3 rondas consistentes |
-| `SET LOCAL work_mem = '16MB'` (Q4) | Aceptado (complementario) | Ya confirmado en TP4 sobre la misma consulta; ataca un cuello de botella distinto al del índice |
+| `idx_pedido_fecha_hora_btree` | Descartado (tras remedir) | El 8,9% salía de rondas sin archivar, cercano al ruido. Remedición con salida archivada (3 rondas): 699.9 → 708.2 ms, dirección inconsistente y pérdida de paralelismo |
+| `SET LOCAL work_mem = '16MB'` (Q4) | Aceptado | Ya confirmado en TP4 sobre la misma consulta; con el B-tree descartado, es la única intervención aplicable a Q4 |

@@ -125,7 +125,7 @@ de aceptar cada pieza.
 
 - **Parte A** (Amanda) — plan de indexado sobre 4 consultas reales
   con Seq Scan (ranking de clientes, productos vs. promedio de
-  categoría, top 3 por facturación mensual y productos de una
+  categoría, top 3 por facturación en los últimos 6 meses y productos de una
   categoría en un rango de precio). Quedaron 2 índices aplicados en
   firme: el de Q6 (~41%) y el de Q2 (~37%, Seq Scan → Bitmap Heap
   Scan). Se descartaron el índice parcial de Q5 (ignorado por el

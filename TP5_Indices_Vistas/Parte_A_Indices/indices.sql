@@ -102,7 +102,8 @@ CREATE INDEX IF NOT EXISTS idx_producto_categoria_precio_activo
 --
 -- Se acepta el indice igual porque: (a) es complementario, no
 -- redundante, con idx_productos_categoria_activo (ese no incluye
--- precio_lista); (b) aporta una mejora real aunque modesta; (c) sirve
+-- precio_lista); (b) aporta una mejora real (~41%), aunque la consulta
+-- sigue en minutos porque el SubPlan corre 50.003 veces; (c) sirve
 -- ademas para acelerar cualquier otra consulta futura que ordene
 -- productos activos por precio dentro de una categoria.
 

@@ -59,9 +59,9 @@ leyó el SQL propuesto y se verificó explícitamente:
 Ningún índice se ejecutó "a ciegas": los que no se entendían del todo
 al proponerse (por ejemplo, el `pages_per_range` del candidato BRIN)
 se investigaron antes de decidir, no se aplicaron ni se descartaron
-sin comprender el mecanismo (ver Caso 3 más abajo, donde el
-`pages_per_range = 32` propuesto por Kiro se justificó explícitamente
-antes de decidir no crear el índice).
+sin comprender el mecanismo (en el Caso 3, el BRIN con `pages_per_range = 32` que propuso Kiro se
+descartó antes de crearlo por la correlación ~0 de `fecha_hora`: con
+esa correlación, ningún valor de `pages_per_range` lo haría útil).
 
 ### Caso 1 — Q5: Ranking de clientes por gasto total
 

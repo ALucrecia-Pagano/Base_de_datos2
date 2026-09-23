@@ -378,3 +378,52 @@ La Prueba 1 se conserva en el informe (no se borra) porque documenta
 un hallazgo metodológico real: medir el costo de escritura en una
 tabla sin índices nuevos da un resultado trivial y no debe confundirse
 con "los índices no tienen costo de escritura".
+
+
+### Prueba 3 — `producto` con los dos índices aceptados (Q6 y Q2)
+
+Con el Caso 4, `producto` pasa a tener dos índices nuevos de este TP.
+Se midió el costo de escritura con los dos juntos:
+`Parte_A_Indices/medir_escritura_producto_dos_indices.sql`, con la
+salida completa en `Parte_A_Indices/medicion_escritura_producto_dos_indices_salida.txt`.
+Son 500 `INSERT` en `producto` dentro de transacciones con `ROLLBACK`,
+3 rondas intercaladas, medidas con `\timing` de `psql` (no con `time`
+de consola).
+
+**Ronda de calentamiento:** el primer `INSERT` de la sesión tardó
+65.963 ms por arranque en frío. Queda en la salida, pero no se cuenta.
+En una corrida anterior sin calentamiento, ese costo caía en la Ronda 1
+"sin índices" y daba la conclusión falsa de que los índices aceleraban
+la escritura.
+
+| Ronda | Sin los 2 índices (ms) | Con los 2 índices (ms) |
+|---|---|---|
+| 1 | 13.505 | 18.407 |
+| 2 | 11.225 | 17.462 |
+| 3 | 12.578 | 19.168 |
+| **Promedio** | **12.4** | **18.3** |
+
+Con los dos índices, cada carga de 500 filas en `producto` tarda
+alrededor de un 47% más, en las 3 rondas. Se acepta ese costo porque
+`producto` se escribe poco y se lee mucho en reportes: a cambio, Q6
+mejora ~41% y Q2 ~37%. Al terminar la prueba se corrió
+`VACUUM ANALYZE producto;`, porque los `INSERT` deshechos con
+`ROLLBACK` dejan filas muertas que le hacen perder a Q6 el
+`Index Only Scan` sin ir al heap.
+
+**Sobre `detalle_pedido`:** la consigna pide medir `INSERT` en
+`detalle_pedido`. Ninguno de los índices aceptados vive en esa tabla,
+así que un `INSERT` en `detalle_pedido` no tiene que mantenerlos (la
+Prueba 1 ya lo mostró: sin diferencia significativa). El costo real de
+los índices aceptados aparece en `producto`, y por eso se mide ahí.
+
+**Tres índices sobre `producto` que empiezan por `id_categoria`:**
+`idx_productos_categoria_activo` (heredado de TP1, parcial),
+`idx_producto_categoria_precio_activo` (Q6, parcial) e
+`idx_producto_categoria_precio` (Q2, no parcial). Los dos de TP5 no son
+redundantes entre sí: Q2 no puede usar los parciales porque no filtra
+por `activo`, y Q6 usa el parcial para resolver el `AVG` con
+`Index Only Scan`. Con los dos presentes, un `EXPLAIN` de Q6 confirma
+que sigue eligiendo `idx_producto_categoria_precio_activo`
+(`Parte_A_Indices/plan_q6_con_dos_indices.txt`). El de TP1 no se toca,
+porque está en `schema.sql` y el modelo heredado no se modifica.

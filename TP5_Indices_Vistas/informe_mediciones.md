@@ -1,4 +1,4 @@
-# Informe de mediciones — TP5 (Índices)
+# Informe de mediciones — TP5 (índices, costo de escritura y vista materializada)
 
 **Base:** `foodstore_tp3_carga` · **Motor:** PostgreSQL
 
@@ -585,7 +585,7 @@ salida.
 
 La ronda 1 de la consulta directa es la primera de la sesión y paga el
 arranque en frío (`Planning Time: 25.273 ms`). Aun sin esa ronda
-(rondas 2 y 3: 912.3 ms), la vista responde unas 17.000 veces más
+(rondas 2 y 3: 912.3 ms contra 0.056 ms), la vista responde unas 16.000 veces más
 rápido: lee 26 filas ya calculadas, en lugar de cruzar `pedido`,
 `detalle_pedido` (~500.000 filas), `producto` y `categoria` y agrupar.
 

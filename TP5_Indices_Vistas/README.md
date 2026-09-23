@@ -29,7 +29,7 @@ TP5_Indices_Vistas/
 ├── views.sql                     # punto de entrada Partes B y C, en el orden correcto
 ├── specs/README.md               # índice de los 6 specs y dónde está cada uno
 ├── duia.md                       # bitácora de uso de IA
-├── informe_mediciones.md         # EXPLAIN ANALYZE antes/después (Parte A)
+├── informe_mediciones.md         # mediciones de las Partes A y C
 ├── README.md
 ├── Parte_A_Indices/
 │   ├── indices.sql
@@ -168,7 +168,8 @@ crean o borran índices:
 
 Todo el proceso siguió el flujo obligatorio: **Kiro especifica y
 propone** (specs en `Parte_A_Indices/specs/`, `Parte_B_Vistas/specs/`
-y `Parte_C_Vista_Materializada/specs/`, uno por pieza; `spec_06` la
+y `Parte_C_Vista_Materializada/specs/`, uno por caso en la Parte A, uno para las 5 vistas de la Parte B y uno
+para la Parte C; `spec_06` la
 escribió Claude Code y el complemento de `spec_05`, Claude, en la
 corrección posterior) → **OpenCode genera y ejecuta** (GitHub Copilot
 en la Parte C) dentro de `BEGIN...ROLLBACK` cuando aplica → se lee

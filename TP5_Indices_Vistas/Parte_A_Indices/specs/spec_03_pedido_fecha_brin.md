@@ -17,7 +17,10 @@ ejecute en cada operacion del sistema.
 Filtro relevante en pedido:
   WHERE estado <> 'CANCELADO' AND fecha_hora >= now() - interval '6 months'
 Selectividad real medida: retiene ~35.5% de las filas (23.655 de 66.668
-examinadas por worker) -- mas selectivo que en Q5 (75%), pero con el
+examinadas por worker; NOTA DE CORRECCION 23/09: el 23.655 sale del
+nodo Parallel Hash de plan_q4_antes.txt y el 66.668 no figura en
+ninguna salida archivada; segun los planes archivados el filtro
+retiene ~33-35%, ver informe_mediciones.md, Caso 3) -- mas selectivo que en Q5 (75%), pero con el
 mismo riesgo estructural que en TP3-Q3 (selectividad ~33%, un indice
 btree simple sobre fecha_hora empeoro el tiempo real por perdida de
 paralelismo, ver TP3_Optimizacion/.../tabla_comparativa.md).

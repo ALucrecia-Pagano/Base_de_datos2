@@ -4,7 +4,8 @@
 --
 -- Cada bloque documenta: la consulta que motivó la propuesta, el índice
 -- (creado o descartado), y el resultado real medido con EXPLAIN ANALYZE
--- (control de ruido: 3 corridas en orden intercalado, ver
+-- (control de ruido con 3 rondas intercaladas en Q5, Q4 y Q2; Q6 tarda
+-- minutos por corrida y se midio con una corrida por lado. Ver
 -- informe_mediciones.md para el detalle completo).
 -- ============================================================================
 

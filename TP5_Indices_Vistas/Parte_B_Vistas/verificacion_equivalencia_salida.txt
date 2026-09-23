@@ -1,7 +1,22 @@
-Base: foodstore_copia_trabajo
-Comando: psql -U postgres -d foodstore_copia_trabajo -v ON_ERROR_STOP=1 -f verificacion_equivalencia.sql
+Base: foodstore_tp3_carga (base de trabajo real; la corrida anterior de
+este archivo se habia hecho contra foodstore_copia_trabajo, una base sin
+la vista materializada ni el volumen de TP3, y con la tabla usuario
+vacia, lo que dejaba a v_usuario_publico y v_pedido_usuario probando 0
+filas contra 0 filas).
+Comando: psql -U postgres -d foodstore_tp3_carga -v ON_ERROR_STOP=1 -f verificacion_equivalencia.sql
+Precondicion: usuario tiene ahora 7 filas (2 preexistentes + 5 de
+Parte_B_Vistas/usuarios_datos.sql: 3 que matchean con cliente real,
+1 sin cliente asociado, 1 eliminada que matchea con un cliente).
 
-           vista           | diferencias
+CREATE TABLE
+INSERT 0 1
+INSERT 0 1
+INSERT 0 1
+INSERT 0 1
+INSERT 0 1
+INSERT 0 1
+DO
+           vista           | diferencias 
 ---------------------------+-------------
  v_catalogo_productos      |           0
  v_detalle_pedido_producto |           0
@@ -9,6 +24,5 @@ Comando: psql -U postgres -d foodstore_copia_trabajo -v ON_ERROR_STOP=1 -f verif
  v_pedido_usuario          |           0
  v_reporte_ventas_cliente  |           0
  v_usuario_publico         |           0
-(6 rows)
+(6 filas)
 
-Resultado: el bloque DO finalizo correctamente y las seis vistas no presentaron diferencias.

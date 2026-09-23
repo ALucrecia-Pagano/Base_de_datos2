@@ -21,7 +21,7 @@ Time inicial: 527.637 ms. Nodo relevante: `Finalize HashAggregate` con
 on pedido` con `Filter: estado <> 'CANCELADO'`, descartando ~25% de las
 filas (selectividad real ~75%, no el ~83% que había estimado la IA antes de medir — la estimación inicial de Kiro se corrigió tras medir la selectividad real con `pg_stats`).
 
-### Candidato propuesto 1 — `idx_pedido_no_cancelado_cliente (id_cliente) WHERE estado <> 'CANCELADO'`
+### Candidato A — `idx_pedido_no_cancelado_cliente (id_cliente) WHERE estado <> 'CANCELADO'`
 
 Propuesto por Kiro a partir de `specs/spec_01_pedido_estado_detalle_join.md`.
 
@@ -91,7 +91,7 @@ varía por ronda (más marcada en las rondas 2 y 3, con caché más
 caliente), pero el cambio estructural en el plan es consistente. No
 requiere ningún índice ni cambio de esquema — se aplica por sesión.
 
-### Candidato propuesto 2 — `idx_detalle_pedido_id_pedido (id_pedido)`: **DESCARTADO por redundante**
+### Candidato B — `idx_detalle_pedido_id_pedido (id_pedido)`: **DESCARTADO por redundante**
 
 Kiro lo propuso como segundo candidato para el join con
 `detalle_pedido`. `spec_01` afirmaba que no había ningún índice sobre
@@ -118,9 +118,6 @@ que la PK no haga. El error de `spec_01` quedó corregido con una nota,
 sin borrar la afirmación original.
 
 ---
-
-*(Siguientes casos se agregan a continuación a medida que se resuelven
-las Partes A, B y C.)*
 
 ## Caso 2 — Q6: Productos con precio superior al promedio de su categoría
 

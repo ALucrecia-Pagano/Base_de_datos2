@@ -76,7 +76,7 @@
 -- ----------------------------------------------------------------------------
 
 -- ACEPTADO, con salvedad importante documentada abajo
-CREATE INDEX idx_producto_categoria_precio_activo
+CREATE INDEX IF NOT EXISTS idx_producto_categoria_precio_activo
     ON producto (id_categoria, precio_lista DESC)
     WHERE activo = TRUE;
 
@@ -173,7 +173,7 @@ CREATE INDEX idx_producto_categoria_precio_activo
 -- ----------------------------------------------------------------------------
 
 -- ACEPTADO Y APLICADO EN FIRME
-CREATE INDEX idx_producto_categoria_precio
+CREATE INDEX IF NOT EXISTS idx_producto_categoria_precio
     ON producto (id_categoria, precio_lista);
 
 -- Por que no sirven los indices que ya existian sobre producto:

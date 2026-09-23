@@ -148,14 +148,14 @@ sobre `producto` filtrando por `id_categoria` — patrón O(n²).
 Propuesto por Kiro (`specs/spec_02_producto_categoria_precio.md`),
 probado con OpenCode dentro de `BEGIN...ROLLBACK`.
 
-**Resultado:** Execution Time con índice: **220.899 s**. Mejora: ~19%.
+**Resultado provisional (sin salida archivada):** Execution Time con índice: **220.899 s**. Mejora: ~19%. Este número no tiene archivo de respaldo; el valor que se toma es el de `plan_q6_despues.txt` (ver abajo).
 
 **Nota de trazabilidad:** los 220.899 s de arriba son la medición hecha
 dentro de `BEGIN...ROLLBACK` al probar el candidato por primera vez (ya
 con `Index Only Scan`, `Heap Fetches: 0`). La medición final, sobre el
 índice ya aplicado en firme, quedó en `Parte_A_Indices/plan_q6_despues.txt`:
 **158.728 s**, capturada después de correr `VACUUM ANALYZE producto;`
-(ver Caso 3, Punto 5, donde el mapa de visibilidad se había desactualizado
+(ver Punto 5, Prueba 3, donde el mapa de visibilidad se había desactualizado
 por los INSERT de prueba y forzaba temporalmente un `Index Scan` con
 fetches al heap). Ese último número —no el 220.899 s— es el que refleja
 el estado real de la base entregada: mejora de **271.205 s → 158.728 s
@@ -182,9 +182,9 @@ verificado por equivalencia con `EXCEPT` en aquel momento.
 Se acepta el índice de todas formas porque:
 - No es redundante con `idx_productos_categoria_activo` (ese no
   incluye `precio_lista`, no sirve para el `ORDER BY` ni el `AVG`).
-- Aporta una mejora real: ~19% en la medicion provisional, ~41%
-en la medicion final aplicada en firme (ver Nota de trazabilidad
-arriba).
+- Aporta una mejora real: ~41% en la medición final archivada
+  (`plan_q6_despues.txt`); la medición provisional de ~19% no quedó
+  archivada (ver Nota de trazabilidad arriba).
 - Sirve para acelerar cualquier consulta futura que ordene productos
   activos por precio dentro de una categoría — no es un índice de un
   solo uso.

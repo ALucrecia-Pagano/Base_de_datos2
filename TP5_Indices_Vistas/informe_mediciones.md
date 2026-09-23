@@ -61,6 +61,11 @@ la Parte A (columna/condición de baja selectividad).
 
 ### Decisión — `SET LOCAL work_mem = '16MB'`: **ACEPTADO**
 
+Elimina el spill a disco del `HashAggregate` final en las 3 rondas sin
+excepción (`Batches: 5 → 1`, `Disk Usage → 0`). La mejora de tiempo
+varía por ronda (más marcada en las rondas 2 y 3, con caché más
+caliente), pero el cambio estructural en el plan es consistente. No
+requiere ningún índice ni cambio de esquema — se aplica por sesión.
 
 ### Candidato propuesto 2 — `idx_detalle_pedido_id_pedido (id_pedido)`: **DESCARTADO por redundante**
 
@@ -87,11 +92,6 @@ la consigna (un índice redundante con otro ya existente): tendría costo
 de mantenimiento en cada `INSERT` de `detalle_pedido` sin aportar nada
 que la PK no haga. El error de `spec_01` quedó corregido con una nota,
 sin borrar la afirmación original.
-Elimina el spill a disco del `HashAggregate` final en las 3 rondas sin
-excepción (`Batches: 5 → 1`, `Disk Usage → 0`). La mejora de tiempo
-varía por ronda (más marcada en las rondas 2 y 3, con caché más
-caliente), pero el cambio estructural en el plan es consistente. No
-requiere ningún índice ni cambio de esquema — se aplica por sesión.
 
 ---
 

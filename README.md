@@ -123,27 +123,37 @@ integrando el aporte de cada integrante del equipo sobre la misma
 base heredada, con specs propios en Kiro y verificación propia antes
 de aceptar cada pieza.
 
-- **Parte A** (Amanda) — plan de indexado sobre 3 consultas reales
+- **Parte A** (Amanda) — plan de indexado sobre 5 consultas reales
   con Seq Scan (ranking de clientes, productos vs. promedio de
-  categoría, top 3 por facturación mensual). De 3 candidatos, 2
-  quedaron aplicados en firme y 1 se descartó explícitamente por
-  sobreindexación (índice parcial ignorado por el planificador en
-  9/9 corridas por baja selectividad). Un tercer caso (B-tree sobre
-  `fecha_hora`) se descartó en una primera medición aislada y se
-  revirtió a aceptado tras un control de ruido con 3 rondas
-  intercaladas — el cambio de conclusión queda documentado, no
-  oculto.
+  categoría, top 3 por facturación mensual, productos por categoría y
+  rango de precio). 2 índices quedaron aplicados en firme
+  (`idx_producto_categoria_precio_activo`, `idx_producto_categoria_precio`)
+  y 2 se descartaron explícitamente por sobreindexación: un índice
+  parcial ignorado por el planificador en 9/9 corridas por baja
+  selectividad, y un segundo candidato redundante con la PK compuesta
+  de `detalle_pedido` (plan idéntico con y sin el candidato). Un caso
+  adicional (B-tree sobre `fecha_hora` para Q4) tuvo un historial de
+  idas y vueltas — descartado, aceptado tras una medición de 3 rondas
+  no archivada, y **descartado de nuevo** en una auditoría posterior
+  que remidió con salida real archivada y encontró dirección
+  inconsistente entre rondas (además de perjudicar a otra consulta,
+  Q3, por pérdida de paralelismo); el índice fue eliminado en firme.
+  Todo el proceso queda documentado, no oculto.
 
-- **Parte B** (Lucas) — 5 vistas (`vistas.sql`): productos vigentes con categoría, ventas
-  agregadas por cliente, pedidos con los datos del cliente, detalle de pedido con nombre de producto, y
-  una vista de seguridad (`v_usuario_publico`) que expone `usuario`
-  sin la columna `contrasena`. El esquema heredado usa `cliente` sin
-  tabla de autenticación; se agregó una
-  tabla `usuario` nueva sin tocar `cliente` (`usuarios.sql`). Un rol
+- **Parte B** (Lucas) — 6 vistas (`vistas.sql`): productos vigentes con
+  categoría, ventas agregadas por cliente, pedidos con los datos del
+  cliente, pedidos con datos de usuario (vinculados por mail), detalle
+  de pedido con nombre de producto, y una vista de seguridad
+  (`v_usuario_publico`) que expone `usuario` sin la columna
+  `contrasena`. El esquema heredado usa `cliente` sin tabla de
+  autenticación; se agregó una tabla `usuario` nueva sin tocar
+  `cliente` (`usuarios.sql`), con datos de prueba versionados. Un rol
   de solo lectura (`seguridad_roles.sql`) tiene `SELECT` sobre las
-  vistas pero no sobre las tablas base. Cada vista se verificó contra
-  una consulta manual equivalente con `EXCEPT`
-  (`verificacion_vistas.sql`).
+  vistas y la vista materializada, pero no sobre las tablas base. Cada
+  vista se verifica contra una consulta manual equivalente con
+  `EXCEPT` en ambos sentidos y con `count(*)`, en un script ejecutable
+  que falla si alguna comparación no coincide
+  (`verificacion_equivalencia.sql`).
 
 - **Parte C** (Mateo) — vista materializada
   `mv_resumen_ventas_categoria_mes` (facturación,

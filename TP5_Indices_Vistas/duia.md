@@ -19,6 +19,98 @@ verificable con `git log --oneline -- TP5_Indices_Vistas/`.
 
 ---
 
+## Sesión de auditoría y corrección — Claude Code (2026-09-23)
+
+**Herramienta:** Claude Code (no OpenCode ni Kiro — se declara así para
+no atribuirle a OpenCode nada que no generó). **Propósito:** auditar
+TP5 contra el texto literal de la consigna, corregir lo que no
+verificaba correctamente, y resolver contradicciones detectadas en una
+auditoría previa dentro de la misma conversación.
+
+**Prompt literal recibido (tal como se entregó, incluye las reglas no
+negociables y las ocho tareas):**
+
+> Contexto: estoy en el repo Base_de_datos2, materia Base de Datos II (UTN FRM). Trabajamos en
+> TP5_Indices_Vistas (índices, vistas y vista materializada sobre Food Store, PostgreSQL).
+> La base de trabajo es foodstore_tp3_carga (psql -U postgres). La consigna está resumida abajo;
+> el TP se evalúa en una defensa oral y el historial de commits es parte de la entrega.
+>
+> REGLAS (no negociables):
+> 1. No inventes mediciones. Todo número que aparezca en el informe tiene que salir de una ejecución
+>    real, y la salida completa se archiva en un .txt dentro de la carpeta de la parte correspondiente.
+>    Si un resultado contradice lo que ya está escrito, se corrige el texto; no se ajusta el número.
+> 2. Antes de cualquier prueba que escriba en la base, hacé un respaldo con pg_dump. Probá índices y
+>    cargas dentro de BEGIN...ROLLBACK siempre que se pueda.
+> 3. No toques Parte_C_Vista_Materializada/. No reescribas el historial de Git (nada de rebase, amend
+>    ni force push). No hagas push: solo commits locales.
+> 4. Hacé un commit separado y descriptivo por cada punto de abajo (un commit por pieza).
+> 5. No modifiques schema.sql ni las tablas heredadas.
+> 6. Antes de hacer git add, fijate si hay dumps .sql de más de 50 MB sin commitear. Si hay, agregalos
+>    al .gitignore y avisame; no los subas.
+> 7. Antes de empezar, leé todo TP5_Indices_Vistas y mostrame un plan breve. Esperá mi OK.
+>
+> TAREAS (en este orden):
+> 1. GRANT roto — restaurar mv_resumen_ventas_categoria_mes junto a v_pedido_usuario en el GRANT
+>    SELECT de seguridad_roles.sql, verificar con SET ROLE y archivar la evidencia.
+> 2. Usuarios de prueba — usuario estaba casi vacía; crear usuarios_datos.sql con 5 filas (3 que
+>    matcheen con clientes reales, 1 sin cliente asociado, 1 eliminada), sumarlas a views.sql y
+>    re-verificar sobre foodstore_tp3_carga.
+> 3. Equivalencia exacta — agregar a verificacion_equivalencia.sql una comparación de count(*) por
+>    vista, además del EXCEPT, que también haga fallar el script si no coincide.
+> 4. Contradicción en Q4 — remedir idx_pedido_fecha_hora_btree con 3 rondas archivadas y actualizar
+>    todos los documentos según el resultado real (aceptar o descartar).
+> 5. Índice redundante con la PK — corregir spec_01 (sin borrar el error) y documentar
+>    idx_detalle_pedido_id_pedido como segundo descarte por sobreindexación, demostrado con
+>    EXPLAIN ANALYZE real de Q5.
+> 6. Costo de escritura con los índices reales — medir el costo de escritura sobre los índices
+>    realmente aceptados en firme, no sobre un índice de control ajeno al TP.
+> 7. Tercera consulta con cambio de plan real — evaluar Q1 y Q3, proponer índice solo si hace falta.
+> 8. DUIA y README — una entrada por cada tarea, con el prompt literal, declarando la herramienta
+>    con honestidad.
+>
+> AL FINAL mostrame: una tabla con cada punto, su estado, los archivos tocados y el hash del commit;
+> cualquier resultado que haya contradicho lo que estaba documentado; la salida de git status y
+> git log --oneline -12.
+
+**Aclaraciones y tareas adicionales recibidas durante la misma sesión
+(mensajes intercalados mientras se trabajaba, atendidos en el momento y
+resumidos acá para que la DUIA quede completa):**
+
+> Aclaración antes de seguir: la Parte C la hizo mi compañero y no quiero pisar su trabajo. No
+> modifiques nada dentro de Parte_C_Vista_Materializada/. En duia.md e informe_mediciones.md NO
+> edites las secciones de la Parte C. No toques la línea \ir de vista_materializada.sql en
+> views.sql. No ejecutes CREATE, DROP ni REFRESH sobre mv_resumen_ventas_categoria_mes. Si algún
+> punto necesita cambiar algo de la Parte C, pará y avisame.
+>
+> Dos ajustes al punto 2: (1) versionar las 2 filas que ya existían en usuario (Admin y Vero) en
+> usuarios_datos.sql; (2) hacer que usuarios_datos.sql sea idempotente con ON CONFLICT (mail) DO
+> NOTHING. Y de acá en adelante alcanza con un solo respaldo por sesión, no un pg_dump por punto.
+>
+> Tres agregados antes del punto 8: (A) el DROP de idx_pedido_fecha_hora_btree lo ejecuta el
+> usuario, documentarlo como aplicado. (B) Nuevo caso Q2 (productos de categoría 1, precio
+> 1000-3000) con el flujo completo: medir plan actual, spec si hace Seq Scan, proponer índice
+> explicando por qué los parciales existentes no sirven (Q2 no filtra por activo), 3 rondas
+> intercaladas, aceptar o descartar en un commit propio. (C) En el punto 8, actualizar también la
+> sección TP5 de Informe_General.md y del README.md de la raíz (cantidad de índices, cantidad de
+> vistas, decisión de Q4), sin tocar el párrafo de la Parte C.
+
+**Qué propuso / qué se hizo (resumen; el detalle completo de cada
+punto está en las secciones de Caso 1-5 y Punto 5-7 de este archivo, y
+en `informe_mediciones.md`):**
+
+| Punto | Qué se encontró | Qué se aceptó / hizo |
+|---|---|---|
+| 1 | `v_pedido_usuario` nunca se había aplicado en `foodstore_tp3_carga` (solo en `foodstore_copia_trabajo`); el GRANT tampoco incluía la vista materializada | Se creó la vista en firme, se corrigió el GRANT (ambas), se verificó con `SET ROLE` y se archivó la evidencia |
+| 2 | `usuario` no estaba vacía (2 filas administrativas preexistentes, no versionadas), y ninguna coincidía con un cliente | `usuarios_datos.sql`: 7 filas (2 preexistentes + 5 de prueba), idempotente con `ON CONFLICT (mail) DO NOTHING` |
+| 3 | `EXCEPT` no detecta diferencias de cantidad de filas duplicadas; además el bloque de `v_pedido_cliente` tenía un bug de precedencia (faltaban paréntesis) que lo volvía unidireccional | Se agregó `count(*)` por vista al chequeo, y se corrigieron los paréntesis faltantes |
+| 4 | El informe afirmaba +8.9% para `idx_pedido_fecha_hora_btree` sin archivo de salida real, contradicho por `plan_q4_antes/despues.txt` | Remedición con 3 rondas archivadas: dirección inconsistente, promedio final peor. **Descartado**, `DROP INDEX` ejecutado por el usuario y verificado |
+| 5 | `spec_01` afirmaba que `detalle_pedido` no tenía índice sobre `id_pedido`; es falso, la PK compuesta ya lo cubre | Spec corregido (con nota, sin borrar el error); candidato demostrado como redundante con EXPLAIN ANALYZE real; segundo descarte por sobreindexación |
+| 6 | La medición de costo de escritura usaba un índice temporal ajeno al TP, sobre `detalle_pedido` | Nueva medición sobre `producto`, el único índice real aceptado en ese momento; conclusión honesta pese a un valor atípico en la Ronda 1 |
+| 7 | Q1 ya resuelta por un índice de TP3; Q3 parecía resuelta pero por el índice que el Punto 4 descartó (y de hecho la perjudicaba, 2.24x) | No se crea índice nuevo para ninguna; se documenta con planes reales, incluida la medición de Q3 sin el índice |
+| Q2 (agregado durante la sesión) | Seq Scan real; los índices parciales existentes no aplican (no filtra por `activo`) | `idx_producto_categoria_precio` — remedido con 3 rondas, aceptado (a diferencia de un intento similar en TP3), aplicado en firme |
+
+---
+
 ## Parte A — Plan de indexado asistido por IA
 
 ### Lectura línea por línea antes de ejecutar (consigna, punto 3 del flujo obligatorio)

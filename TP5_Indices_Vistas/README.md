@@ -23,6 +23,9 @@ TP5_Indices_Vistas/
 ├── schema.sql                    # heredado de TP1, sin modificar
 ├── data.sql                      # referencia al script de carga de TP3
 ├── queries.sql                   # consultas reales de TP3/TP4
+├── indices.sql                   # punto de entrada Parte A (llama a Parte_A_Indices/indices.sql)
+├── views.sql                     # punto de entrada Partes B y C, en el orden correcto
+├── specs/README.md               # índice de los 6 specs y dónde está cada uno
 ├── duia.md                       # bitácora de uso de IA
 ├── informe_mediciones.md         # EXPLAIN ANALYZE antes/después (Parte A)
 ├── README.md
@@ -174,12 +177,19 @@ registra el prompt de cada pieza.
 ## Cómo reproducir/verificar Parte B
 
 ```bash
-psql -U postgres -d foodstore_tp3_carga -f Parte_B_Vistas/usuarios.sql
-psql -U postgres -d foodstore_tp3_carga -f Parte_B_Vistas/usuarios_datos.sql
-psql -U postgres -d foodstore_tp3_carga -f Parte_B_Vistas/vistas.sql
-psql -U postgres -d foodstore_tp3_carga -f Parte_B_Vistas/seguridad_roles.sql
+psql -U postgres -d foodstore_tp3_carga -f views.sql
 psql -U postgres -d foodstore_tp3_carga -f Parte_B_Vistas/verificacion_vistas.sql
 ```
+
+`views.sql` corre, en este orden, `usuarios.sql`, `usuarios_datos.sql`,
+`vistas.sql`, la vista materializada de la Parte C y
+`seguridad_roles.sql`. El orden importa: `seguridad_roles.sql` otorga
+`SELECT` también sobre `mv_resumen_ventas_categoria_mes`, así que la
+vista materializada tiene que existir antes. Si se corren los archivos
+de a uno, hay que respetar ese mismo orden. En una base que ya tiene
+todo aplicado, el `CREATE MATERIALIZED VIEW` y su índice dan
+`already exists` y se pueden ignorar: el resto se vuelve a aplicar sin
+problema.
 
 El último script muestra las columnas de `v_usuario_publico` (sin
 `contrasena`), consulta las vistas con `SET ROLE tp5_reportes` y

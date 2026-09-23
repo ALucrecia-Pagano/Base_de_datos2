@@ -138,3 +138,38 @@ CREATE INDEX idx_producto_categoria_precio_activo
 -- y no depende de ningun indice: ataca el spill del agregado, no el
 -- filtro de fecha. Con el B-tree descartado, queda como la unica
 -- intervencion aplicable a Q4.
+
+
+-- ----------------------------------------------------------------------------
+-- CASO 4 — Q2: Productos de una categoria en un rango de precio
+-- Spec: specs/spec_06_producto_categoria_precio_sin_activo.md
+-- (caso agregado en la correccion posterior a la devolucion de la catedra)
+-- ----------------------------------------------------------------------------
+
+-- ACEPTADO Y APLICADO EN FIRME
+CREATE INDEX idx_producto_categoria_precio
+    ON producto (id_categoria, precio_lista);
+
+-- Por que no sirven los indices que ya existian sobre producto:
+-- idx_productos_categoria_activo e idx_producto_categoria_precio_activo
+-- son PARCIALES (WHERE activo = TRUE). Q2 no filtra por activo, asi que
+-- el planificador no puede usarlos: dejarian afuera productos inactivos
+-- que Q2 si tiene que devolver. Por eso este indice NO es parcial.
+--
+-- Medicion (medir_q2_rondas.sql -> plan_q2_rondas_salida.txt), 3 rondas
+-- intercaladas, con el candidato creado dentro de BEGIN...ROLLBACK:
+--   Sin indice: 30.757 / 24.997 / 26.580 ms -> promedio 27.4 ms
+--   Con indice: 17.925 / 16.431 / 17.330 ms -> promedio 17.2 ms
+-- Mejora de ~37% en las 3 rondas, y los rangos no se superponen
+-- (sin indice 25-31 ms, con indice 16-18 ms). El plan pasa de
+-- Seq Scan on producto (recorre las 50.003 filas y descarta 38.955) a
+-- Bitmap Heap Scan con Bitmap Index Scan sobre este indice (lee solo
+-- las 11.048 filas que cumplen el filtro). El Sort por precio_lista se
+-- mantiene en los dos planes, porque el Bitmap Heap Scan no devuelve
+-- las filas ordenadas.
+--
+-- Antecedente: en TP3 se probo este mismo indice para Q2 con una sola
+-- corrida por lado y no mostro mejora (12.384 ms -> 12.787 ms). Con
+-- tiempos tan chicos, una corrida por lado queda dentro del ruido; la
+-- medicion de 3 rondas intercaladas de este TP si muestra una mejora
+-- consistente.

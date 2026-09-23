@@ -3,7 +3,7 @@
 **Materia:** Base de Datos II
 **Proyecto:** Food Store — continúa el esquema de TP1/TP3/TP4
 **Base de trabajo:** `foodstore_tp3_carga`
-**Herramientas obligatorias:** Kiro (especificación) + un agente de generación y ejecución de código (OpenCode en Parte A y B; GitHub Copilot en Parte C, según la herramienta de cada integrante; Claude Code en la corrección de Q4 posterior a la devolución de la cátedra) + Git
+**Herramientas obligatorias:** Kiro (especificación) + un agente de generación y ejecución de código (OpenCode en Parte A y B; GitHub Copilot en Parte C, según la herramienta de cada integrante; Claude Code en la corrección de Q4 y el caso Q2, posteriores a la devolución de la cátedra) + Git
 
 Esta bitácora registra, para cada pieza del trabajo, qué herramienta se
 usó, con qué propósito, el spec/prompt entregado, qué propuso la IA, y
@@ -90,6 +90,19 @@ antes de decidir no crear el índice).
 | Qué propuso | `medir_q4_rondas.sql` y su salida `plan_q4_rondas_salida.txt`. Sin índice: 767.5 / 704.0 / 628.3 ms (promedio 699.9 ms). Con índice: 729.2 / 688.9 / 706.6 ms (promedio 708.2 ms). Propuso descartar el índice por dirección inconsistente y pérdida de paralelismo: sin índice, `Parallel Seq Scan` en varios procesos (`loops=2` o `3`); con índice, `Bitmap Heap Scan` en un solo proceso (`loops=1`) |
 | Qué se aceptó (decisión final) | Se leyeron el script y la salida completa, y se verificaron los 6 `Execution Time` y los nodos del plan antes de decidir. **`idx_pedido_fecha_hora_btree`: DESCARTADO.** El `DROP INDEX` en firme lo ejecutó la integrante a mano (`DROP INDEX idx_pedido_fecha_hora_btree; ANALYZE pedido;`); en `indices.sql` quedó comentado con el historial completo |
 | Intervención complementaria | `SET LOCAL work_mem = '16MB'` — ya confirmado en TP4-Parte4 sobre esta misma consulta. Ataca el spill del `HashAggregate` y no depende de ningún índice, así que con el B-tree descartado queda como la única intervención aplicable a Q4 |
+
+### Caso 4 — Q2: Productos de una categoría en un rango de precio
+
+| Campo | Detalle |
+|---|---|
+| Contexto | Caso agregado en la corrección posterior a la devolución de la cátedra: con el B-tree de Q4 descartado, la Parte A necesitaba otra consulta con un cambio de plan real |
+| Herramienta | Claude Code (agente de codificación en la terminal) |
+| Propósito | Medir el plan actual de Q2, escribir la spec, proponer el índice, medirlo con 3 rondas intercaladas y aplicarlo o descartarlo según los números |
+| Prompt entregado | "Nuevo caso para la Parte A: Q2 de queries.sql (productos de categoría 1 con precio entre 1000 y 3000). Tiene que seguir el flujo completo: 1. Medí el plan actual. Si no hace Seq Scan, documentalo y no hagas nada más. 2. Escribí primero el spec en Parte_A_Indices/specs/spec_06_... (consulta, frecuencia, columnas, criterio de aceptación). 3. Proponé el índice. Explicá por qué los índices parciales que ya existen sobre producto no le sirven a Q2, que no filtra por activo. 4. Hacé 3 rondas intercaladas antes y después dentro de transacciones y archivá la salida completa. 5. Aceptalo o descartalo según los números reales, en un commit propio." |
+| Spec | `specs/spec_06_producto_categoria_precio_sin_activo.md`, escrita por Claude Code a partir del prompt (no con Kiro), antes de proponer el índice |
+| Qué propuso | `idx_producto_categoria_precio (id_categoria, precio_lista)`, **no parcial**, porque los dos índices existentes sobre `producto` son parciales (`WHERE activo = TRUE`) y Q2 no filtra por `activo`. Medición: sin índice 30.8 / 25.0 / 26.6 ms (promedio 27.4 ms); con índice 17.9 / 16.4 / 17.3 ms (promedio 17.2 ms). El plan pasa de `Seq Scan` a `Bitmap Heap Scan` |
+| Qué se aceptó | Se leyeron la spec, el script y la salida completa, y se verificaron los 6 `Execution Time` y los nodos del plan. **Aceptado y aplicado en firme** (~37%, 3 de 3 rondas, rangos sin superponerse) |
+| Salvedad | En TP3 este mismo índice no había mostrado mejora (12.384 → 12.787 ms, una corrida por lado). Se documenta el antecedente: con tiempos de decenas de ms, una sola corrida no alcanza para decidir |
 
 ### Punto 5 — Costo de los índices sobre la escritura
 
@@ -240,3 +253,4 @@ firme.
 | `idx_pedido_fecha_hora_brin` | Descartado sin crear | Correlación física ~0 |
 | `idx_pedido_fecha_hora_btree` | Descartado (tras remedir) | El 8,9% salía de rondas sin archivar, cercano al ruido. Remedición con salida archivada (3 rondas): 699.9 → 708.2 ms, dirección inconsistente y pérdida de paralelismo |
 | `SET LOCAL work_mem = '16MB'` (Q4) | Aceptado | Ya confirmado en TP4 sobre la misma consulta; con el B-tree descartado, es la única intervención aplicable a Q4 |
+| `idx_producto_categoria_precio` (Q2) | **Aceptado (aplicado en firme)** | ~37% en 3 de 3 rondas (27.4 → 17.2 ms), `Seq Scan` → `Bitmap Heap Scan`. Los índices parciales existentes no le sirven a Q2, que no filtra por `activo` |

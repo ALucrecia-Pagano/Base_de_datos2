@@ -260,6 +260,65 @@ paralelismo. La conclusión cambió dos veces, y cada cambio quedó
 documentado: lo que se defiende es el proceso de medición, no un
 resultado aislado.
 
+## Caso 4 — Q2: Productos de una categoría en un rango de precio
+
+*(Caso agregado en la corrección posterior a la devolución de la
+cátedra: con el B-tree de Q4 descartado, la Parte A necesitaba otra
+consulta con un cambio de plan real.)*
+
+**Consulta:** Q2 de `queries.sql`:
+```sql
+SELECT id, nombre, precio_lista, stock
+FROM producto
+WHERE id_categoria = 1 AND precio_lista BETWEEN 1000 AND 3000
+ORDER BY precio_lista;
+```
+
+**Plan "antes":** `plan_q2_antes.txt`. `Seq Scan on producto`: recorre
+las 50.003 filas y descarta 38.955 (`Rows Removed by Filter`) para
+quedarse con 11.048, más un `Sort` por `precio_lista`.
+
+**Por qué no sirven los índices que ya existían sobre `producto`:**
+`idx_productos_categoria_activo` e `idx_producto_categoria_precio_activo`
+son **parciales** (`WHERE activo = TRUE`). Para usar un índice parcial,
+la consulta tiene que garantizar esa condición en su propio `WHERE`.
+Q2 no filtra por `activo`, así que usarlos dejaría afuera productos
+inactivos que Q2 sí tiene que devolver.
+
+### Candidato — `idx_producto_categoria_precio (id_categoria, precio_lista)`
+
+Especificado en `specs/spec_06_producto_categoria_precio_sin_activo.md`.
+Índice compuesto **no parcial**: `id_categoria` para la igualdad y
+`precio_lista` para el rango.
+
+**Medición (3 rondas intercaladas):** `Parte_A_Indices/medir_q2_rondas.sql`,
+con la salida completa en `Parte_A_Indices/plan_q2_rondas_salida.txt`.
+El candidato se creó dentro de `BEGIN...ROLLBACK` en cada ronda.
+
+| Ronda | Sin índice (ms) | Con índice (ms) |
+|---|---|---|
+| 1 | 30.757 | 17.925 |
+| 2 | 24.997 | 16.431 |
+| 3 | 26.580 | 17.330 |
+| **Promedio** | **27.4** | **17.2** |
+
+El índice mejora en las 3 rondas (~37%), y los rangos no se superponen
+(sin índice 25–31 ms, con índice 16–18 ms). El plan pasa de
+`Seq Scan on producto` a `Bitmap Heap Scan` con `Bitmap Index Scan`
+sobre `idx_producto_categoria_precio`, que lee solo las 11.048 filas
+que cumplen el filtro. El `Sort` por `precio_lista` se mantiene en los
+dos planes, porque el `Bitmap Heap Scan` no devuelve las filas
+ordenadas.
+
+**Antecedente de TP3:** este mismo índice se probó para Q2 en TP3 con
+una sola corrida por lado y no mostró mejora (12.384 ms → 12.787 ms,
+"dentro del ruido"). Con tiempos tan chicos, una corrida por lado no
+alcanza para decidir; la medición de 3 rondas intercaladas de este TP
+sí muestra una mejora consistente.
+
+**Decisión: ACEPTADO Y APLICADO EN FIRME**
+(`CREATE INDEX idx_producto_categoria_precio ON producto (id_categoria, precio_lista); ANALYZE producto;`).
+
 ## Punto 5 — Costo de los índices sobre la escritura
 
 **Prueba 1 (inicial, sobre `detalle_pedido`):** insertar 500 filas en

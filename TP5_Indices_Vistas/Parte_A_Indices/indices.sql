@@ -157,13 +157,15 @@ CREATE INDEX IF NOT EXISTS idx_producto_categoria_precio_activo
 --    no justifica el costo de mantener el indice en cada INSERT/UPDATE
 --    sobre pedido.
 
--- Intervencion complementaria — SET LOCAL work_mem (igual que en Caso 1 y en TP4)
---   SET LOCAL work_mem = '16MB';
--- Ya confirmado en TP4-Parte4 que resuelve el spill a disco del
--- HashAggregate de esta misma consulta. Es una intervencion distinta
--- y no depende de ningun indice: ataca el spill del agregado, no el
--- filtro de fecha. Con el B-tree descartado, queda como la unica
--- intervencion aplicable a Q4.
+-- Intervencion complementaria — SET LOCAL work_mem (recomendada segun TP4, no remedida en TP5)
+--   SET LOCAL work_mem = '8MB';
+-- En Q4 el nodo que derrama a disco es el Sort (external merge) que
+-- alimenta al Partial GroupAggregate; no hay HashAggregate
+-- (ver plan_q4_antes.txt). En TP4-Parte4, sobre esta misma consulta,
+-- 8MB llevo el Sort a quicksort en memoria y 16MB dio peor (641 ms),
+-- por eso el valor es 8MB. No depende de ningun indice: ataca el spill
+-- del ordenamiento, no el filtro de fecha. Con el B-tree descartado,
+-- queda como la unica intervencion aplicable a Q4.
 
 
 -- ----------------------------------------------------------------------------

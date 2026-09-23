@@ -292,12 +292,18 @@ justifica el costo de mantener el índice en cada `INSERT`/`UPDATE` de
 (`DROP INDEX idx_pedido_fecha_hora_btree; ANALYZE pedido;`) y quedó
 comentado en `indices.sql` con el historial completo.
 
-### Intervención complementaria — `SET LOCAL work_mem = '16MB'`
+### Intervención complementaria — `SET LOCAL work_mem = '8MB'` (recomendada según TP4, no remedida en TP5)
 
-Confirmada en TP4-Parte 4 sobre esta misma consulta: elimina el spill
-a disco del `HashAggregate`. No depende de ningún índice (ataca el
-spill del agregado, no el filtro de fecha), así que con el B-tree
-descartado queda como la única intervención aplicable a Q4.
+En Q4 no hay `HashAggregate`: el nodo que se va a disco es el `Sort`
+que alimenta al `Partial GroupAggregate` (`Sort Method: external merge`,
+~4.5 MB a disco en el proceso principal y en uno de los workers, ver
+`plan_q4_antes.txt`). En TP4-Parte 4 se trabajó esta misma consulta:
+con `work_mem = '8MB'` el `Sort` pasó a `quicksort` en memoria, y con
+`16MB` no mejoró (641.026 ms, peor que con 8MB), así que el valor
+validado es 8MB. No depende de ningún índice (ataca el spill del
+ordenamiento, no el filtro de fecha), así que con el B-tree descartado
+queda como la única intervención aplicable a Q4. En TP5 no se volvió a
+medir: se toma el resultado de TP4.
 
 **Cierre del Caso 3:** dos candidatos descartados por motivos
 distintos. El BRIN, por estadística (correlación ~0). El B-tree, por

@@ -60,8 +60,8 @@
 -- mostraba el HashAggregate final derramando a disco (Batches: 5,
 -- Disk Usage > 0). Con work_mem = '16MB' para esta sesion, el
 -- HashAggregate paso a 1 solo batch, 100% en RAM, en las 3 rondas de
--- control sin excepcion. Mejora de tiempo real de ~15-29% segun la
--- ronda (ver informe_mediciones.md).
+-- control sin excepcion. En la primera tanda (9 corridas, sin salida
+-- archivada) la mejora habia sido de ~15%.
 -- Remedicion archivada (plan_q5_rondas_salida.txt): ~26% menos en las
 -- rondas 2 y 3 (la ronda 1 del baseline paga el arranque en frio), y
 -- Batches: 5 -> 1 en las 3 rondas.
@@ -136,7 +136,7 @@ CREATE INDEX IF NOT EXISTS idx_producto_categoria_precio_activo
 --
 -- Historial de la decision (documentado completo, no se oculta ningun
 -- cambio de conclusion):
--- 1) Primera medicion (corrida unica): parecio empeorar el tiempo
+-- 1) Primera medicion (corrida unica, sin salida archivada): parecio empeorar el tiempo
 --    (658 ms sin indice -> 921 ms con indice). Se descarto.
 -- 2) Control de ruido con 3 rondas intercaladas: 371.5 ms -> 338.5 ms
 --    (~8.9%). Se acepto. Esas 3 rondas NO quedaron archivadas, y la

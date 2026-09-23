@@ -25,7 +25,7 @@ filas (selectividad real ~75%, no el ~83% que había estimado la IA antes de med
 
 Propuesto por Kiro a partir de `specs/spec_01_pedido_estado_detalle_join.md`.
 
-**Control de ruido:** 3 escenarios (Baseline / Índice A / `work_mem`),
+**Control de ruido (primera tanda, sin salida archivada):** 3 escenarios (Baseline / Índice A / `work_mem`),
 3 rondas en orden intercalado (9 corridas totales), cada una dentro de
 `BEGIN...ROLLBACK` para no dejar nada aplicado durante la prueba.
 
@@ -207,7 +207,8 @@ sobre `pedido`, reteniendo ~35-47% de las filas según la corrida.
 
 **Nota metodológica:** esta consulta se midió varias veces a lo largo
 de la sesión de trabajo (658, 910, 365, 384, 378 ms en distintos
-momentos, siempre sin ningún índice nuevo aplicado), con variación
+momentos, siempre sin ningún índice nuevo aplicado; salvo los 378 ms
+de `plan_q4_antes.txt`, esas corridas no tienen salida archivada), con variación
 significativa por el estado del caché de PostgreSQL/SO durante una
 sesión larga. Esto llevó a que la primera comparación contra el B-tree
 (un solo baseline vs. una sola corrida con índice) diera una
@@ -235,7 +236,7 @@ podría descartar casi ninguna.
 CREATE INDEX idx_pedido_fecha_hora_btree ON pedido (fecha_hora DESC);
 ```
 
-**Primera medición (corrida única, luego revertida):** una comparación
+**Primera medición (corrida única, sin salida archivada, luego revertida):** una comparación
 aislada de una corrida de cada lado sugirió que el índice empeoraba el
 tiempo (~658 ms sin índice → ~921 ms con índice), aparentemente por
 pérdida de paralelismo — el mismo patrón que en TP3-Q3. Con ese único
@@ -374,7 +375,7 @@ sí muestra una mejora consistente.
 
 ## Punto 5 — Costo de los índices sobre la escritura
 
-**Prueba 1 (inicial, sobre `detalle_pedido`):** insertar 500 filas en
+**Prueba 1 (inicial, sobre `detalle_pedido`, sin salida archivada):** insertar 500 filas en
 `detalle_pedido` dentro de una transacción con `ROLLBACK`, midiendo el
 tiempo total con `time` sobre el comando `psql`.
 
@@ -400,7 +401,7 @@ prueba el costo real de mantener un índice en la tabla donde
 efectivamente se escribe.
 
 **Prueba 2 (corregida, sobre `producto`, la tabla donde vive el
-índice):** insertar 500 filas en `producto` (misma técnica de
+índice; sin salida archivada):** insertar 500 filas en `producto` (misma técnica de
 `array_agg`, sin el bug de aleatoriedad ya que solo depende de
 `categoria`, con apenas 2 filas — impacto insignificante), midiendo
 antes de crear el índice y después, sobre la misma sesión:
@@ -430,7 +431,10 @@ frecuencia de la que se lee en reportes analíticos).
 La Prueba 1 se conserva en el informe (no se borra) porque documenta
 un hallazgo metodológico real: medir el costo de escritura en una
 tabla sin índices nuevos da un resultado trivial y no debe confundirse
-con "los índices no tienen costo de escritura".
+con "los índices no tienen costo de escritura". Las Pruebas 1 y 2 se
+midieron a mano con `time` y no tienen salida archivada; las mediciones
+archivadas del costo de escritura son la Prueba 3 (`producto`) y la
+Prueba 4 (`detalle_pedido`).
 
 
 ### Prueba 3 — `producto` con los dos índices aceptados (Q6 y Q2)

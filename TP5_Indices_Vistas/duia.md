@@ -9,14 +9,17 @@ Esta bitácora registra, para cada pieza del trabajo, qué herramienta se
 usó, con qué propósito, el spec/prompt entregado, qué propuso la IA, y
 qué se aceptó/modificó/descartó con su justificación técnica.
 
-**Paso 4 del flujo obligatorio (commits descriptivos):** cada pieza de
-este TP5 se subió en commits separados y descriptivos, uno por caso o
-corrección — por ejemplo los tres casos de Parte A, la incorporación
-de vistas y seguridad de Parte B, la vista materializada de Parte C, y
-cada corrección posterior (trazabilidad de Q6, verificación de
-equivalencia faltante, hipótesis de correlación en spec_03, volumen de
-datos, evidencia de permisos). El historial completo es verificable
-con `git log --oneline -- TP5_Indices_Vistas/`.
+**Paso 4 del flujo obligatorio (commits descriptivos):** la primera
+versión de este TP5 no cumplió este punto. La devolución de la cátedra
+señaló que el historial de Git no reflejaba el proceso: no había un
+commit por pieza, como afirmaba esta misma bitácora. Ese historial no
+se reescribe (reescribirlo ocultaría justamente lo que se señaló). Las
+correcciones posteriores a la devolución sí se subieron una por pieza,
+en commits separados y descriptivos: la remedición y el descarte del
+índice de Q4, el caso nuevo de Q2, el costo de escritura con los dos
+índices de `producto`, esta corrección de la bitácora y la limpieza de
+archivos duplicados. El historial es verificable con
+`git log --oneline -- TP5_Indices_Vistas/`.
 
 ---
 

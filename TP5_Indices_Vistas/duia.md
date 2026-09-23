@@ -81,8 +81,10 @@ antes de decidir no crear el índice).
 | Herramienta | OpenCode |
 | Propósito | Ejecutar y medir el B-tree dentro de `BEGIN...ROLLBACK` (no descartable solo con estadística) |
 | Primera medición (revertida) | Una corrida única sugirió que el índice empeoraba (658 ms → 921 ms). Con ese único dato se había descartado |
-| Corrección con control de ruido | Re-auditoría detectó que era una sola corrida por lado (mismo error metodológico ya evitado en Caso 1). Se repitió con 3 rondas intercaladas: Baseline promedio 371.5 ms, B-tree promedio 338.5 ms — el índice ganó en 3/3 rondas, dirección consistente |
-| Qué se aceptó (decisión final) | **`idx_pedido_fecha_hora_btree`: ACEPTADO Y APLICADO EN FIRME**, revirtiendo la conclusión inicial errónea. Mejora real ~8.9%. Se documenta el cambio de conclusión completo, no se oculta el error metodológico inicial |
+| Corrección con control de ruido (sin archivar) | Re-auditoría anterior reportó 3 rondas intercaladas con Baseline promedio 371.5 ms, B-tree promedio 338.5 ms — el índice ganó en 3/3 rondas, dirección consistente. Esa salida nunca se archivó en un .txt |
+| Herramienta | Claude Code |
+| Propósito | Auditoría externa (2026-09-23): detectar que 371.5/338.5 ms no coincidía con `plan_q4_antes.txt` (378 ms) ni `plan_q4_despues.txt` (414 ms), y remedir con salida archivada (`Parte_A_Indices/medir_q4_rondas.sql`, `plan_q4_rondas_salida.txt`) |
+| Qué se descartó y por qué (B-tree, decisión final) | **`idx_pedido_fecha_hora_btree`: DESCARTADO**, revirtiendo la aceptación anterior. Remedición con `DROP`/`CREATE` real dentro de transacciones, 3 rondas: antes 767.5/704.0/628.3 ms (prom. 699.9), después 729.2/688.9/706.6 ms (prom. 708.2) — dirección **inconsistente** (2 rondas mejoran, 1 empeora más de lo que las otras mejoran), promedio final **peor** con el índice. El plan confirma perdida de paralelismo (`Parallel Seq Scan` → `Bitmap Heap Scan` sin workers). Índice comentado en `indices.sql`; su baja de la base real quedó pendiente de aprobación explícita del usuario (el harness bloqueó el `DROP INDEX` en firme por ser una accion irreversible, pese al respaldo pg_dump previo) |
 | Intervención complementaria | `SET LOCAL work_mem = '16MB'` — ya confirmado en TP4-Parte4 sobre esta misma consulta (ataca el spill del `HashAggregate`, distinto del filtro de fecha que ataca el índice de arriba). No remedido el efecto combinado |
 
 ### Punto 5 — Costo de los índices sobre la escritura
@@ -222,6 +224,6 @@ sin necesidad de envolverlas en una transacción de prueba. La
 | `idx_pedido_no_cancelado_cliente` | Descartado | Ignorado por el planificador (baja selectividad, ~75%) |
 | `SET LOCAL work_mem = '16MB'` (Q5) | Aceptado | −15.1% real, confirmado con 9 corridas |
 | `idx_producto_categoria_precio_activo` | **Aceptado (aplicado en firme)** | Mejora real ~41% (271.2s -> 158.7s, medicion final tras VACUUM ANALYZE; ver informe_mediciones.md Caso 2), con salvedad de que no resuelve el O(n²) de fondo |
-| `idx_pedido_fecha_hora_brin` | Descartado sin crear | Correlación física ~0 |
-| `idx_pedido_fecha_hora_btree` | **Aceptado (aplicado en firme)** | Primera corrida sugería descarte (658→921ms); control de 3 rondas intercaladas lo revirtió: +8.9% real, 3/3 rondas consistentes |
-| `SET LOCAL work_mem = '16MB'` (Q4) | Aceptado (complementario) | Ya confirmado en TP4 sobre la misma consulta; ataca un cuello de botella distinto al del índice |
+| `idx_pedido_fecha_hora_brin` | Descartado, medido igual | Correlación física ~0; medido dentro de BEGIN...ROLLBACK, confirmó Seq Scan sin usar el BRIN (571.1 ms) |
+| `idx_pedido_fecha_hora_btree` | **Descartado (decisión final, 2026-09-23)** | Historial completo: descartado por corrida única (658→921ms) → aceptado por 3 rondas no archivadas (+8.9%) → **descartado de nuevo** por remedición archivada con `DROP`/`CREATE` real: dirección inconsistente entre rondas, promedio final peor con el índice (~700 → ~708 ms), pérdida de paralelismo confirmada en el plan |
+| `SET LOCAL work_mem = '16MB'` (Q4) | Aceptado (complementario) | Ya confirmado en TP4 sobre la misma consulta; ataca un cuello de botella distinto al del (descartado) índice |

@@ -189,6 +189,7 @@ como evidencia de descarte por sobreindexación, no como índice aplicado.
 ### Candidato 2 — B-tree simple sobre `fecha_hora`
 
 ```sql
+-- DESCARTADO (ver decision final abajo)
 CREATE INDEX idx_pedido_fecha_hora_btree ON pedido (fecha_hora DESC);
 ```
 
@@ -198,36 +199,69 @@ tiempo (~658 ms sin índice → ~921 ms con índice), aparentemente por
 pérdida de paralelismo — el mismo patrón que en TP3-Q3. Con ese único
 dato, el índice se había descartado.
 
-**Corrección con control de ruido (3 rondas intercaladas):** al
-re-auditar, se detectó que esa conclusión salía de una sola corrida de
-cada escenario — el mismo error metodológico ya evitado en el Caso 1.
-Se repitió con 3 rondas intercaladas (Baseline-B-tree-Baseline-B-tree-
-Baseline-B-tree), todas dentro de `BEGIN...ROLLBACK`:
+**Corrección previa con control de ruido (3 rondas, sin archivar):** al
+re-auditar, se reportó una mejora consistente de ~8.9% (371.5 → 338.5
+ms, 3 de 3 rondas a favor) y el índice pasó a **ACEPTADO Y APLICADO EN
+FIRME**. Esa tabla de 3 rondas nunca quedó respaldada por un archivo de
+salida real — solo el resumen en este informe.
 
-| Ronda | Baseline (ms) | B-tree (ms) |
-|---|---|---|
-| 1 | 380.800 | 358.550 |
-| 2 | 390.572 | 327.330 |
-| 3 | 343.204 | 329.518 |
-| **Promedio** | **371.5** | **338.5** |
+**Auditoría externa (2026-09-23) — contradicción detectada:** ni
+`plan_q4_antes.txt` (378 ms, corrida única) ni `plan_q4_despues.txt`
+(414 ms, corrida única) eran compatibles con los 371.5/338.5 ms
+citados arriba, y sin la salida de las 3 rondas archivada no había
+forma de confirmar cuál medición (si alguna) era la real.
 
-El índice ganó en **3 de 3 rondas**, con dirección consistente (a
-diferencia del Índice A del Caso 1, que no la tenía) — mejora real de
-**~8.9%**.
+**Remedición reproducible (`Parte_A_Indices/medir_q4_rondas.sql`,
+salida completa en `plan_q4_rondas_salida.txt`):** el índice ya estaba
+aplicado en firme, así que "antes" se midió haciendo `DROP INDEX`
+dentro de una transacción, `ANALYZE pedido`, y `EXPLAIN (ANALYZE,
+BUFFERS)`; "después" recreando el índice de la misma forma. 3 rondas
+intercaladas:
+
+| Ronda | Antes (ms) | Después (ms) | Diferencia |
+|---|---|---|---|
+| 1 | 767.525 | 729.226 | mejora ~5.0% |
+| 2 | 704.008 | 688.866 | mejora ~2.2% |
+| 3 | 628.264 | 706.615 | **empeora ~12.5%** |
+| **Promedio** | **699.9** | **708.2** | **empeora ~1.2%** |
+
+La dirección es **inconsistente** (2 de 3 rondas mejoran levemente, 1
+de 3 empeora bastante más de lo que las otras dos mejoran), y en
+promedio el índice **empeora** el tiempo. El plan confirma la causa:
+con el índice, el nodo sobre `pedido` pasa de `Parallel Seq Scan` (3
+workers, `loops=3`) a `Bitmap Heap Scan` **sin paralelismo**
+(`loops=1`) — la pérdida de paralelismo compensa o supera la ganancia
+de evitar el `Seq Scan`. Es exactamente el riesgo que ya se había
+anticipado en `spec_03` y que se había confirmado en TP3-Q3; en la
+medición de 3 rondas anterior (no archivada) no se había concretado,
+pero en esta remedición sí.
+
+**Por qué los tiempos absolutos no coinciden entre mediciones:** ni
+`plan_q4_antes.txt`/`plan_q4_despues.txt` (378/414 ms), ni la tabla
+371.5/338.5 ms citada anteriormente, ni esta remedición (~700 ms)
+coinciden en magnitud absoluta entre sí. No hay un entorno de
+benchmark aislado — es una máquina de desarrollo compartida con otros
+procesos — y ya dentro de esta misma remedición el "antes" varía entre
+628 y 768 ms (~20% de rango) solo por estado de cache/carga del
+sistema entre rondas. Por eso la comparación válida es siempre relativa
+y dentro de la misma sesión (antes vs. después, intercalado), nunca
+magnitudes absolutas entre sesiones distintas.
 
 Los planes "después" completos de cada punto quedaron archivados en `Parte_A_Indices/`:
 
-- `plan_q4_despues.txt` — 414.220 ms (uso de `idx_pedido_fecha_hora_btree`, `Bitmap Index Scan`).
+- `plan_q4_despues.txt` — 414.220 ms, corrida única histórica, **superada por la remedición de 3 rondas de arriba**; se conserva como evidencia de que ya en su momento no coincidía con el promedio de 3 rondas citado entonces.
+- `plan_q4_rondas_salida.txt` — salida completa de las 6 corridas (3 antes + 3 después) que sostienen la decisión final.
 - `plan_q5_despues_workmem.txt` — 336.877 ms con `SET LOCAL work_mem = '16MB'`: el `HashAggregate` pasa de `Batches: 5` con `Disk Usage` a `Batches: 1` sin volcado a disco.
 - `plan_q5_despues_indice_descartado.txt` — 301.954 ms: se probó (dentro de `BEGIN...ROLLBACK`) un índice parcial `idx_pedido_no_cancelado_cliente ON pedido (id_cliente) WHERE estado <> 'CANCELADO'`. El planner **no lo usó** — siguió eligiendo `Seq Scan` sobre `pedido`, porque el filtro `estado <> 'CANCELADO'` descarta muy pocas filas (16.620 de ~66.668, ~25%) y no es lo suficientemente selectivo para justificar el índice. Se documenta como índice evaluado y descartado, no aplicado en la base final.
 - `plan_q6_despues.txt` — 158.728 s (158728.129 ms según `plan_q6_despues.txt`), confirmado `Index Only Scan` con `Heap Fetches: 0` tras ejecutar `VACUUM ANALYZE producto;` (el mapa de visibilidad estaba desactualizado por los INSERT de prueba del punto anterior, lo que inicialmente forzaba `Index Scan` con fetches al heap).
 
-**Decisión final: ACEPTADO y APLICADO EN FIRME**, revirtiendo la
-conclusión inicial. Se documenta el cambio completo (no se oculta la
-primera conclusión errónea) porque es un buen ejemplo de por qué una
-sola medición no alcanza para decidir, incluso cuando "tiene sentido"
-en teoría (pérdida de paralelismo es un riesgo real y documentado en
-TP3, pero acá no se concretó con este nivel de selectividad y control).
+**Decisión final: DESCARTADO**, revirtiendo la aceptación anterior. Se
+documenta el historial completo de idas y vueltas (descartado → aceptado
+→ descartado de nuevo) porque es la evidencia de que sin un archivo de
+salida real por cada medición, ninguna conclusión puede darse por firme
+— exactamente lo que esta auditoría vino a corregir. `idx_pedido_fecha_hora_btree`
+queda comentado en `indices.sql`; su eliminación de la base de trabajo
+quedó pendiente de tu confirmación (ver el resumen final de esta sesión).
 
 ### Intervención complementaria — `SET LOCAL work_mem = '16MB'`
 
@@ -237,10 +271,11 @@ con el índice de arriba (uno ataca el filtro de fecha, el otro el
 spill del agregado) — no se remidió el efecto combinado en este TP,
 queda como posible mejora adicional a futuro.
 
-**Cierre del Caso 3:** un descarte sin necesidad de medir (BRIN, por
-estadística), un candidato que casi se descarta por error metodológico
-y terminó aceptado tras control riguroso (B-tree), y una intervención
-complementaria ya confirmada en otro TP (`work_mem`). Buen ejemplo de
+**Cierre del Caso 3:** dos candidatos de índice descartados (BRIN por
+estadística y medición; B-tree por medición reproducible final, tras
+un historial de idas y vueltas por mediciones no archivadas), y una
+intervención complementaria ya confirmada en otro TP (`work_mem`).
+Buen ejemplo de
 que el proceso de medición importa tanto como el resultado.
 
 ## Punto 5 — Costo de los índices sobre la escritura
@@ -338,11 +373,21 @@ a reflejarse hasta la próxima ejecución. Para un reporte gerencial
 mensual esto es aceptable; no lo sería para un dashboard operativo que
 necesite ver ventas en tiempo real.
 
-## Punto 5 (continuación) — Costo de escritura de `idx_pedido_fecha_hora_btree`
+## Punto 5 (continuación) — Costo de escritura de `idx_pedido_fecha_hora_btree` (histórico, índice descartado)
+
+**Nota de la auditoría (2026-09-23):** `idx_pedido_fecha_hora_btree`
+fue descartado en el Caso 3 (ver arriba) tras la remedición de 3
+rondas — no queda aplicado en la base final. Esta sección se conserva
+sin modificar el número porque documenta una medición real que sí se
+hizo en su momento, pero ya no describe el costo de escritura de un
+índice vigente; ver el Punto 6 de esta auditoría
+(`Parte_A_Indices/medir_escritura_detalle.sql` o su reemplazo) para la
+medición de costo de escritura sobre los índices que sí quedaron
+aplicados en firme.
 
 La Prueba 2 del Punto 5 midió el costo de escritura del índice aplicado
-sobre `producto`. Faltaba medir el del segundo índice aplicado en
-firme, `idx_pedido_fecha_hora_btree` (sobre `pedido`).
+sobre `producto`. Faltaba medir el del segundo índice, entonces
+aplicado en firme, `idx_pedido_fecha_hora_btree` (sobre `pedido`).
 
 **Prueba (sobre `pedido`):** insertar 500 filas dentro de una
 transacción con `ROLLBACK`, con la misma técnica de `array_agg` para

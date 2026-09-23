@@ -86,9 +86,9 @@ ROLLBACK;
 
 ### 4. Estado real de índices aplicados en firme sobre `foodstore_tp3_carga`
 
-**Dos** de los candidatos probados en la Parte A quedaron aplicados en
+**Uno** de los candidatos probados en la Parte A queda aplicado en
 firme (ver `indices.sql` y `duia.md` para el detalle completo de por
-qué se aceptaron y por qué los demás se descartaron):
+qué se aceptó y por qué los demás se descartaron):
 
 ```sql
 -- Caso 2 (Q6): covering index parcial, mejora final ~41% real (271.2s -> 158.7s tras
@@ -96,12 +96,16 @@ qué se aceptaron y por qué los demás se descartaron):
 CREATE INDEX idx_producto_categoria_precio_activo
     ON producto (id_categoria, precio_lista DESC)
     WHERE activo = TRUE;
-
--- Caso 3 (Q4): aceptado tras control de ruido de 3 rondas intercaladas
--- (la primera medicion aislada sugeria descartarlo; el control lo revirtio)
-CREATE INDEX idx_pedido_fecha_hora_btree
-    ON pedido (fecha_hora DESC);
 ```
+
+`idx_pedido_fecha_hora_btree` (Caso 3, Q4) tuvo un historial de idas y
+vueltas: descartado por corrida única → aceptado por una medición de 3
+rondas que nunca se archivó → **descartado de nuevo** (auditoría
+2026-09-23) tras remedir con salida real archivada
+(`Parte_A_Indices/plan_q4_rondas_salida.txt`): la dirección resultó
+inconsistente entre rondas y el promedio final es levemente peor con
+el índice, por pérdida de paralelismo. Queda comentado en `indices.sql`,
+no se crea en la base final.
 
 Para verificar qué índices existen realmente en la base:
 ```bash

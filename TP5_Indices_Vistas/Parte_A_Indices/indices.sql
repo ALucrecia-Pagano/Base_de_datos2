@@ -105,29 +105,44 @@ CREATE INDEX idx_producto_categoria_precio_activo
 -- un gasto de tiempo para confirmar algo que la estadistica ya
 -- anticipaba: no aporta mejora y se descarta.
 
--- Candidato B-tree — CREADO Y APLICADO EN FIRME (tras corregir una
--- conclusion erronea de una medicion aislada)
-CREATE INDEX idx_pedido_fecha_hora_btree ON pedido (fecha_hora DESC);
+-- Candidato B-tree — DESCARTADO (corregido tras auditoria; ver
+-- Parte_A_Indices/medir_q4_rondas.sql y plan_q4_rondas_salida.txt)
+-- CREATE INDEX idx_pedido_fecha_hora_btree ON pedido (fecha_hora DESC);
 --
--- Historial de la decision (documentado completo, no se oculta el
--- cambio de conclusion):
+-- Historial completo de la decision (no se oculta ningun cambio de
+-- conclusion, incluida esta ultima reversion):
 -- 1) Primera medicion (corrida unica): parecio empeorar el tiempo
---    (658 ms sin indice -> 921 ms con indice). Con esa sola corrida se
---    habia descartado el indice.
--- 2) Al re-auditar, se detecto que esa conclusion venia de UNA sola
---    corrida de cada lado, sin control de ruido -- el mismo error
---    metodologico que ya se habia evitado en el Caso 1. Se repitio la
---    prueba con 3 rondas intercaladas (Baseline-Btree-Baseline-Btree-
---    Baseline-Btree), todo dentro de BEGIN...ROLLBACK:
---      Baseline: 380.800 / 390.572 / 343.204 ms -> promedio 371.5 ms
---      B-tree:   358.550 / 327.330 / 329.518 ms -> promedio 338.5 ms
---    El indice gano en las 3 de 3 rondas (direccion consistente, a
---    diferencia del Candidato A del Caso 1) -- mejora real de ~8.9%.
--- 3) Conclusion final: ACEPTADO Y APLICADO EN FIRME. La primera
---    medicion aislada llevaba a una conclusion equivocada; el control
---    riguroso la revirtio. Se documenta el cambio completo porque es
---    la evidencia de que el proceso de medicion (no solo el resultado)
---    es lo que hay que poder defender.
+--    (658 ms sin indice -> 921 ms con indice). Se habia descartado.
+-- 2) Con 3 rondas intercaladas dentro de BEGIN...ROLLBACK (sin
+--    archivar la salida completa en su momento) se reporto una mejora
+--    consistente de ~8.9% (371.5 -> 338.5 ms, 3 de 3 rondas a favor) y
+--    el indice paso a ACEPTADO Y APLICADO EN FIRME.
+-- 3) Auditoria externa (2026-09-23): esos numeros de 371.5/338.5 ms no
+--    coincidian ni con plan_q4_antes.txt (378 ms, corrida unica) ni con
+--    plan_q4_despues.txt (414 ms, corrida unica), y la salida de las 3
+--    rondas nunca habia quedado archivada como evidencia verificable
+--    -- solo el resumen en el informe. Sin el archivo de salida no hay
+--    forma de confirmar si esos numeros fueron reales.
+-- 4) Remedicion con DROP/CREATE del indice real dentro de transacciones,
+--    3 rondas intercaladas, EXPLAIN (ANALYZE, BUFFERS), salida completa
+--    archivada en plan_q4_rondas_salida.txt:
+--      Antes:   767.525 / 704.008 / 628.264 ms -> promedio 699.9 ms
+--      Despues: 729.226 / 688.866 / 706.615 ms -> promedio 708.2 ms
+--    Direccion INCONSISTENTE: ronda 1 mejora ~5.0%, ronda 2 mejora
+--    ~2.2%, ronda 3 EMPEORA ~12.5%. Promedio final: el indice empeora
+--    el tiempo en ~1.2%. El plan confirma la causa: con el indice,
+--    pedido pasa de Parallel Seq Scan (3 workers) a Bitmap Heap Scan
+--    SIN paralelismo -- la perdida de paralelismo compensa o supera la
+--    ganancia de evitar el Seq Scan, el mismo riesgo que ya se habia
+--    anticipado en spec_03 y que se confirmo en TP3-Q3.
+-- 5) Conclusion final: DESCARTADO. El indice fue eliminado de
+--    foodstore_tp3_carga (no se mantiene aplicado en firme). Los
+--    tiempos absolutos de esta remedicion (~700 ms) tampoco coinciden
+--    con los ~370 ms de la medicion anterior; no hay entorno de
+--    benchmark controlado (maquina de desarrollo compartida con otros
+--    procesos), asi que solo la comparacion relativa DENTRO de cada
+--    sesion (antes vs. despues, intercalado) es interpretable, y esa
+--    comparacion, hoy, no favorece al indice de forma consistente.
 
 -- Intervencion complementaria — SET LOCAL work_mem (igual que en Caso 1 y en TP4)
 --   SET LOCAL work_mem = '16MB';

@@ -136,7 +136,7 @@ de aceptar cada pieza.
   se remidió con 3 rondas archivadas, no mejoró de forma consistente y
   se descartó. El costo de escritura se midió en `producto` (+47% con
   los dos índices) y en `detalle_pedido` (sin efecto relevante), y
-  todas las mediciones tienen su salida archivada.
+  las mediciones que sostienen cada decisión final tienen su salida archivada.
 
 - **Parte B** (Lucas) — 5 vistas (`vistas.sql`): productos vigentes con categoría, ventas
   agregadas por cliente, pedidos con los datos del cliente, detalle de pedido con nombre de producto, y

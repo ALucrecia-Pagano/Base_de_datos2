@@ -552,3 +552,117 @@ sí se mantienen: ~6 ms más sobre ~12 ms, un 47%), el efecto en
 `detalle_pedido` es chico. **Conclusión:** el costo de escritura de los
 índices aceptados se paga al escribir en `producto`, no en
 `detalle_pedido`.
+
+## Parte C — Vista materializada `mv_resumen_ventas_categoria_mes`
+
+**Reporte:** facturación, cantidad de pedidos y unidades vendidas por
+categoría y mes (`Parte_C_Vista_Materializada/specs/spec_05_resumen_ventas_categoria_mes.md`).
+La vista se crea en `Parte_C_Vista_Materializada/vista_materializada.sql`
+con `WITH DATA` y un índice único sobre `(id_categoria, mes)`, que es
+lo que permite usar `REFRESH ... CONCURRENTLY`.
+
+**Medición archivada (corrección posterior a la devolución):**
+`Parte_C_Vista_Materializada/medir_refresh_parte_c.sql`, con la salida
+completa en `Parte_C_Vista_Materializada/medir_refresh_parte_c_salida.txt`.
+La medición original de la Parte C (618.156 ms contra 0.073 ms) no
+había quedado archivada; los números de esta sección son los de la
+salida.
+
+### Consulta directa vs. vista materializada (3 rondas intercaladas)
+
+| Ronda | Tablas base (ms) | Vista materializada (ms) |
+|---|---|---|
+| 1 | 1103.941 | 0.051 |
+| 2 | 1002.192 | 0.060 |
+| 3 | 822.318 | 0.052 |
+| **Promedio** | **976.1** | **0.054** |
+
+La ronda 1 de la consulta directa es la primera de la sesión y paga el
+arranque en frío (`Planning Time: 25.273 ms`). Aun sin esa ronda
+(rondas 2 y 3: 912.3 ms), la vista responde unas 17.000 veces más
+rápido: lee 26 filas ya calculadas, en lugar de cruzar `pedido`,
+`detalle_pedido` (~500.000 filas), `producto` y `categoria` y agrupar.
+
+### Costo del REFRESH: normal vs. CONCURRENTLY (3 rondas intercaladas)
+
+| Ronda | `REFRESH` (ms) | `REFRESH ... CONCURRENTLY` (ms) |
+|---|---|---|
+| 1 | 956.124 | 907.325 |
+| 2 | 920.415 | 878.248 |
+| 3 | 932.677 | 881.295 |
+| **Promedio** | **936.4** | **889.0** |
+
+Los dos cuestan lo mismo que una consulta directa (~0,9 s), porque
+recalculan la vista entera: la vista materializada no ahorra ese
+trabajo, lo concentra en el momento del `REFRESH`. En esta base el
+`CONCURRENTLY` fue ~5% más rápido en las 3 rondas, pero no es una
+ventaja que se pueda generalizar: `CONCURRENTLY` calcula el resultado
+nuevo aparte y lo compara fila por fila con la vista vieja (para eso
+necesita el índice único), y aplica solo las diferencias. Con 26 filas
+esa comparación no cuesta casi nada; con una vista grande, sería más
+lento que el `REFRESH` normal.
+
+### Bloqueos: qué le pasa al usuario que está leyendo el reporte
+
+Cada `REFRESH` se ejecutó dentro de `BEGIN...ROLLBACK` y se consultó
+`pg_locks` sobre la vista:
+
+| Modo | Bloqueo principal sobre la vista | Otros bloqueos |
+|---|---|---|
+| `REFRESH` | `AccessExclusiveLock` | `ExclusiveLock`, `ShareLock` |
+| `REFRESH ... CONCURRENTLY` | `ExclusiveLock` | `AccessShareLock`, `RowExclusiveLock` |
+
+- **`REFRESH` normal:** `AccessExclusiveLock` es incompatible con
+  todo, incluso con el `AccessShareLock` que toma un `SELECT`. Mientras
+  dura el `REFRESH` (~0,9 s acá, y crece con los datos), cualquier
+  usuario que abra el reporte queda esperando. Si ya hay una consulta
+  larga en curso, el `REFRESH` espera a que termine y las lecturas
+  nuevas se encolan detrás de él.
+- **`REFRESH ... CONCURRENTLY`:** `ExclusiveLock` es compatible con
+  `AccessShareLock`, así que los `SELECT` siguen funcionando y ven la
+  versión anterior de la vista hasta que el `REFRESH` termina. Lo que
+  sí bloquea es otro `REFRESH` simultáneo sobre la misma vista. Exige
+  el índice único y que la vista ya tenga datos (no sirve sobre una
+  vista creada con `WITH NO DATA`).
+
+### Qué ve el usuario entre dos REFRESH
+
+Dentro de `BEGIN...ROLLBACK` se canceló el pedido 6549 (`PENDIENTE`, de
+septiembre de 2026), que solo tenía productos de la categoría 2:
+
+| Momento | Vista: pedidos / facturación (cat. 2) | Consulta directa (cat. 2) |
+|---|---|---|
+| Antes de cancelarlo | 178 / 1.959.552,09 | 178 / 1.959.552,09 |
+| Cancelado, sin `REFRESH` | **178 / 1.959.552,09** | 177 / 1.934.407,12 |
+| Después del `REFRESH` | 177 / 1.934.407,12 | 177 / 1.934.407,12 |
+
+Hasta el siguiente `REFRESH`, el reporte sigue contando un pedido
+cancelado y $25.144,97 de facturación que ya no existe. El usuario no
+recibe ningún error ni aviso: el dato está desactualizado sin que se
+note. El `ROLLBACK` deshizo la cancelación y el `REFRESH`, y la
+verificación final de la salida confirma que el pedido sigue
+`PENDIENTE` y que la vista tiene las mismas 26 filas.
+
+### Frecuencia de REFRESH recomendada
+
+El reporte es de gestión: se usa para comparar categorías y meses, no
+para operar los pedidos del momento. Con eso y con lo medido:
+
+- **Una vez por día, de noche, con `CONCURRENTLY`.** Cuesta ~0,9 s por
+  ejecución, lo mismo que una sola consulta directa, y con
+  `CONCURRENTLY` nadie queda bloqueado si consulta el reporte en ese
+  momento.
+- **Qué implica para los usuarios:** durante el día, el reporte muestra
+  los datos hasta el último `REFRESH`. Los meses cerrados casi no
+  cambian, así que el desfase afecta sobre todo al mes en curso: los
+  pedidos nuevos, las cancelaciones y los cambios de estado del día no
+  aparecen hasta la noche, como muestra el ejemplo del pedido 6549.
+  Para un reporte mensual, un día de desfase es aceptable, siempre que
+  el usuario sepa que los datos son "al cierre del día anterior".
+- **Cuándo no sirve:** si alguien necesita la facturación del día en
+  tiempo real (por ejemplo, para cerrar caja), la vista materializada no
+  es la herramienta: tiene que consultar las tablas base o una vista
+  común. Refrescarla después de cada `INSERT` o `UPDATE` en `pedido`
+  costaría ~0,9 s por cambio y anularía la ventaja.
+- **`REFRESH` normal:** solo conviene en una ventana sin usuarios (por
+  ejemplo, un mantenimiento), porque bloquea las lecturas mientras dura.

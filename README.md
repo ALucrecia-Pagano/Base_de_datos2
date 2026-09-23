@@ -128,13 +128,15 @@ de aceptar cada pieza.
   categoría, top 3 por facturación mensual y productos de una
   categoría en un rango de precio). Quedaron 2 índices aplicados en
   firme: el de Q6 (~41%) y el de Q2 (~37%, Seq Scan → Bitmap Heap
-  Scan). Se descartaron el índice parcial de Q5 por sobreindexación
-  (ignorado por el planificador en 9/9 corridas, por baja
-  selectividad), el BRIN sobre `fecha_hora` (correlación ~0) y el
-  B-tree sobre `fecha_hora` de Q4: se había aceptado con ~8,9%, pero
-  tras la devolución de la cátedra se remidió con 3 rondas archivadas,
-  no mejoró de forma consistente y se descartó. Los cambios de
-  conclusión quedaron documentados, no ocultos.
+  Scan). Se descartaron el índice parcial de Q5 (ignorado por el
+  planificador, baja selectividad), un índice sobre
+  `detalle_pedido(id_pedido)` redundante con la PK, el BRIN sobre
+  `fecha_hora` (correlación ~0) y el B-tree sobre `fecha_hora` de Q4:
+  se había aceptado con ~8,9%, pero tras la devolución de la cátedra
+  se remidió con 3 rondas archivadas, no mejoró de forma consistente y
+  se descartó. El costo de escritura se midió en `producto` (+47% con
+  los dos índices) y en `detalle_pedido` (sin efecto relevante), y
+  todas las mediciones tienen su salida archivada.
 
 - **Parte B** (Lucas) — 5 vistas (`vistas.sql`): productos vigentes con categoría, ventas
   agregadas por cliente, pedidos con los datos del cliente, detalle de pedido con nombre de producto, y

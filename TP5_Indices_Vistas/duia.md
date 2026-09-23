@@ -21,6 +21,21 @@ en commits separados y descriptivos: la remedición y el descarte del
 archivos duplicados. El historial es verificable con
 `git log --oneline -- TP5_Indices_Vistas/`.
 
+
+**Cómo se hizo la corrección (23/09):** una primera tanda de
+correcciones posteriores a la devolución se hizo con agentes de IA
+(GitHub Copilot y Claude Code) directamente sobre este repositorio,
+con muchos cambios encadenados en una misma sesión. Para partir de la
+versión que corrigió la cátedra (la misma que tiene el grupo) y rehacer
+las correcciones de forma controlada, todo ese trabajo se guardó en la
+rama `tp5-mejoras-23sep` y `main` se volvió a esa versión (commit
+`5a31f4b`; el commit `0e6c147` deja la carpeta idéntica a la copia del
+grupo). Después cada corrección se rehízo una por una sobre `main`,
+trayendo de la rama solo los scripts y salidas ya medidos que
+correspondían (Q4, Q2 y costo de escritura), revisando cada archivo
+antes de commitearlo y sin tocar la Parte C. La rama queda como
+respaldo y registro de esa primera tanda; lo que se entrega es `main`.
+
 ---
 
 ## Parte A — Plan de indexado asistido por IA

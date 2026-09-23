@@ -2,6 +2,19 @@
 
 **Base:** `foodstore_tp3_carga` · **Motor:** PostgreSQL
 
+**Índices que ya existían sobre `pedido`:** `pedido_pkey`,
+`idx_pedidos_cliente_id` (de `schema.sql`) e
+`idx_pedido_estado_fecha (estado, fecha_hora DESC)`, heredado de TP3
+para Q1 (`TP3_Optimizacion/.../indices_propuestos.sql`). Todas las
+mediciones "sin índice" de Q5 y Q4 se hicieron con esos índices
+presentes. Ninguna de las dos usa `idx_pedido_estado_fecha`: las dos
+filtran con `estado <> 'CANCELADO'`, una desigualdad que el B-tree no
+puede usar como punto de entrada (sirve para `estado = ...`), y
+`fecha_hora`, que Q4 también filtra, es la segunda columna del índice.
+Es el mismo análisis de TP4-Parte 4 (`analisis_optimizacion.md`). Los
+índices heredados de `detalle_pedido` y `producto` se tratan en el
+Caso 1 (Candidato B) y en el Punto 5.
+
 ## Caso 1 — Q5: Ranking de clientes por gasto total
 
 **Consulta:**
@@ -265,7 +278,7 @@ Los planes "después" completos de cada punto quedaron archivados en `Parte_A_In
 
 - `plan_q4_despues.txt` — 414.220 ms (uso de `idx_pedido_fecha_hora_btree`, `Bitmap Index Scan`). Es una corrida única y ya daba un tiempo **peor** que `plan_q4_antes.txt` (378.669 ms), lo que no coincidía con el promedio de la tabla de arriba.
 - `plan_q5_despues_workmem.txt` — 336.877 ms con `SET LOCAL work_mem = '16MB'`: el `HashAggregate` pasa de `Batches: 5` con `Disk Usage` a `Batches: 1` sin volcado a disco.
-- `plan_q5_despues_indice_descartado.txt` — 301.954 ms: se probó (dentro de `BEGIN...ROLLBACK`) un índice parcial `idx_pedido_no_cancelado_cliente ON pedido (id_cliente) WHERE estado <> 'CANCELADO'`. El planner **no lo usó** — siguió eligiendo `Seq Scan` sobre `pedido`, porque el filtro `estado <> 'CANCELADO'` descarta muy pocas filas (16.620 de ~66.668, ~25%) y no es lo suficientemente selectivo para justificar el índice. Se documenta como índice evaluado y descartado, no aplicado en la base final.
+- `plan_q5_despues_indice_descartado.txt` — 301.954 ms: se probó (dentro de `BEGIN...ROLLBACK`) un índice parcial `idx_pedido_no_cancelado_cliente ON pedido (id_cliente) WHERE estado <> 'CANCELADO'`. El planner **no lo usó** — siguió eligiendo `Seq Scan` sobre `pedido`, porque el filtro `estado <> 'CANCELADO'` descarta muy pocas filas (~25%: en `plan_q5_antes.txt` son 16.620 filas descartadas por proceso, con `loops=3`; en total ~49.860 de los 200.005 pedidos) y no es lo suficientemente selectivo para justificar el índice. Se documenta como índice evaluado y descartado, no aplicado en la base final.
 - `plan_q6_despues.txt` — 158.728 s (158728.129 ms según `plan_q6_despues.txt`), confirmado `Index Only Scan` con `Heap Fetches: 0` tras ejecutar `VACUUM ANALYZE producto;` (el mapa de visibilidad estaba desactualizado por los INSERT de prueba del punto anterior, lo que inicialmente forzaba `Index Scan` con fetches al heap).
 
 **Tercera medición (3 rondas intercaladas, salida archivada):**
@@ -463,8 +476,9 @@ la escritura.
 Con los dos índices, cada carga de 500 filas en `producto` tarda
 alrededor de un 47% más, en las 3 rondas. Se acepta ese costo porque
 `producto` se escribe poco y se lee mucho en reportes: a cambio, Q6
-mejora ~41% y Q2 ~37%. Al terminar la prueba se corrió
-`VACUUM ANALYZE producto;`, porque los `INSERT` deshechos con
+mejora ~41% y Q2 ~37%. Al terminar la prueba se corrió a mano
+`VACUUM ANALYZE producto;` (no está en el script, así que no aparece
+en la salida archivada), porque los `INSERT` deshechos con
 `ROLLBACK` dejan filas muertas que le hacen perder a Q6 el
 `Index Only Scan` sin ir al heap.
 

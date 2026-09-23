@@ -183,3 +183,35 @@ CREATE INDEX idx_producto_categoria_precio_activo
 -- por indice. Crear el candidato solo agregaria costo de mantenimiento
 -- en cada INSERT/UPDATE/DELETE de detalle_pedido sin ningun beneficio
 -- de lectura medible.
+
+-- ----------------------------------------------------------------------------
+-- CASO 5 — Q2: productos de una categoria en un rango de precio
+-- Spec: specs/spec_06_producto_categoria_precio_sin_activo.md
+-- ----------------------------------------------------------------------------
+
+-- ACEPTADO Y APLICADO EN FIRME
+CREATE INDEX idx_producto_categoria_precio ON producto (id_categoria, precio_lista);
+--
+-- Plan antes (Seq Scan on producto, Rows Removed by Filter: 38955):
+-- ver plan_q2_antes.txt. Los dos indices parciales existentes sobre
+-- producto (idx_productos_categoria_activo, idx_producto_categoria_precio_activo)
+-- no son aplicables aca: ambos tienen WHERE activo = TRUE, y Q2 no
+-- filtra por esa columna -- usarlos daria un resultado incorrecto.
+--
+-- Nota de contexto: en TP3 se habia probado un candidato practicamente
+-- identico para esta misma consulta y el resultado fue "ninguna mejora,
+-- dentro del ruido" (12.384 -> 12.787 ms). No se aplico en ese momento.
+--
+-- Remedicion con 3 rondas intercaladas (Parte_A_Indices/medir_q2_rondas.sql,
+-- salida completa en plan_q2_rondas_salida.txt), esta vez con resultado
+-- distinto al de TP3:
+--   Antes:   30.757 / 24.997 / 26.580 ms -> promedio 27.4 ms
+--   Despues: 17.925 / 16.431 / 17.330 ms -> promedio 17.2 ms
+-- Mejora consistente en 3 de 3 rondas (~35-42% cada una, ~37% en
+-- promedio). El plan cambia de Seq Scan a Bitmap Heap Scan +
+-- Bitmap Index Scan using idx_producto_categoria_precio en las 3
+-- rondas, sin excepcion.
+--
+-- Conclusion: a diferencia de TP3 (dataset en otro estado de carga en
+-- ese momento), sobre el volumen actual de foodstore_tp3_carga el
+-- indice si aporta una mejora real y consistente. Aplicado en firme.

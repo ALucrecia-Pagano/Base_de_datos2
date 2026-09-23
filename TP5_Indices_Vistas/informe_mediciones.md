@@ -593,3 +593,52 @@ por pérdida de paralelismo, no la mejora.
 **Cierre del Punto 7:** ninguna de las dos consultas necesita un índice
 nuevo de este TP. Q1 ya estaba resuelta desde TP3; Q3 se resuelve mejor
 sin índice sobre `fecha_hora` que con él, en ambos TPs donde se probó.
+
+## Caso 5 — Q2: productos de una categoría en un rango de precio
+
+**Consulta:**
+```sql
+SELECT id, nombre, precio_lista, stock
+FROM producto
+WHERE id_categoria = 1 AND precio_lista BETWEEN 1000 AND 3000
+ORDER BY precio_lista;
+```
+
+**Plan "antes"** (`plan_q2_antes.txt`): `Seq Scan on producto`,
+`Rows Removed by Filter: 38955`, Execution Time ~29–50 ms según la
+corrida.
+
+**Por qué los índices parciales existentes no sirven:**
+`idx_productos_categoria_activo` e `idx_producto_categoria_precio_activo`
+tienen ambos `WHERE activo = TRUE`. Q2 no filtra por `activo` en ningún
+lado, así que el planificador no puede usar ninguno de los dos sin
+arriesgarse a excluir productos no vigentes que la consulta sí debería
+devolver — un índice parcial solo es aplicable cuando la consulta
+garantiza la condición del índice.
+
+**Nota de contexto (spec `spec_06`):** en TP3 ya se había probado un
+candidato prácticamente idéntico (`idx_producto_categoria_precio
+(id_categoria, precio_lista)`) para esta misma consulta, con resultado
+"ninguna mejora, dentro del ruido" (12.384 → 12.787 ms) — no se aplicó
+en ese momento.
+
+**Remedición con 3 rondas intercaladas** (`Parte_A_Indices/medir_q2_rondas.sql`,
+salida completa en `plan_q2_rondas_salida.txt`):
+
+| Ronda | Antes (ms) | Después (ms) | Mejora |
+|---|---|---|---|
+| 1 | 30.757 | 17.925 | ~41.7% |
+| 2 | 24.997 | 16.431 | ~34.3% |
+| 3 | 26.580 | 17.330 | ~34.8% |
+| **Promedio** | **27.4** | **17.2** | **~37.2%** |
+
+El plan cambia de `Seq Scan` a `Bitmap Heap Scan` + `Bitmap Index Scan
+using idx_producto_categoria_precio` en las 3 rondas, sin excepción —
+dirección consistente, a diferencia de lo que había encontrado TP3 en
+su momento (posiblemente por el estado de carga de datos en esa etapa
+del proyecto).
+
+**Decisión: ACEPTADO Y APLICADO EN FIRME.** Segundo índice aceptado en
+este TP5 (junto con `idx_producto_categoria_precio_activo` del Caso 2),
+y tercera consulta con cambio real de plan documentada (además de Q6 en
+su momento, y sin contar Q4 que terminó descartado).

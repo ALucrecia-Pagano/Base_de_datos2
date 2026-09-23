@@ -125,6 +125,18 @@ antes de decidir no crear el índice).
 | Qué se encontró (Q3) | Con `idx_pedido_fecha_hora_btree` presente: `Bitmap Heap Scan` sin paralelismo, 807.912 ms. Sin ese índice: `Parallel Seq Scan` con 2 workers, 359.951 ms — **2.24x más rápida sin el índice**. Coincide con lo que TP3 ya había documentado para un índice similar sobre esta misma consulta (empeoró por pérdida de paralelismo) |
 | Qué se aceptó | No se crea ningún índice nuevo para Q1 ni Q3. El hallazgo de Q3 se suma como evidencia adicional (no solo de Q4) de que descartar `idx_pedido_fecha_hora_btree` (Caso 3) es la decisión correcta |
 
+### Caso 5 — Q2: productos de una categoría en un rango de precio
+
+| Campo | Detalle |
+|---|---|
+| Herramienta | Claude Code |
+| Propósito | Nuevo caso de indexado pedido por el usuario. Especificar en `specs/spec_06_producto_categoria_precio_sin_activo.md` a partir del plan real de Q2 (`Seq Scan`, `plan_q2_antes.txt`) |
+| Qué propuso | `idx_producto_categoria_precio (id_categoria, precio_lista)`, **sin** condición parcial — los dos índices parciales existentes sobre `producto` tienen `WHERE activo = TRUE` y Q2 no filtra por esa columna, así que no son aplicables (usarlos daría un resultado incorrecto) |
+| Verificación previa | En TP3 se había probado un candidato casi idéntico para esta misma consulta con resultado "ninguna mejora, dentro del ruido" (12.384 → 12.787 ms), no aplicado en su momento |
+| Qué se hizo | 3 rondas intercaladas dentro de `BEGIN...ROLLBACK` (`medir_q2_rondas.sql`, salida en `plan_q2_rondas_salida.txt`) |
+| Resultado | Antes: 30.757/24.997/26.580 ms (prom. 27.4). Después: 17.925/16.431/17.330 ms (prom. 17.2). Mejora consistente en 3/3 rondas (~34–42%, ~37% promedio), plan `Seq Scan` → `Bitmap Heap Scan` en las 3 |
+| Qué se aceptó | **`idx_producto_categoria_precio`: ACEPTADO Y APLICADO EN FIRME**, a diferencia del resultado de TP3 sobre el mismo candidato — el dataset actual de `foodstore_tp3_carga` sí muestra una mejora real y consistente |
+
 
 ## Parte B — Vistas para los reportes del sistema
 
@@ -256,5 +268,6 @@ sin necesidad de envolverlas en una transacción de prueba. La
 | `SET LOCAL work_mem = '16MB'` (Q5) | Aceptado | −15.1% real, confirmado con 9 corridas |
 | `idx_producto_categoria_precio_activo` | **Aceptado (aplicado en firme)** | Mejora real ~41% (271.2s -> 158.7s, medicion final tras VACUUM ANALYZE; ver informe_mediciones.md Caso 2), con salvedad de que no resuelve el O(n²) de fondo |
 | `idx_pedido_fecha_hora_brin` | Descartado, medido igual | Correlación física ~0; medido dentro de BEGIN...ROLLBACK, confirmó Seq Scan sin usar el BRIN (571.1 ms) |
-| `idx_pedido_fecha_hora_btree` | **Descartado (decisión final, 2026-09-23)** | Historial completo: descartado por corrida única (658→921ms) → aceptado por 3 rondas no archivadas (+8.9%) → **descartado de nuevo** por remedición archivada con `DROP`/`CREATE` real: dirección inconsistente entre rondas, promedio final peor con el índice (~700 → ~708 ms), pérdida de paralelismo confirmada en el plan |
+| `idx_pedido_fecha_hora_btree` | **Descartado (decisión final, 2026-09-23) — DROP ejecutado** | Historial completo: descartado por corrida única (658→921ms) → aceptado por 3 rondas no archivadas (+8.9%) → **descartado de nuevo** por remedición archivada con `DROP`/`CREATE` real: dirección inconsistente entre rondas, promedio final peor con el índice (~700 → ~708 ms), pérdida de paralelismo confirmada en el plan; además perjudicaba a Q3 (Punto 7, 2.24x más lenta). El `DROP INDEX idx_pedido_fecha_hora_btree` y el `ANALYZE pedido` posteriores se ejecutaron en firme sobre `foodstore_tp3_carga`; verificado con `pg_indexes` que ya no existe |
 | `SET LOCAL work_mem = '16MB'` (Q4) | Aceptado (complementario) | Ya confirmado en TP4 sobre la misma consulta; ataca un cuello de botella distinto al del (descartado) índice |
+| `idx_producto_categoria_precio` (Q2) | **Aceptado (aplicado en firme)** | Candidato similar ya probado sin éxito en TP3; remedido con 3 rondas sobre el dataset actual: mejora consistente ~37% (Seq Scan → Bitmap Heap Scan), 3/3 rondas a favor. Ver Caso 5 |

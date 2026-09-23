@@ -85,23 +85,25 @@ CREATE INDEX idx_producto_categoria_precio_activo
 -- Spec: specs/spec_03_pedido_fecha_brin.md
 -- ----------------------------------------------------------------------------
 
--- Candidato BRIN — DESCARTADO SIN CREAR
--- CREATE INDEX idx_pedido_fecha_hora_brin
+-- Candidato BRIN — DESCARTADO TRAS MEDICION
+-- CREATE INDEX idx_pedido_fecha_hora_brin_tp5
 --     ON pedido USING BRIN (fecha_hora)
 --     WITH (pages_per_range = 32);
 --
--- Descartado antes de crearlo, con evidencia estadistica:
+-- La evidencia estadistica se registro antes de probarlo:
 --   SELECT correlation FROM pg_stats
 --   WHERE tablename = 'pedido' AND attname = 'fecha_hora';
 --   -> resultado real: 0.013024098 (practicamente nula)
 --
--- Un BRIN funciona eliminando rangos de paginas cuyo [min,max] no
+-- Se midio dentro de BEGIN...ROLLBACK (ver medir_brin_q4.sql). El plan
+-- mantuvo Seq Scan, no uso el BRIN y termino en 571.123 ms
+-- (ver plan_q4_brin.txt). Un BRIN funciona eliminando rangos de paginas cuyo [min,max] no
 -- intersecta el filtro. Con correlacion ~0, cada rango de paginas
 -- contiene fechas de todo el año mezcladas (el seed genero fecha_hora
 -- con random() independiente del orden de insercion por id), asi que
 -- no hay casi ningun rango descartable. Crear este indice hubiera sido
 -- un gasto de tiempo para confirmar algo que la estadistica ya
--- garantiza: no va a servir.
+-- anticipaba: no aporta mejora y se descarta.
 
 -- Candidato B-tree — CREADO Y APLICADO EN FIRME (tras corregir una
 -- conclusion erronea de una medicion aislada)

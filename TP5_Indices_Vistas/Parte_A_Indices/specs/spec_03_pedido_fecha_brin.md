@@ -39,10 +39,10 @@ directamente con pg_stats.correlation antes de crear el BRIN:
 
 fecha_hora en realidad se genero con random() en el seed masivo (ver
 TP3), no correlacionada con el orden fisico de insercion como asumia
-esta spec original. Por eso se agrega un criterio de descarte previo:
-si pg_stats.correlation es practicamente cero, registrar el valor,
-explicar que el BRIN no podra descartar rangos de paginas y no crear el
-indice. El candidato B-tree se mide siempre con EXPLAIN ANALYZE real.
-La medicion estadistica no reemplaza la medicion de tiempo exigida para
-un indice que efectivamente se cree; para el BRIN descartado se conserva
-la consulta de correlacion y la justificacion en el informe.
+esta spec original. Se registro la correlacion y se midio igualmente el
+BRIN dentro de una transaccion reversible para validar la hipotesis:
+el plan mantuvo Seq Scan, no uso el BRIN y termino en 571.123 ms
+(ver `plan_q4_brin.txt`). El candidato B-tree se midio por separado con
+EXPLAIN ANALYZE y control de ruido. La decision final conserva el BRIN
+descartado por sobreindexacion: la medicion confirma que no aporta una
+mejora frente al B-tree.

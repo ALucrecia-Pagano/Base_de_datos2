@@ -29,6 +29,8 @@ TP5_Indices_Vistas/
 │   ├── indices.sql
 │   ├── plan_q4_antes.txt
 │   ├── plan_q4_despues.txt
+│   ├── plan_q4_brin.txt
+│   ├── medir_brin_q4.sql
 │   ├── plan_q5_antes.txt
 │   ├── plan_q5_despues_workmem.txt
 │   ├── plan_q5_despues_indice_descartado.txt

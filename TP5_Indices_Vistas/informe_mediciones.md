@@ -175,12 +175,16 @@ SELECT correlation FROM pg_stats WHERE tablename = 'pedido' AND attname = 'fecha
 -- resultado real: 0.013024098
 ```
 
-**Decisión: DESCARTADO sin crearlo.** Un índice BRIN depende de que los
-valores estén físicamente correlacionados con el orden de las páginas
-en disco. Con correlación ~0 (el `seed_masivo.sql` genera `fecha_hora`
-con `random()`, sin relación con el orden de inserción por `id`), cada
-rango de páginas contiene fechas de todo el año mezcladas — el BRIN no
-podría descartar casi ninguna.
+**Prueba adicional con BRIN:** se creó el índice dentro de
+`BEGIN...ROLLBACK` y se ejecutó la Q4 completa con `EXPLAIN ANALYZE`.
+El plan mantuvo `Seq Scan` sobre `pedido`, no utilizó el BRIN y terminó
+en **571.123 ms**. La salida completa está archivada en
+`Parte_A_Indices/plan_q4_brin.txt`; el script reproducible está en
+`Parte_A_Indices/medir_brin_q4.sql`.
+
+**Decisión: DESCARTADO.** La correlación física es 0.013024098 y la
+medición confirma que el BRIN no mejora el plan ni el tiempo. Se conserva
+como evidencia de descarte por sobreindexación, no como índice aplicado.
 
 ### Candidato 2 — B-tree simple sobre `fecha_hora`
 

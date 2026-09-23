@@ -1,13 +1,21 @@
-Base: foodstore_tp3_carga (base de trabajo real; la corrida anterior de
+Base: foodstore_tp3_carga (base de trabajo real; una corrida anterior de
 este archivo se habia hecho contra foodstore_copia_trabajo, una base sin
 la vista materializada ni el volumen de TP3, y con la tabla usuario
 vacia, lo que dejaba a v_usuario_publico y v_pedido_usuario probando 0
 filas contra 0 filas).
 Comando: psql -U postgres -d foodstore_tp3_carga -v ON_ERROR_STOP=1 -f verificacion_equivalencia.sql
-Precondicion: usuario tiene ahora 7 filas (2 preexistentes + 5 de
+Precondicion: usuario tiene 7 filas (2 preexistentes + 5 de
 Parte_B_Vistas/usuarios_datos.sql: 3 que matchean con cliente real,
 1 sin cliente asociado, 1 eliminada que matchea con un cliente).
 
+Esta corrida ya incluye el chequeo de count(*) agregado (punto 3 de la
+auditoria: EXCEPT no detecta diferencias de cantidad de filas
+duplicadas) y la correccion del bloque de v_pedido_cliente, que hasta
+la corrida anterior le faltaban los parentesis que separan las dos
+mitades del EXCEPT bidireccional y por eso solo detectaba filas
+faltantes en la vista, no filas de mas.
+
+CREATE TABLE
 CREATE TABLE
 INSERT 0 1
 INSERT 0 1
@@ -15,14 +23,24 @@ INSERT 0 1
 INSERT 0 1
 INSERT 0 1
 INSERT 0 1
+INSERT 0 1
+INSERT 0 1
+INSERT 0 1
+INSERT 0 1
+INSERT 0 1
+INSERT 0 1
 DO
-           vista           | diferencias 
----------------------------+-------------
- v_catalogo_productos      |           0
- v_detalle_pedido_producto |           0
- v_pedido_cliente          |           0
- v_pedido_usuario          |           0
- v_reporte_ventas_cliente  |           0
- v_usuario_publico         |           0
+           vista           | diferencias | conteo_vista | conteo_manual
+---------------------------+-------------+--------------+---------------
+ v_catalogo_productos      |           0 |        50003 |         50003
+ v_detalle_pedido_producto |           0 |       499571 |        499571
+ v_pedido_cliente          |           0 |       200005 |        200005
+ v_pedido_usuario          |           0 |           35 |            35
+ v_reporte_ventas_cliente  |           0 |        20003 |         20003
+ v_usuario_publico         |           0 |            6 |             6
 (6 filas)
 
+Resultado: el bloque DO finalizo correctamente. Las seis vistas dan 0
+diferencias en el chequeo EXCEPT bidireccional y conteo_vista =
+conteo_manual en las seis, con datos no triviales (usuario con 7 filas,
+3 de ellas efectivamente vinculadas a pedidos via v_pedido_usuario).

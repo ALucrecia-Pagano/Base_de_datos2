@@ -6,9 +6,11 @@ líneas de detalle).
 
 ## Estado actual
 
-- ✅ **Parte A** (plan de indexado) — completa: 3 casos medidos (Q5,
-  Q6, Q4), punto 5 (costo de escritura) y punto 6 (descarte por
-  sobreindexación) resueltos.
+- ✅ **Parte A** (plan de indexado) — completa: 4 casos medidos (Q5,
+  Q6, Q4, Q2), con 2 índices aplicados en firme (Q6 y Q2), punto 5
+  (costo de escritura) y punto 6 (descarte por sobreindexación)
+  resueltos. Corregida tras la devolución de la cátedra: Q4 se remidió
+  con salida archivada y su índice se descartó; se agregó el caso Q2.
 - ✅ **Parte B** (vistas y seguridad por roles) — completa: 5 vistas
   en `vistas.sql`, rol `tp5_reportes` en `seguridad_roles.sql`,
   verificación en `verificacion_vistas.sql`.
@@ -28,11 +30,19 @@ TP5_Indices_Vistas/
 │   ├── indices.sql
 │   ├── plan_q4_antes.txt
 │   ├── plan_q4_despues.txt
+│   ├── medir_q4_rondas.sql
+│   ├── plan_q4_rondas_salida.txt
 │   ├── plan_q5_antes.txt
 │   ├── plan_q5_despues_workmem.txt
 │   ├── plan_q5_despues_indice_descartado.txt
 │   ├── plan_q6_antes.txt
 │   ├── plan_q6_despues.txt
+│   ├── plan_q6_con_dos_indices.txt
+│   ├── plan_q2_antes.txt
+│   ├── medir_q2_rondas.sql
+│   ├── plan_q2_rondas_salida.txt
+│   ├── medir_escritura_producto_dos_indices.sql
+│   ├── medicion_escritura_producto_dos_indices_salida.txt
 │   └── specs/
 ├── Parte_B_Vistas/
 │   ├── usuarios.sql
@@ -59,7 +69,7 @@ createdb -U postgres -T foodstore_dev foodstore_tp3_carga
 psql -U postgres -d foodstore_tp3_carga -f "../TP3_Optimizacion/Parte 1 - Poblar la base masivamente con datos generados por IA/seed_masivo.sql"
 ```
 
-### 2. Medir un plan "antes" de cualquiera de los 3 casos
+### 2. Medir un plan "antes" de cualquiera de los 4 casos
 
 ```bash
 psql -U postgres -d foodstore_tp3_carga -c "EXPLAIN ANALYZE <consulta de queries.sql>"
@@ -90,16 +100,42 @@ CREATE INDEX idx_producto_categoria_precio_activo
     ON producto (id_categoria, precio_lista DESC)
     WHERE activo = TRUE;
 
--- Caso 3 (Q4): aceptado tras control de ruido de 3 rondas intercaladas
--- (la primera medicion aislada sugeria descartarlo; el control lo revirtio)
-CREATE INDEX idx_pedido_fecha_hora_btree
-    ON pedido (fecha_hora DESC);
+-- Caso 4 (Q2): indice compuesto NO parcial, ~37% en 3 rondas intercaladas
+-- (27.4 ms -> 17.2 ms), Seq Scan -> Bitmap Heap Scan
+CREATE INDEX idx_producto_categoria_precio
+    ON producto (id_categoria, precio_lista);
 ```
+
+El B-tree de Q4 (`idx_pedido_fecha_hora_btree`) se había aceptado con
+~8.9%, pero al remedirlo con salida archivada no mejoró de forma
+consistente (699.9 ms → 708.2 ms) y se **descartó**: se eliminó de la
+base y quedó comentado en `indices.sql`.
 
 Para verificar qué índices existen realmente en la base:
 ```bash
 psql -U postgres -d foodstore_tp3_carga -c "SELECT tablename, indexname FROM pg_indexes WHERE schemaname='public' ORDER BY tablename;"
 ```
+
+### 5. Scripts de medición archivados
+
+Cada script deja su salida completa en el `.txt` indicado. Antes de
+correrlos hay que tener en cuenta el estado de la base, porque algunos
+crean o borran índices:
+
+- `medir_q4_rondas.sql` → `plan_q4_rondas_salida.txt`. Empieza con
+  `DROP INDEX idx_pedido_fecha_hora_btree` y termina dejándolo creado.
+  Como ese índice ya se descartó, para reproducirlo hay que crearlo
+  antes (`CREATE INDEX idx_pedido_fecha_hora_btree ON pedido (fecha_hora DESC);`)
+  y borrarlo después (`DROP INDEX idx_pedido_fecha_hora_btree; ANALYZE pedido;`).
+- `medir_q2_rondas.sql` → `plan_q2_rondas_salida.txt`. Crea el índice
+  de Q2 dentro de `BEGIN...ROLLBACK` en cada ronda. Como ese índice ya
+  está aplicado en firme, para reproducirlo hay que borrarlo antes
+  (`DROP INDEX idx_producto_categoria_precio;`) y volver a crearlo después.
+- `medir_escritura_producto_dos_indices.sql` →
+  `medicion_escritura_producto_dos_indices_salida.txt`. Borra y vuelve a
+  crear los dos índices de `producto` en cada ronda y termina con los
+  dos creados. Después conviene correr `VACUUM ANALYZE producto;` para
+  que Q6 conserve el `Index Only Scan` sin ir al heap.
 
 ## Flujo de trabajo con IA
 
@@ -109,7 +145,10 @@ y `Parte_C_Vista_Materializada/specs/`, uno por pieza) → **OpenCode
 genera y ejecuta** dentro de `BEGIN...ROLLBACK` cuando aplica → se lee
 y verifica el resultado real antes de decidir → se documenta en
 `duia.md` y `informe_mediciones.md`, se acepte o se descarte la
-propuesta.
+propuesta. En la corrección posterior a la devolución de la cátedra
+(remedición de Q4, caso Q2 y costo de escritura con los dos índices de
+`producto`) se usó Claude Code; `duia.md` registra el prompt literal de
+cada pieza.
 
 ## Cómo reproducir/verificar Parte B
 

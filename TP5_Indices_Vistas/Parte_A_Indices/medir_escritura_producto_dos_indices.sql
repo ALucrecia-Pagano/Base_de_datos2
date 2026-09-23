@@ -9,7 +9,9 @@
 -- Incluye una ronda de CALENTAMIENTO antes de la Ronda 1: la primera
 -- corrida de la sesion sobre producto (tras un VACUUM) mostro un costo
 -- de arranque en frio que no se repetia en las rondas siguientes
--- (47.8 ms vs. 11-17 ms en una medicion previa sin calentamiento). El
+-- (47.8 ms vs. 11-17 ms en una medicion previa sin calentamiento, que
+-- no quedo archivada; en la corrida archivada el calentamiento dio
+-- 65.963 ms). El
 -- calentamiento se archiva igual que las demas rondas, con su propio
 -- rotulo -- no se descarta en silencio, se muestra y se explica.
 \set ON_ERROR_STOP on

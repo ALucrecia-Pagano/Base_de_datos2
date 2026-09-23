@@ -9,6 +9,13 @@
 -- lo vuelve a crear dentro de la misma sesion, dejando la base en el
 -- mismo estado en el que estaba al terminar el script (indice presente).
 -- Respaldo previo: TP2_Concurrencia_IA/respaldo_foodstore_tp3_carga_antes_q4_rondas.sql
+--
+-- NOTA (estado actual, 23/09): despues de esta medicion el indice se
+-- DESCARTO y se elimino de la base. Para reproducir: crearlo antes de
+-- correr el script y, al terminar, ejecutar
+--   DROP INDEX idx_pedido_fecha_hora_btree; ANALYZE pedido;
+-- (ver README.md del TP5, seccion 5). El respaldo citado arriba no esta
+-- versionado: .gitignore excluye TP2_Concurrencia_IA/respaldo_*.sql.
 \set ON_ERROR_STOP on
 \timing on
 

@@ -351,6 +351,28 @@ sin necesidad de envolverlas en una transacción de prueba. La
 | Prueba reversible previa | Antes de aplicarse en firme, se validó como prueba de concepto: se creó la vista con `WITH NO DATA`, se cargó con `REFRESH MATERIALIZED VIEW`, se midió con `EXPLAIN ANALYZE`, y se eliminó con `DROP MATERIALIZED VIEW` sin dejar nada aplicado. Confirmado el resultado, se volvió a crear con `WITH DATA` para la aplicación en firme (equivalente al `BEGIN...ROLLBACK` de Parte A, adaptado a que un `REFRESH` de vista materializada no se prueba dentro de una transacción de forma útil) |
 | Lectura previa | El SQL generado (`CREATE MATERIALIZED VIEW`, el índice único, el `REFRESH`) se revisó contra lo pedido en `specs/spec_05_resumen_ventas_categoria_mes.md` antes de ejecutarlo; la corrección del resultado se confirmó después con la medición `EXPLAIN ANALYZE` y con la prueba `WITH NO DATA`/`DROP` descrita arriba |
 
+### Coexistencia de los índices sobre `producto` (Caso 2 + Caso 5 + heredado de TP1)
+
+| Campo | Detalle |
+|---|---|
+| Herramienta | Claude Code |
+| Propósito | Tras el Caso 5, `producto` quedó con 3 índices que empiezan por `id_categoria`. Justificar por qué se mantienen los 2 de TP5, y analizar si el heredado de TP1 (`idx_productos_categoria_activo`) quedó redundante |
+| Qué se verificó | Q2 no filtra por `activo` → los índices parciales `WHERE activo = TRUE` no son aplicables, de ahí que `idx_producto_categoria_precio` (Caso 5) no sea parcial. Q6 sí filtra `activo` y necesita `precio_lista` para `Index Only Scan` → solo `idx_producto_categoria_precio_activo` (Caso 2) le sirve |
+| Verificación real (Q6) | `EXPLAIN` (sin `ANALYZE`, instantáneo) confirmó que Q6 sigue usando `idx_producto_categoria_precio_activo` con el índice de Q2 ya creado (`plan_q6_con_dos_indices.txt`). Un intento de correr `EXPLAIN ANALYZE` completo se canceló a los 6+ minutos por el usuario — tardaba más que el baseline por filas muertas de los `INSERT`+`ROLLBACK` previos; no se toma como medición |
+| Redundancia de `idx_productos_categoria_activo` (TP1) | No se elimina (heredado, `schema.sql`, fuera de alcance). Análisis: sigue siendo la opción más barata para un filtro `id_categoria + activo` sin precio (verificado forzando el planificador con `SET enable_seqscan = off`), pero ninguna consulta de este TP ejercita ese patrón exacto, y con solo 2 categorías en el dataset ese filtro nunca es lo bastante selectivo para que el planificador lo elija sin forzarlo. Conclusión: no redundante en principio, sin uso demostrado en la práctica actual |
+| Nota operativa | Después de pruebas de escritura con `ROLLBACK` sobre `producto`, hace falta `VACUUM ANALYZE producto;` antes de volver a medir Q6, o el `Index Only Scan` puede degradarse (`Heap Fetches > 0`) sin que el índice haya cambiado — mismo fenómeno ya visto en el Caso 2 original |
+
+### Costo de escritura con los 2 índices de TP5 juntos (corrección metodológica)
+
+| Campo | Detalle |
+|---|---|
+| Herramienta | Claude Code |
+| Propósito | Medir el costo de escritura en `producto` con `idx_producto_categoria_precio_activo` + `idx_producto_categoria_precio` presentes al mismo tiempo, no solo uno a la vez (Punto 6) |
+| Primera corrida (sin calentamiento) | Antes: 47.787/16.667/10.915 ms. Después: 19.797/19.190/21.380 ms. Promediar tal cual da una conclusión **falsa** (los índices "aceleran" la escritura) por el costo de arranque en frío de la Ronda 1 |
+| Corrección | Se agregó una ronda de calentamiento (`INSERT`+`ROLLBACK` no contado) al script `medir_escritura_producto_dos_indices.sql`, en vez de descartar la Ronda 1 a mano sin decirlo |
+| Segunda corrida (con calentamiento) | Calentamiento: 65.963 ms (descartado por diseño). Antes: 13.505/11.225/12.578 ms. Después: 18.407/17.462/19.168 ms. **3 de 3 rondas consistentes**: +36.3%, +55.6%, +52.4% — promedio **+47.5%** |
+| Qué se aceptó | Se documentan ambas corridas (no se oculta la primera, con su conclusión errónea explicada). `VACUUM ANALYZE producto;` y verificación con `pg_indexes` confirmaron que los 2 índices de TP5 siguen aplicados en firme después de la medición |
+
 ## Resumen de aceptado/descartado (Parte A)
 
 | Pieza | Decisión | Motivo |

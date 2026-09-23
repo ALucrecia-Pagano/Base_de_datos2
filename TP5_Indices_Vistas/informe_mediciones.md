@@ -646,3 +646,161 @@ del proyecto).
 este TP5 (junto con `idx_producto_categoria_precio_activo` del Caso 2),
 y tercera consulta con cambio real de plan documentada (además de Q6 en
 su momento, y sin contar Q4 que terminó descartado).
+
+## Coexistencia de los 3 índices sobre `producto (id_categoria, ...)`
+
+Tras el Caso 5, `producto` tiene tres índices que empiezan por
+`id_categoria`:
+
+| Índice | Origen | Columnas | Parcial |
+|---|---|---|---|
+| `idx_productos_categoria_activo` | TP1 (`schema.sql`, heredado) | `(id_categoria, activo)` | `WHERE activo = TRUE` |
+| `idx_producto_categoria_precio_activo` | TP5, Caso 2 (Q6) | `(id_categoria, precio_lista DESC)` | `WHERE activo = TRUE` |
+| `idx_producto_categoria_precio` | TP5, Caso 5 (Q2) | `(id_categoria, precio_lista)` | (ninguna) |
+
+### Por qué se mantienen los dos de TP5 (no son redundantes entre sí)
+
+- **Q2** no filtra por `activo` en ningún lado (trae productos de una
+  categoría en un rango de precio, vigentes o no). Un índice parcial
+  con `WHERE activo = TRUE` **no es utilizable** para esta consulta: el
+  planificador no puede garantizar que el resultado sea correcto si
+  usa un índice que ya excluyó filas de antemano según una condición
+  que la consulta no pidió. Por eso `idx_producto_categoria_precio`
+  tuvo que crearse sin condición parcial.
+- **Q6** sí filtra `activo = TRUE` (tanto en el filtro externo como en
+  la subconsulta correlacionada), y además necesita que el índice
+  cubra `precio_lista` para resolver el `AVG` con `Index Only Scan`
+  (`Heap Fetches: 0`) sin volver al heap. Solo
+  `idx_producto_categoria_precio_activo` cumple ambas condiciones.
+
+**Verificación real de que Q6 sigue usando su índice** con el nuevo
+índice de Q2 ya creado (`Parte_A_Indices/plan_q6_con_dos_indices.txt`,
+`EXPLAIN` sin `ANALYZE` — una corrida con `ANALYZE` completo se había
+iniciado en background y se canceló a los 6+ minutos por tardar más
+que el baseline sin índice, efecto de las filas muertas dejadas por los
+`INSERT`+`ROLLBACK` del Punto 6/Caso 5 sobre `producto`; no se toma como
+medición, solo se usó el `EXPLAIN` de plan, que es instantáneo):
+
+```
+Nested Loop
+  ->  Index Scan using idx_producto_categoria_precio_activo on producto p
+        Filter: (precio_lista > (SubPlan 1))
+        SubPlan 1
+          ->  Aggregate
+                ->  Index Only Scan using idx_producto_categoria_precio_activo on producto p2
+                      Index Cond: (id_categoria = p.id_categoria)
+```
+
+Confirmado: Q6 sigue eligiendo `idx_producto_categoria_precio_activo`
+(no el índice nuevo de Q2, que no cubre `activo` ni sería
+`Index Only Scan` para el `AVG`).
+
+**Nota operativa importante:** antes de este `EXPLAIN`, hubo que correr
+`VACUUM ANALYZE producto;`. Los `INSERT` de prueba dentro de
+`BEGIN...ROLLBACK` (Punto 6 y esta misma medición) dejan filas muertas
+en el mapa de visibilidad aunque se reviertan, lo que puede forzar que
+el `Index Only Scan` de Q6 tenga que ir al heap (`Heap Fetches > 0`) en
+vez de resolverse solo con el índice — el mismo fenómeno ya documentado
+en el Caso 2 original. **Después de cualquier prueba de escritura con
+`ROLLBACK` sobre `producto`, correr `VACUUM ANALYZE producto;` antes de
+volver a medir Q6**, o el `Index Only Scan` puede verse degradado sin
+que el índice haya cambiado.
+
+### ¿`idx_productos_categoria_activo` (TP1) quedó redundante?
+
+No se puede eliminar de todas formas (vive en `schema.sql`, heredado,
+fuera del alcance de este TP), pero se analizó si sigue teniendo razón
+de ser ahora que existen los otros dos:
+
+- **No es redundante en principio.** Es el índice más angosto de los
+  tres (solo `id_categoria` + un booleano constante dentro de la
+  partición parcial), así que para un filtro que solo necesita
+  `id_categoria` + `activo` (sin precio) sigue siendo más barato de
+  recorrer que `idx_producto_categoria_precio_activo`, que carga
+  además `precio_lista` en cada entrada. Verificado forzando el
+  planificador (`SET enable_seqscan = off`) sobre
+  `WHERE id_categoria = 1 AND activo = TRUE`: eligió
+  `idx_productos_categoria_activo` (Bitmap Index Scan, 13.628 ms) por
+  sobre el índice más ancho de Q6, pese a que ambos son técnicamente
+  aplicables.
+- **Pero ninguna consulta real de este TP lo necesita hoy.** Con solo
+  2 categorías en `categoria` (Pizzas, Bebidas), un filtro de
+  `id_categoria` sin más condiciones nunca es muy selectivo (~50% de
+  la tabla), así que en la práctica el planificador prefiere `Seq
+  Scan` sin forzarlo (confirmado: `EXPLAIN` de
+  `WHERE id_categoria = 1 AND activo = TRUE` sin forzar nada da `Seq
+  Scan`, no usa ningún índice). Ninguna de las 7 consultas de
+  `queries.sql` hace ese filtro exacto (Q2 no filtra `activo`; Q6
+  necesita `precio_lista`).
+- **Conclusión:** `idx_productos_categoria_activo` no es redundante en
+  el sentido estricto (sigue siendo la opción más barata para su patrón
+  de acceso específico, y el planificador lo demuestra cuando se lo
+  fuerza), pero tampoco está demostrado que aporte valor real hoy,
+  porque ninguna consulta de este TP ejercita ese patrón y la selectividad
+  del dataset actual (2 categorías) hace que ni siquiera haga falta forzarlo
+  para llegar a `Seq Scan`. No se modifica ni se elimina — es parte del
+  esquema heredado de TP1 y está fuera del alcance de "no modificar el
+  modelo de datos" de la consigna.
+
+## Costo de escritura en `producto` con los DOS índices de TP5 juntos
+
+Las mediciones anteriores (Punto 6) probaron cada índice de `producto`
+por separado. Con los dos aplicados en firme al mismo tiempo
+(`idx_producto_categoria_precio_activo` + `idx_producto_categoria_precio`),
+se remidió el costo conjunto: 3 rondas intercaladas, `DROP`/`CREATE`
+real de ambos dentro de transacciones,
+`Parte_A_Indices/medir_escritura_producto_dos_indices.sql`, salida
+completa en `medicion_escritura_producto_dos_indices_salida.txt`.
+
+**Primera corrida (sin calentamiento) — descartada como metodología,
+no como dato:**
+
+| Ronda | Sin los 2 índices (ms) | Con los 2 índices (ms) |
+|---|---:|---:|
+| 1 | 47.787 | 19.797 |
+| 2 | 16.667 | 19.190 |
+| 3 | 10.915 | 21.380 |
+
+Promediar estas 3 rondas tal cual da la conclusión de que los índices
+**aceleran** la escritura (25.1 ms → 20.1 ms) — es falso, es un
+artefacto de que la Ronda 1 "antes" incluye el costo de arranque en
+frío del primer `INSERT` de la sesión sobre `producto` (mismo patrón ya
+visto en el Punto 6). No se corrigió el número a mano descartando la
+Ronda 1 en silencio: se agregó una ronda de calentamiento explícita al
+script y se remidió.
+
+**Segunda corrida (con ronda de calentamiento previa, no contada) —
+la que sostiene la conclusión:**
+
+| Ronda | Sin los 2 índices (ms) | Con los 2 índices (ms) | Diferencia |
+|---|---:|---:|---|
+| Calentamiento (no contado) | 65.963 | — | descartado por diseño, no por conveniencia |
+| 1 | 13.505 | 18.407 | +36.3% |
+| 2 | 11.225 | 17.462 | +55.6% |
+| 3 | 12.578 | 19.168 | +52.4% |
+| **Promedio (1-3)** | **12.44** | **18.35** | **+47.5%** |
+
+El calentamiento absorbió el costo de arranque en frío (65.963 ms,
+coherente con los 47.787 ms de la corrida anterior — incluso más alto,
+lo que confirma que es un efecto de estado de caché/sesión y no un
+número estable). Con el calentamiento afuera, las 3 rondas son
+consistentes en dirección **sin excepción**: escribir con los dos
+índices presentes cuesta más en las 3 de 3 rondas, entre +36% y +56%,
+promedio **+47.5%**. Esto coincide en dirección con la medición de un
+solo índice del Punto 6 (~45–72%) y con la expectativa básica de que
+dos índices cuestan más que uno, sin ser un múltiplo exacto (el costo
+marginal del segundo índice no se suma linealmente al del primero). En
+términos absolutos sigue siendo un costo bajo (siempre por debajo de
+20 ms para 500 filas).
+
+Tras esta segunda corrida se corrió `VACUUM ANALYZE producto;` de nuevo
+y se verificó con `pg_indexes` que los 4 índices de `producto` (PK +
+`idx_productos_categoria_activo` heredado + los 2 de TP5) siguen
+existiendo.
+
+**Lección metodológica para la defensa oral:** la Ronda 1 de una serie
+de mediciones sobre una tabla recién tocada por `VACUUM` puede incluir
+costos de arranque que no son parte de lo que se quiere medir. La
+respuesta correcta no es descartar esa ronda a mano y no decirlo — es
+agregar una ronda de calentamiento explícita, archivarla igual que las
+demás, y dejar que los números hablen solos.

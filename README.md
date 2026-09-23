@@ -123,16 +123,18 @@ integrando el aporte de cada integrante del equipo sobre la misma
 base heredada, con specs propios en Kiro y verificación propia antes
 de aceptar cada pieza.
 
-- **Parte A** (Amanda) — plan de indexado sobre 3 consultas reales
+- **Parte A** (Amanda) — plan de indexado sobre 4 consultas reales
   con Seq Scan (ranking de clientes, productos vs. promedio de
-  categoría, top 3 por facturación mensual). De 3 candidatos, 2
-  quedaron aplicados en firme y 1 se descartó explícitamente por
-  sobreindexación (índice parcial ignorado por el planificador en
-  9/9 corridas por baja selectividad). Un tercer caso (B-tree sobre
-  `fecha_hora`) se descartó en una primera medición aislada y se
-  revirtió a aceptado tras un control de ruido con 3 rondas
-  intercaladas — el cambio de conclusión queda documentado, no
-  oculto.
+  categoría, top 3 por facturación mensual y productos de una
+  categoría en un rango de precio). Quedaron 2 índices aplicados en
+  firme: el de Q6 (~41%) y el de Q2 (~37%, Seq Scan → Bitmap Heap
+  Scan). Se descartaron el índice parcial de Q5 por sobreindexación
+  (ignorado por el planificador en 9/9 corridas, por baja
+  selectividad), el BRIN sobre `fecha_hora` (correlación ~0) y el
+  B-tree sobre `fecha_hora` de Q4: se había aceptado con ~8,9%, pero
+  tras la devolución de la cátedra se remidió con 3 rondas archivadas,
+  no mejoró de forma consistente y se descartó. Los cambios de
+  conclusión quedaron documentados, no ocultos.
 
 - **Parte B** (Lucas) — 5 vistas (`vistas.sql`): productos vigentes con categoría, ventas
   agregadas por cliente, pedidos con los datos del cliente, detalle de pedido con nombre de producto, y

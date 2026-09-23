@@ -1,0 +1,86 @@
+El despliegue de duración está activado.
+=== RONDA 1 - ANTES (sin idx_producto_categoria_precio_activo) ===
+BEGIN
+Duración: 0,593 ms
+DROP INDEX
+Duración: 4,769 ms
+COMMIT
+Duración: 6,438 ms
+BEGIN
+Duración: 0,225 ms
+INSERT 0 500
+Duración: 64,763 ms
+ROLLBACK
+Duración: 0,318 ms
+=== RONDA 1 - DESPUES (con idx_producto_categoria_precio_activo) ===
+BEGIN
+Duración: 0,229 ms
+CREATE INDEX
+Duración: 117,790 ms
+COMMIT
+Duración: 13,576 ms
+BEGIN
+Duración: 0,276 ms
+INSERT 0 500
+Duración: 20,595 ms
+ROLLBACK
+Duración: 0,285 ms
+=== RONDA 2 - ANTES (sin idx_producto_categoria_precio_activo) ===
+BEGIN
+Duración: 0,308 ms
+DROP INDEX
+Duración: 0,857 ms
+COMMIT
+Duración: 15,150 ms
+BEGIN
+Duración: 0,316 ms
+INSERT 0 500
+Duración: 11,103 ms
+ROLLBACK
+Duración: 0,295 ms
+=== RONDA 2 - DESPUES (con idx_producto_categoria_precio_activo) ===
+BEGIN
+Duración: 0,256 ms
+CREATE INDEX
+Duración: 108,395 ms
+COMMIT
+Duración: 14,670 ms
+BEGIN
+Duración: 0,288 ms
+INSERT 0 500
+Duración: 19,132 ms
+ROLLBACK
+Duración: 0,269 ms
+=== RONDA 3 - ANTES (sin idx_producto_categoria_precio_activo) ===
+BEGIN
+Duración: 0,255 ms
+DROP INDEX
+Duración: 0,831 ms
+COMMIT
+Duración: 7,269 ms
+BEGIN
+Duración: 0,216 ms
+INSERT 0 500
+Duración: 11,700 ms
+ROLLBACK
+Duración: 0,303 ms
+=== RONDA 3 - DESPUES (con idx_producto_categoria_precio_activo) ===
+BEGIN
+Duración: 0,204 ms
+CREATE INDEX
+Duración: 126,290 ms
+COMMIT
+Duración: 25,306 ms
+BEGIN
+Duración: 0,292 ms
+INSERT 0 500
+Duración: 16,920 ms
+ROLLBACK
+Duración: 0,331 ms
+=== Verificacion: el indice quedo aplicado en firme al terminar ===
+              indexname               
+--------------------------------------
+ idx_producto_categoria_precio_activo
+(1 fila)
+
+Duración: 14,299 ms

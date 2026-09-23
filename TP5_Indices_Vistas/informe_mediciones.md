@@ -470,3 +470,57 @@ la salida completa se obtuvo sobre `foodstore_tp3_carga`, previamente
 respaldada, y el índice temporal fue eliminado al terminar.
 
 Salida archivada: `Parte_A_Indices/medicion_escritura_detalle_salida.txt`.
+
+**Nota de reproducibilidad:** el archivo de respaldo que cita esta
+salida (`TP2_Concurrencia_IA/respaldo_foodstore_tp3_carga_antes_medicion_detalle.sql`)
+existe en el disco de esta máquina pero está gitignorado (regla de
+respaldos pesados, ver `.gitignore`) — no viaja con el repositorio. Para
+reproducir la prueba en otra máquina, generar un respaldo propio con el
+comando de la Sección 3/protocolo de seguridad antes de correr el script.
+
+## Punto 6 — Costo de escritura con los índices realmente aceptados en firme
+
+La medición de arriba usa un índice **temporal** sobre `detalle_pedido(cantidad)`,
+que no es ninguno de los índices de este TP — sirve como control, no
+como respuesta a la consigna ("medir el costo de los índices creados
+sobre las escrituras"). Tras el Caso 3 (`idx_pedido_fecha_hora_btree`
+descartado por la remedición de 3 rondas), el único índice que queda
+**aceptado en firme** en este TP es `idx_producto_categoria_precio_activo`,
+sobre `producto` — ninguno de los índices vigentes vive en `pedido` ni
+en `detalle_pedido`.
+
+**Medición reproducible** (`Parte_A_Indices/medir_escritura_indices_reales.sql`,
+salida completa en `medicion_escritura_indices_reales_salida.txt`): 3
+rondas intercaladas de `INSERT` de 500 filas en `producto`, con
+`DROP`/`CREATE` real del índice dentro de transacciones y `\timing`
+(no `time` de consola):
+
+| Ronda | Sin índice (ms) | Con índice (ms) | Diferencia |
+|---|---:|---:|---|
+| 1 | 64.763 | 20.595 | el índice parece *más* rápido (ver nota) |
+| 2 | 11.103 | 19.132 | empeora ~72% |
+| 3 | 11.700 | 16.920 | empeora ~45% |
+
+**Nota sobre la Ronda 1 (no se descarta el número, se explica):** 64.763
+ms es un valor atípico frente a las otras dos corridas "sin índice"
+(11.1 y 11.7 ms) — es el primer `INSERT` que toca la tabla `producto`
+en toda la sesión de este script, con costo de calentamiento de caché/
+plan que no se repite en las rondas siguientes. Su "después" (20.595 ms)
+sí es consistente con los después de las rondas 2 y 3 (19.1 y 16.9 ms).
+Promediar las 3 rondas tal cual daría una conclusión invertida y
+engañosa (el índice "mejorando" la escritura); las rondas 2 y 3, sin
+ese artefacto de arranque, muestran la dirección esperada y consistente
+con la Prueba 2 original (0.101 s → 0.267 s, un único run): el índice
+**aumenta** el costo de escritura sobre `producto`.
+
+**Conclusión:** el impacto del índice aceptado en firme es real pero
+pequeño en términos absolutos (siempre por debajo de 20 ms para 500
+filas) y aumenta el costo de escritura entre ~45% y ~72% según la
+ronda, cuando se excluye el artefacto de arranque de la ronda 1. Es el
+impacto esperado: `producto` se escribe con mucha menos frecuencia de
+la que se lee en los reportes analíticos de este TP, así que el
+trade-off contra la mejora de lectura de Q6 (~41%, ver Caso 2) sigue
+siendo razonable. La medición sobre `detalle_pedido(cantidad)` de
+arriba se conserva como prueba complementaria de control (un índice
+ajeno a este TP, sobre otra tabla), no como respuesta principal a la
+consigna.

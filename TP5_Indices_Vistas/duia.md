@@ -104,6 +104,16 @@ antes de decidir no crear el índice).
 | Hallazgo intermedio | El primer intento de generar 500 `INSERT` de prueba usó subconsultas escalares no correlacionadas (mismo bug de TP3: Postgres las resuelve una sola vez, no por fila). Resultado: `INSERT 0 1` en vez de `INSERT 0 500`. Corregido con la técnica de array + índice aleatorio por fila ya usada en TP3 |
 | Medición | Prueba 1 (sobre `detalle_pedido`, tabla sin índices nuevos): 1.036 s → 0.888 s, sin diferencia significativa — resultado trivial porque el índice de esa etapa vivía en `producto`, no en `detalle_pedido`. Prueba 2, corregida (sobre `producto`, la tabla donde vive el índice): `DROP INDEX` → medir sin índice (0.101 s) → recrear índice → medir con índice (0.267 s). **El costo de escritura sí aumenta con el índice presente** (~2.6x en este caso, aunque en términos absolutos ambos siguen siendo rápidos) |
 
+### Punto 6 — Costo de escritura con los índices realmente aceptados en firme
+
+| Campo | Detalle |
+|---|---|
+| Herramienta | Claude Code |
+| Propósito | La medición previa (`medir_escritura_detalle.sql`) usaba un índice temporal sobre `detalle_pedido(cantidad)`, ajeno a este TP. Tras el Caso 3 (índice sobre `pedido` descartado), el único índice aceptado en firme vive en `producto`, así que se remidió específicamente ese |
+| Qué se hizo | `Parte_A_Indices/medir_escritura_indices_reales.sql`: 3 rondas intercaladas de `INSERT` de 500 filas en `producto`, `DROP`/`CREATE` real de `idx_producto_categoria_precio_activo` dentro de transacciones, `\timing` (no `time` de consola). Salida completa en `medicion_escritura_indices_reales_salida.txt` |
+| Resultado | Antes: 64.763 / 11.103 / 11.700 ms. Después: 20.595 / 19.132 / 16.920 ms. La Ronda 1 "antes" es un valor atípico (primer `INSERT` de la sesión sobre `producto`, costo de arranque); las Rondas 2 y 3 muestran la dirección esperada y consistente con la Prueba 2 original: el índice aumenta el costo de escritura (~45–72%, siempre por debajo de 20 ms absolutos) |
+| Qué se aceptó | Se documenta el resultado completo con la Ronda 1 explicada, no descartada. La medición sobre `cantidad` se conserva como prueba complementaria de control, aclarada como índice ajeno al TP |
+
 
 ## Parte B — Vistas para los reportes del sistema
 

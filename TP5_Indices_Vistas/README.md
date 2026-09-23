@@ -6,10 +6,12 @@ líneas de detalle).
 
 ## Estado actual
 
-- **Parte A**: tres casos de planes archivados, descarte por baja
-  selectividad y scripts reproducibles de costo de escritura.
-- **Parte B**: vistas, seguridad por roles y verificación ejecutable de
-  equivalencia.
+- **Parte A**: cinco casos documentados (Q2, Q4, Q5, Q6 + segundo
+  descarte por sobreindexación), dos índices aceptados en firme
+  (`idx_producto_categoria_precio_activo`, `idx_producto_categoria_precio`),
+  y Q1/Q3 confirmadas sin necesidad de índice nuevo (Punto 7).
+- **Parte B**: vistas, seguridad por roles con usuarios de prueba reales,
+  y verificación ejecutable de equivalencia (`EXCEPT` + `count(*)`).
 - **Parte C**: `mv_resumen_ventas_categoria_mes` con `WITH DATA`, índice único
   y medición documentada.
 
@@ -27,25 +29,40 @@ TP5_Indices_Vistas/
 ├── README.md
 ├── Parte_A_Indices/
 │   ├── indices.sql
+│   ├── plan_q2_antes.txt                # Caso 5
+│   ├── medir_q2_rondas.sql
+│   ├── plan_q2_rondas_salida.txt
 │   ├── plan_q4_antes.txt
 │   ├── plan_q4_despues.txt
 │   ├── plan_q4_brin.txt
 │   ├── medir_brin_q4.sql
+│   ├── plan_q4_rondas_salida.txt        # Punto 4: remedicion 3 rondas, DROP/CREATE real
+│   ├── medir_q4_rondas.sql
 │   ├── plan_q5_antes.txt
 │   ├── plan_q5_despues_workmem.txt
 │   ├── plan_q5_despues_indice_descartado.txt
+│   ├── plan_q5_indice_redundante.txt    # Punto 5: segundo descarte por sobreindexacion
+│   ├── medir_indice_redundante_q5.sql
 │   ├── plan_q6_antes.txt
 │   ├── plan_q6_despues.txt
 │   ├── medir_escritura_detalle.sql
 │   ├── medicion_escritura_detalle_salida.txt
+│   ├── medir_escritura_indices_reales.sql        # Punto 6: costo real con indices aceptados
+│   ├── medicion_escritura_indices_reales_salida.txt
+│   ├── medir_q1_q3_actual.sql           # Punto 7: tercera consulta con cambio de plan
+│   ├── plan_q1_q3_actual.txt
+│   ├── plan_q3_sin_indice_btree.txt
 │   └── specs/
 ├── Parte_B_Vistas/
 │   ├── usuarios.sql
+│   ├── usuarios_datos.sql               # Punto 2: usuarios de prueba (matchean con clientes reales)
 │   ├── vistas.sql
 │   ├── seguridad_roles.sql
+│   ├── evidencia_grant_punto1.txt       # Punto 1: verificacion real del GRANT corregido
 │   ├── verificacion_equivalencia.sql
 │   ├── verificacion_equivalencia_salida.txt
 │   ├── verificacion_vistas.sql
+│   ├── verificacion_vistas_salida.txt
 │   └── specs/
 └── Parte_C_Vista_Materializada/
     ├── vista_materializada.sql
@@ -86,9 +103,9 @@ ROLLBACK;
 
 ### 4. Estado real de índices aplicados en firme sobre `foodstore_tp3_carga`
 
-**Uno** de los candidatos probados en la Parte A queda aplicado en
+**Dos** de los candidatos probados en la Parte A quedan aplicados en
 firme (ver `indices.sql` y `duia.md` para el detalle completo de por
-qué se aceptó y por qué los demás se descartaron):
+qué se aceptaron y por qué los demás se descartaron):
 
 ```sql
 -- Caso 2 (Q6): covering index parcial, mejora final ~41% real (271.2s -> 158.7s tras
@@ -96,6 +113,10 @@ qué se aceptó y por qué los demás se descartaron):
 CREATE INDEX idx_producto_categoria_precio_activo
     ON producto (id_categoria, precio_lista DESC)
     WHERE activo = TRUE;
+
+-- Caso 5 (Q2): sin condicion parcial (Q2 no filtra por activo), aceptado
+-- tras remedicion con 3 rondas (~37% real), plan Seq Scan -> Bitmap Heap Scan
+CREATE INDEX idx_producto_categoria_precio ON producto (id_categoria, precio_lista);
 ```
 
 `idx_pedido_fecha_hora_btree` (Caso 3, Q4) tuvo un historial de idas y
@@ -104,13 +125,71 @@ rondas que nunca se archivó → **descartado de nuevo** (auditoría
 2026-09-23) tras remedir con salida real archivada
 (`Parte_A_Indices/plan_q4_rondas_salida.txt`): la dirección resultó
 inconsistente entre rondas y el promedio final es levemente peor con
-el índice, por pérdida de paralelismo. Queda comentado en `indices.sql`,
-no se crea en la base final.
+el índice, por pérdida de paralelismo (y además perjudicaba a Q3, ver
+Punto 7). Queda comentado en `indices.sql`. **Eliminado en firme**:
+`DROP INDEX idx_pedido_fecha_hora_btree` + `ANALYZE pedido` ejecutados,
+verificado con `pg_indexes` que ya no existe.
 
 Para verificar qué índices existen realmente en la base:
 ```bash
 psql -U postgres -d foodstore_tp3_carga -c "SELECT tablename, indexname FROM pg_indexes WHERE schemaname='public' ORDER BY tablename;"
 ```
+
+### 5. Segundo descarte por sobreindexación (índice redundante con la PK)
+
+```bash
+psql -U postgres -d foodstore_tp3_carga -f Parte_A_Indices/medir_indice_redundante_q5.sql
+```
+
+Crea `idx_detalle_pedido_id_pedido` dentro de `BEGIN...ROLLBACK`, mide
+Q5 con y sin el candidato, y confirma que el plan es idéntico en ambos
+casos (`pk_detalle_pedido` ya cubre `id_pedido` como su primera
+columna). Salida en `plan_q5_indice_redundante.txt`.
+
+### 6. Remedición de Q4 con salida archivada (Caso 3)
+
+```bash
+psql -U postgres -d foodstore_tp3_carga -f Parte_A_Indices/medir_q4_rondas.sql
+```
+
+`DROP`/`CREATE` real de `idx_pedido_fecha_hora_btree` dentro de
+transacciones, 3 rondas intercaladas, `EXPLAIN (ANALYZE, BUFFERS)`.
+Requiere respaldo previo (el script hace DDL real, no solo prueba
+reversible de lectura). Salida en `plan_q4_rondas_salida.txt`.
+
+### 7. Costo de escritura con los índices realmente aceptados
+
+```bash
+psql -U postgres -d foodstore_tp3_carga -f Parte_A_Indices/medir_escritura_indices_reales.sql
+```
+
+3 rondas de `INSERT` en `producto`, `DROP`/`CREATE` real de
+`idx_producto_categoria_precio_activo`, `\timing`. Salida en
+`medicion_escritura_indices_reales_salida.txt`. Requiere respaldo
+previo (DDL real sobre un índice aplicado en firme).
+
+### 8. Tercera consulta con cambio de plan real (Q1 y Q3)
+
+```bash
+psql -U postgres -d foodstore_tp3_carga -f Parte_A_Indices/medir_q1_q3_actual.sql
+```
+
+Mide el plan actual de Q1 y Q3. Salida en `plan_q1_q3_actual.txt`. Para
+ver a Q3 sin `idx_pedido_fecha_hora_btree` (estado post Caso 3), correr
+manualmente dentro de `BEGIN...DROP INDEX...ROLLBACK` — ver
+`plan_q3_sin_indice_btree.txt` para la salida ya archivada.
+
+### 9. Caso 5 — Q2 (productos de una categoría en un rango de precio)
+
+```bash
+psql -U postgres -d foodstore_tp3_carga -f Parte_A_Indices/medir_q2_rondas.sql
+```
+
+3 rondas intercaladas dentro de `BEGIN...ROLLBACK` del candidato
+`idx_producto_categoria_precio (id_categoria, precio_lista)`, sin
+condición parcial (los índices parciales existentes sobre `producto`
+no aplican porque Q2 no filtra por `activo`). Salida en
+`plan_q2_rondas_salida.txt`. Aceptado y aplicado en firme.
 
 ## Flujo de trabajo con IA
 
@@ -125,16 +204,28 @@ como generada por OpenCode.
 
 ```bash
 psql -U postgres -d foodstore_tp3_carga -f Parte_B_Vistas/usuarios.sql
+psql -U postgres -d foodstore_tp3_carga -f Parte_B_Vistas/usuarios_datos.sql
 psql -U postgres -d foodstore_tp3_carga -f Parte_B_Vistas/vistas.sql
 psql -U postgres -d foodstore_tp3_carga -f Parte_B_Vistas/seguridad_roles.sql
 psql -U postgres -d foodstore_tp3_carga -f Parte_B_Vistas/verificacion_vistas.sql
 ```
 
+`usuarios_datos.sql` (Punto 2 de la auditoría) agrega 5 usuarios de
+prueba con mails que matchean clientes reales existentes, uno sin
+cliente asociado y uno eliminado — sin esto, `v_pedido_usuario` y
+`v_usuario_publico` se verifican contra una tabla casi vacía y no
+prueban nada. Ejecutarlo **antes** de `vistas.sql`, ya que `views.sql`
+(el wrapper de la raíz) ya respeta este orden.
+
 El último script muestra las columnas de `v_usuario_publico` sin
-`contrasena`, ejecuta `verificacion_equivalencia.sql` y falla si alguna
-vista devuelve diferencias. La salida final debe mostrar `diferencias = 0`
-para cada vista. La consulta de acceso directo a `usuario` se prueba por
-separado bajo `SET ROLE` y debe fallar por falta de privilegios.
+`contrasena`, ejecuta `verificacion_equivalencia.sql` (que ahora
+también compara `count(*)` vista vs. manual, no solo `EXCEPT`) y falla
+si alguna vista devuelve diferencias o conteos distintos. La salida
+final debe mostrar `diferencias = 0` y `conteo_vista = conteo_manual`
+para cada vista. La consulta de acceso directo a `usuario` se prueba
+por separado bajo `SET ROLE` y debe fallar por falta de privilegios —
+y ahora también se verifica que `mv_resumen_ventas_categoria_mes` y
+`v_pedido_usuario` se puedan leer con ese rol (`evidencia_grant_punto1.txt`).
 
 ### Medir escritura en `detalle_pedido`
 

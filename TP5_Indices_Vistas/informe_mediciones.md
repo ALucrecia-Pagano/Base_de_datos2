@@ -296,8 +296,9 @@ documenta el historial completo de idas y vueltas (descartado → aceptado
 → descartado de nuevo) porque es la evidencia de que sin un archivo de
 salida real por cada medición, ninguna conclusión puede darse por firme
 — exactamente lo que esta auditoría vino a corregir. `idx_pedido_fecha_hora_btree`
-queda comentado en `indices.sql`; su eliminación de la base de trabajo
-quedó pendiente de tu confirmación (ver el resumen final de esta sesión).
+queda comentado en `indices.sql`. **Eliminado en firme** de
+`foodstore_tp3_carga` (`DROP INDEX` + `ANALYZE pedido` ejecutados por
+el usuario, verificado con `pg_indexes` que ya no existe).
 
 ### Intervención complementaria — `SET LOCAL work_mem = '16MB'`
 
@@ -562,14 +563,17 @@ GROUP BY c.id, c.nombre_completo
 ORDER BY total_facturado DESC LIMIT 20;
 ```
 
-**Plan actual (con `idx_pedido_fecha_hora_btree` todavía presente,
-pendiente de baja por el Caso 3):** `Bitmap Heap Scan on pedido` vía
-`Bitmap Index Scan using idx_pedido_fecha_hora_btree`, **sin
-paralelismo** — Execution Time **807.912 ms**.
+**Plan medido en el momento de esta prueba, con `idx_pedido_fecha_hora_btree`
+todavía presente** (el índice se dio de baja en firme más tarde, en el
+Caso 3): `Bitmap Heap Scan on pedido` vía `Bitmap Index Scan using
+idx_pedido_fecha_hora_btree`, **sin paralelismo** — Execution Time
+**807.912 ms**.
 
 **Medición sin ese índice** (`Parte_A_Indices/plan_q3_sin_indice_btree.txt`,
 dentro de `BEGIN...DROP INDEX...ROLLBACK`): `Parallel Seq Scan on
-pedido` con 2 workers — Execution Time **359.951 ms**.
+pedido` con 2 workers — Execution Time **359.951 ms**. Este es el plan
+que rige hoy, ya que `idx_pedido_fecha_hora_btree` fue eliminado en
+firme (ver Caso 3).
 
 **Hallazgo relevante para el Caso 3:** `idx_pedido_fecha_hora_btree` no
 solo no ayuda a Q4 de forma consistente (ver Caso 3, decisión

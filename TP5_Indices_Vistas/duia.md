@@ -114,6 +114,17 @@ antes de decidir no crear el índice).
 | Resultado | Antes: 64.763 / 11.103 / 11.700 ms. Después: 20.595 / 19.132 / 16.920 ms. La Ronda 1 "antes" es un valor atípico (primer `INSERT` de la sesión sobre `producto`, costo de arranque); las Rondas 2 y 3 muestran la dirección esperada y consistente con la Prueba 2 original: el índice aumenta el costo de escritura (~45–72%, siempre por debajo de 20 ms absolutos) |
 | Qué se aceptó | Se documenta el resultado completo con la Ronda 1 explicada, no descartada. La medición sobre `cantidad` se conserva como prueba complementaria de control, aclarada como índice ajeno al TP |
 
+### Punto 7 — Tercera consulta con cambio de plan real (Q1 y Q3)
+
+| Campo | Detalle |
+|---|---|
+| Herramienta | Claude Code |
+| Propósito | Buscar una tercera consulta con Seq Scan real, ya que Q6 (Caso 2) es la única con índice aceptado tras el descarte del Caso 3. Se evaluaron Q1 y Q3 de `queries.sql` |
+| Qué se hizo | `Parte_A_Indices/medir_q1_q3_actual.sql` para medir el plan actual de ambas; salida en `plan_q1_q3_actual.txt`. Para Q3, medición adicional sin `idx_pedido_fecha_hora_btree` dentro de `BEGIN...DROP...ROLLBACK` (`plan_q3_sin_indice_btree.txt`) |
+| Qué se encontró (Q1) | Ya usa `Index Scan using idx_pedido_estado_fecha` (3.248 ms) — índice creado en **TP3**, no en este TP. No hace falta ningún índice nuevo |
+| Qué se encontró (Q3) | Con `idx_pedido_fecha_hora_btree` presente: `Bitmap Heap Scan` sin paralelismo, 807.912 ms. Sin ese índice: `Parallel Seq Scan` con 2 workers, 359.951 ms — **2.24x más rápida sin el índice**. Coincide con lo que TP3 ya había documentado para un índice similar sobre esta misma consulta (empeoró por pérdida de paralelismo) |
+| Qué se aceptó | No se crea ningún índice nuevo para Q1 ni Q3. El hallazgo de Q3 se suma como evidencia adicional (no solo de Q4) de que descartar `idx_pedido_fecha_hora_btree` (Caso 3) es la decisión correcta |
+
 
 ## Parte B — Vistas para los reportes del sistema
 

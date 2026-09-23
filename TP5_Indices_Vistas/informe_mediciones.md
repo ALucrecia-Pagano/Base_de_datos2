@@ -524,3 +524,72 @@ siendo razonable. La medición sobre `detalle_pedido(cantidad)` de
 arriba se conserva como prueba complementaria de control (un índice
 ajeno a este TP, sobre otra tabla), no como respuesta principal a la
 consigna.
+
+## Punto 7 — Tercera consulta con cambio de plan real (Q1 y Q3)
+
+Objetivo: encontrar una tercera consulta (además de Q6 y, antes de
+descartarse, Q4) que muestre un cambio real de `Seq Scan` a `Index`/`Bitmap
+Scan` con un índice aceptado, o confirmar que ya no hace falta ninguno.
+Medición completa en `Parte_A_Indices/plan_q1_q3_actual.txt`.
+
+### Q1 — Pedidos pendientes
+
+```sql
+SELECT id, fecha_hora, forma_pago, id_cliente
+FROM pedido WHERE estado = 'PENDIENTE'
+ORDER BY fecha_hora DESC LIMIT 50;
+```
+
+Plan actual: `Index Scan using idx_pedido_estado_fecha on pedido`,
+**3.248 ms**. Este índice (`pedido (estado, fecha_hora DESC)`) ya fue
+creado y aplicado en **TP3** (`TP3_Optimizacion/Parte 2 - Consultas
+lentas.../indices_propuestos.sql`), donde quedó documentado un cambio
+de `Parallel Seq Scan` (33.7 ms) a `Index Scan` (0.9 ms) — no es un
+hallazgo de este TP5, ya estaba resuelto.
+
+**Decisión: no se crea ningún índice nuevo para Q1.** Ya tiene el
+cambio de plan que pide la consigna, heredado de TP3.
+
+### Q3 — Total facturado por cliente en un rango de fechas
+
+```sql
+SELECT c.id, c.nombre_completo, SUM(dp.subtotal) AS total_facturado
+FROM cliente c
+JOIN pedido p ON p.id_cliente = c.id
+JOIN detalle_pedido dp ON dp.id_pedido = p.id
+WHERE p.fecha_hora BETWEEN '2025-06-01' AND '2025-12-31'
+GROUP BY c.id, c.nombre_completo
+ORDER BY total_facturado DESC LIMIT 20;
+```
+
+**Plan actual (con `idx_pedido_fecha_hora_btree` todavía presente,
+pendiente de baja por el Caso 3):** `Bitmap Heap Scan on pedido` vía
+`Bitmap Index Scan using idx_pedido_fecha_hora_btree`, **sin
+paralelismo** — Execution Time **807.912 ms**.
+
+**Medición sin ese índice** (`Parte_A_Indices/plan_q3_sin_indice_btree.txt`,
+dentro de `BEGIN...DROP INDEX...ROLLBACK`): `Parallel Seq Scan on
+pedido` con 2 workers — Execution Time **359.951 ms**.
+
+**Hallazgo relevante para el Caso 3:** `idx_pedido_fecha_hora_btree` no
+solo no ayuda a Q4 de forma consistente (ver Caso 3, decisión
+DESCARTADO) — **hace que Q3 sea 2.24x más lenta** (807.9 ms vs. 359.9
+ms) por el mismo motivo: pierde el paralelismo. Esto coincide
+exactamente con lo que TP3 ya había documentado para un índice similar
+sobre esta misma consulta (`tabla_comparativa.md`: "Q3 - resultado
+final... Empeoró: 160.1ms → 198.6ms... El primero perdió el
+paralelismo que tenía el plan original"). Es evidencia adicional, no
+solo teórica, de que la baja de `idx_pedido_fecha_hora_btree` (pendiente
+de aprobación, ver Caso 3) es la decisión correcta también para Q3, no
+solo para Q4.
+
+**Decisión: no se crea ningún índice nuevo para Q3.** El plan sin
+`idx_pedido_fecha_hora_btree` (`Parallel Seq Scan`, 359.9 ms) ya es
+mejor que cualquiera de los dos planes indexados medidos en este TP o
+en TP3 para esta consulta — la evidencia acumulada en dos TPs distintos
+indica que indexar `fecha_hora` sobre `pedido` perjudica a esta consulta
+por pérdida de paralelismo, no la mejora.
+
+**Cierre del Punto 7:** ninguna de las dos consultas necesita un índice
+nuevo de este TP. Q1 ya estaba resuelta desde TP3; Q3 se resuelve mejor
+sin índice sobre `fecha_hora` que con él, en ambos TPs donde se probó.

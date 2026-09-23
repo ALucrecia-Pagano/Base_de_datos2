@@ -46,9 +46,12 @@ TP5_Indices_Vistas/
 │   └── specs/
 ├── Parte_B_Vistas/
 │   ├── usuarios.sql
+│   ├── usuarios_datos.sql
 │   ├── vistas.sql
 │   ├── seguridad_roles.sql
 │   ├── verificacion_vistas.sql
+│   ├── verificacion_vistas_salida.txt
+│   ├── evidencia_permiso_denegado.txt
 │   └── specs/
 └── Parte_C_Vista_Materializada/
     ├── vista_materializada.sql
@@ -154,15 +157,21 @@ cada pieza.
 
 ```bash
 psql -U postgres -d foodstore_tp3_carga -f Parte_B_Vistas/usuarios.sql
+psql -U postgres -d foodstore_tp3_carga -f Parte_B_Vistas/usuarios_datos.sql
 psql -U postgres -d foodstore_tp3_carga -f Parte_B_Vistas/vistas.sql
 psql -U postgres -d foodstore_tp3_carga -f Parte_B_Vistas/seguridad_roles.sql
 psql -U postgres -d foodstore_tp3_carga -f Parte_B_Vistas/verificacion_vistas.sql
 ```
 
-El último script debe: mostrar las columnas de `v_usuario_publico`
-sin `contrasena`, devolver 0 filas en cada bloque de equivalencia
-(punto 3 de la consigna), y fallar solo en la consulta comentada
-final (`SELECT * FROM usuario` bajo `SET ROLE`).
+El último script muestra las columnas de `v_usuario_publico` (sin
+`contrasena`), consulta las vistas con `SET ROLE tp5_reportes` y
+devuelve 0 filas en cada bloque de equivalencia (punto 3 de la
+consigna). Al final, la sección 6 resume para cada vista las
+diferencias con `EXCEPT` y la cantidad de filas de cada lado: tiene que
+dar `diferencias = 0` y `filas_vista = filas_manual`. La salida
+completa está en `Parte_B_Vistas/verificacion_vistas_salida.txt`. El
+acceso directo a `usuario` está comentado en el script; su fallo por
+falta de privilegios quedó en `evidencia_permiso_denegado.txt`.
 
 ## Cómo reproducir Parte C
 

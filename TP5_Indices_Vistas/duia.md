@@ -229,7 +229,7 @@ compara, con `EXCEPT` en ambos sentidos, contra una consulta manual
 escrita de forma independiente — `v_reporte_ventas_cliente` en
 particular se verificó contra una versión con subconsultas escalares,
 deliberadamente distinta a la forma con `JOIN + GROUP BY` de la vista,
-para que la comparación sea real. `v_pedido_cliente` se verificó contra un JOIN directo pedido-cliente. Los 5 bloques devuelven 0 filas.
+para que la comparación sea real. `v_pedido_cliente` se verificó contra un JOIN directo pedido-cliente. Los 5 bloques devuelven 0 filas. En la corrección posterior a la devolución se agregaron dos cosas: `usuarios_datos.sql`, que versiona los usuarios de la tabla `usuario` (incluido uno dado de baja, que la vista oculta), y una sección 6 en el script que compara también la cantidad de filas, porque `EXCEPT` no detecta duplicados. La salida completa quedó archivada en `Parte_B_Vistas/verificacion_vistas_salida.txt`: las 5 vistas dan 0 diferencias y la misma cantidad de filas que su consulta manual (50.003, 20.003, 499.571, 2 y 200.005).
 
 **Sobre la prueba reversible (punto 3 del flujo obligatorio):** a
 diferencia de los índices de Parte A —que se probaron dentro de

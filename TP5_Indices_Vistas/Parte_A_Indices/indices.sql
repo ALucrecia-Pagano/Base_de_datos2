@@ -32,6 +32,26 @@
 --     WHERE estado <> 'CANCELADO';
 -- (dejado comentado a proposito: NO se aplica)
 
+-- Candidato B — DESCARTADO (redundante con la PK)
+-- Kiro lo propuso como segundo candidato para el join con detalle_pedido.
+-- CREATE INDEX idx_detalle_pedido_id_pedido
+--     ON detalle_pedido (id_pedido);
+-- (dejado comentado a proposito: NO se aplica)
+--
+-- Motivo del descarte: es redundante con pk_detalle_pedido, la PK
+-- compuesta PRIMARY KEY (id_pedido, id_producto). Un B-tree compuesto
+-- sirve para buscar por su primera columna sola, asi que la PK ya cubre
+-- id_pedido. Evidencia:
+--   - plan_detalle_por_id_pedido.txt: WHERE id_pedido = 100 usa
+--     Index Scan using pk_detalle_pedido (2.401 ms), sin el candidato.
+--   - plan_q5_indice_redundante.txt (medir_indice_redundante_q5.sql,
+--     dentro de BEGIN...ROLLBACK): Q5 con el candidato 615.608 ms, sin
+--     el candidato 612.285 ms; en los dos casos el planificador lee
+--     detalle_pedido con Parallel Seq Scan y no usa el candidato.
+-- Es el ejemplo literal de sobreindexacion de la consigna: un indice
+-- redundante con otro ya existente. (spec_01 decia por error que no
+-- habia indice sobre id_pedido; quedo corregido con una nota.)
+
 -- Intervencion aceptada — SET LOCAL work_mem
 -- No es un indice, es un ajuste de memoria de sesion. El plan base
 -- mostraba el HashAggregate final derramando a disco (Batches: 5,

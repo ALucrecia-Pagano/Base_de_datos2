@@ -35,6 +35,9 @@ TP5_Indices_Vistas/
 │   ├── plan_q5_antes.txt
 │   ├── plan_q5_despues_workmem.txt
 │   ├── plan_q5_despues_indice_descartado.txt
+│   ├── medir_indice_redundante_q5.sql
+│   ├── plan_q5_indice_redundante.txt
+│   ├── plan_detalle_por_id_pedido.txt
 │   ├── plan_q6_antes.txt
 │   ├── plan_q6_despues.txt
 │   ├── plan_q6_con_dos_indices.txt

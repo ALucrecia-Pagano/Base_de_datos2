@@ -61,6 +61,32 @@ la Parte A (columna/condición de baja selectividad).
 
 ### Decisión — `SET LOCAL work_mem = '16MB'`: **ACEPTADO**
 
+
+### Candidato propuesto 2 — `idx_detalle_pedido_id_pedido (id_pedido)`: **DESCARTADO por redundante**
+
+Kiro lo propuso como segundo candidato para el join con
+`detalle_pedido`. `spec_01` afirmaba que no había ningún índice sobre
+`detalle_pedido.id_pedido`, pero es falso: la PK es compuesta,
+`PRIMARY KEY (id_pedido, id_producto)`, y un B-tree compuesto sirve
+para buscar por su primera columna sola. El candidato duplicaría lo que
+ya hace `pk_detalle_pedido`.
+
+**Evidencia:**
+- `Parte_A_Indices/plan_detalle_por_id_pedido.txt`: una búsqueda
+  `WHERE id_pedido = 100`, sin el candidato, usa
+  `Index Scan using pk_detalle_pedido` (2.401 ms).
+- `Parte_A_Indices/plan_q5_indice_redundante.txt` (script
+  `medir_indice_redundante_q5.sql`, dentro de `BEGIN...ROLLBACK`): Q5
+  con el candidato creado tarda 615.608 ms y sin él 612.285 ms. En los
+  dos casos el planificador lee `detalle_pedido` con
+  `Parallel Seq Scan` (Q5 recorre toda la tabla) y el candidato no se
+  usa.
+
+**Decisión: DESCARTADO.** Es el ejemplo literal de sobreindexación de
+la consigna (un índice redundante con otro ya existente): tendría costo
+de mantenimiento en cada `INSERT` de `detalle_pedido` sin aportar nada
+que la PK no haga. El error de `spec_01` quedó corregido con una nota,
+sin borrar la afirmación original.
 Elimina el spill a disco del `HashAggregate` final en las 3 rondas sin
 excepción (`Batches: 5 → 1`, `Disk Usage → 0`). La mejora de tiempo
 varía por ronda (más marcada en las rondas 2 y 3, con caché más

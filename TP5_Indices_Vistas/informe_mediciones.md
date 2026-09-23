@@ -133,6 +133,11 @@ de mantenimiento en cada `INSERT` de `detalle_pedido` sin aportar nada
 que la PK no haga. El error de `spec_01` quedó corregido con una nota,
 sin borrar la afirmación original.
 
+**Planes "después" archivados del Caso 1** (en `Parte_A_Indices/`):
+
+- `plan_q5_despues_workmem.txt` — 336.877 ms con `SET LOCAL work_mem = '16MB'`: el `HashAggregate` pasa de `Batches: 5` con `Disk Usage` a `Batches: 1` sin volcado a disco.
+- `plan_q5_despues_indice_descartado.txt` — 301.954 ms: se probó (dentro de `BEGIN...ROLLBACK`) un índice parcial `idx_pedido_no_cancelado_cliente ON pedido (id_cliente) WHERE estado <> 'CANCELADO'`. El planner **no lo usó** — siguió eligiendo `Seq Scan` sobre `pedido`, porque el filtro `estado <> 'CANCELADO'` descarta muy pocas filas (~25%: en `plan_q5_antes.txt` son 16.620 filas descartadas por proceso, con `loops=3`; en total ~49.860 de los 200.005 pedidos) y no es lo suficientemente selectivo para justificar el índice. Se documenta como índice evaluado y descartado, no aplicado en la base final.
+
 ---
 
 ## Caso 2 — Q6: Productos con precio superior al promedio de su categoría
@@ -207,6 +212,10 @@ perfectamente (usarse, evitar ir al heap) y aun así no ser la
 herramienta correcta para el problema — cuando el cuello de botella es
 la *estructura* de la consulta (ejecutar algo N veces en vez de una),
 hay que reescribir, no indexar.
+
+**Plan "después" archivado del Caso 2** (en `Parte_A_Indices/`):
+
+- `plan_q6_despues.txt` — 158.728 s (158728.129 ms según `plan_q6_despues.txt`), confirmado `Index Only Scan` con `Heap Fetches: 0` tras ejecutar `VACUUM ANALYZE producto;` (el mapa de visibilidad estaba desactualizado por los INSERT de la Prueba 2 del Punto 5, lo que inicialmente forzaba `Index Scan` con fetches al heap).
 
 ## Caso 3 — Q4: Top 3 productos por facturación dentro de cada categoría
 
@@ -287,12 +296,9 @@ menor que la variación de la misma consulta sin ningún cambio (entre
 365 y 910 ms, ver la Nota metodológica). Es exactamente lo que señaló
 la devolución de la cátedra: una mejora con un margen cercano al ruido.
 
-Los planes "después" completos de cada punto quedaron archivados en `Parte_A_Indices/`:
+El plan "después" de una corrida única con el índice quedó archivado en `Parte_A_Indices/`:
 
 - `plan_q4_despues.txt` — 414.220 ms (uso de `idx_pedido_fecha_hora_btree`, `Bitmap Index Scan`). Es una corrida única y ya daba un tiempo **peor** que `plan_q4_antes.txt` (378.669 ms), lo que no coincidía con el promedio de la tabla de arriba.
-- `plan_q5_despues_workmem.txt` — 336.877 ms con `SET LOCAL work_mem = '16MB'`: el `HashAggregate` pasa de `Batches: 5` con `Disk Usage` a `Batches: 1` sin volcado a disco.
-- `plan_q5_despues_indice_descartado.txt` — 301.954 ms: se probó (dentro de `BEGIN...ROLLBACK`) un índice parcial `idx_pedido_no_cancelado_cliente ON pedido (id_cliente) WHERE estado <> 'CANCELADO'`. El planner **no lo usó** — siguió eligiendo `Seq Scan` sobre `pedido`, porque el filtro `estado <> 'CANCELADO'` descarta muy pocas filas (~25%: en `plan_q5_antes.txt` son 16.620 filas descartadas por proceso, con `loops=3`; en total ~49.860 de los 200.005 pedidos) y no es lo suficientemente selectivo para justificar el índice. Se documenta como índice evaluado y descartado, no aplicado en la base final.
-- `plan_q6_despues.txt` — 158.728 s (158728.129 ms según `plan_q6_despues.txt`), confirmado `Index Only Scan` con `Heap Fetches: 0` tras ejecutar `VACUUM ANALYZE producto;` (el mapa de visibilidad estaba desactualizado por los INSERT de la Prueba 2 del Punto 5, lo que inicialmente forzaba `Index Scan` con fetches al heap).
 
 **Tercera medición (3 rondas intercaladas, salida archivada):**
 `Parte_A_Indices/medir_q4_rondas.sql`, con la salida completa en

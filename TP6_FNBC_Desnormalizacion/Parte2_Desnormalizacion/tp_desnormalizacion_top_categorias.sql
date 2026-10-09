@@ -75,12 +75,21 @@ IN ACCESS EXCLUSIVE MODE NOWAIT;
 DO $$
 BEGIN
     IF EXISTS (
+        SELECT 1 FROM pg_catalog.pg_attribute
+        WHERE attrelid IN ('public.pedido'::regclass, 'public.detalle_pedido'::regclass)
+          AND attname = 'eliminado' AND NOT attisdropped
+    ) THEN
+        RAISE EXCEPTION 'Ya existe eliminado en pedido o detalle_pedido. Revisar; no reutilizar.';
+    END IF;
+
+    IF EXISTS (
         SELECT 1
         FROM pg_catalog.pg_attribute
         WHERE attrelid = 'public.detalle_pedido'::regclass
           AND attname IN (
               'fecha_hora_pedido_cache',
-              'id_categoria_cache'
+              'id_categoria_cache',
+              'pedido_eliminado_cache'
           )
           AND NOT attisdropped
     ) THEN
@@ -154,11 +163,22 @@ BEGIN
               'tp6_auditoria_cache',
               'tp6_top_normalizado',
               'tp6_top_cache',
-              'tp6_diferencias_top'
+              'tp6_diferencias_top',
+              'tp6_filas_normalizadas',
+              'tp6_filas_cache',
+              'tp6_diferencias_filas'
           )
     ) THEN
         RAISE EXCEPTION
             'Ya existe alguna relación temporal reservada para esta prueba.';
+    END IF;
+
+    IF EXISTS (
+        SELECT 1 FROM pg_catalog.pg_proc
+        WHERE pronamespace = pg_my_temp_schema()
+          AND proname = 'fn_tp6_assert_equivalencia'
+    ) THEN
+        RAISE EXCEPTION 'Ya existe la función temporal de aserciones TP6.';
     END IF;
 
     IF EXISTS (
@@ -208,7 +228,12 @@ $$;
 -- 3. Columnas y sincronización de detalles
 -- ============================================================
 
+ALTER TABLE public.pedido
+    ADD COLUMN eliminado BOOLEAN NOT NULL DEFAULT FALSE;
+
 ALTER TABLE public.detalle_pedido
+    ADD COLUMN eliminado BOOLEAN NOT NULL DEFAULT FALSE,
+    ADD COLUMN pedido_eliminado_cache BOOLEAN,
     ADD COLUMN fecha_hora_pedido_cache TIMESTAMPTZ,
     ADD COLUMN id_categoria_cache BIGINT;
 
@@ -221,6 +246,7 @@ AS $$
 DECLARE
     v_fecha TIMESTAMPTZ;
     v_categoria BIGINT;
+    v_pedido_eliminado BOOLEAN;
 BEGIN
     IF current_setting('transaction_isolation') <> 'read committed' THEN
         RAISE EXCEPTION
@@ -229,8 +255,8 @@ BEGIN
 
     -- Orden de lectura/bloqueo: pedido, después producto.
     -- Los bloqueos se conservan hasta terminar la transacción.
-    SELECT ped.fecha_hora
-      INTO v_fecha
+    SELECT ped.fecha_hora, ped.eliminado
+      INTO v_fecha, v_pedido_eliminado
       FROM public.pedido AS ped
      WHERE ped.id = NEW.id_pedido
      FOR SHARE;
@@ -255,6 +281,8 @@ BEGIN
     -- incluso si el UPDATE menciona directamente las columnas cache.
     NEW.fecha_hora_pedido_cache := v_fecha;
     NEW.id_categoria_cache := v_categoria;
+    NEW.pedido_eliminado_cache := v_pedido_eliminado;
+    -- NEW.eliminado es propio del detalle y no se deriva del pedido.
 
     RETURN NEW;
 END;
@@ -269,6 +297,7 @@ EXECUTE FUNCTION public.fn_tp6_sync_detalle_cache();
 -- 4. Propagación desde pedidos y productos
 -- ============================================================
 
+-- Nombre histórico conservado: ahora propaga fecha y eliminado del pedido.
 CREATE FUNCTION public.fn_tp6_propagar_fecha_cache()
 RETURNS TRIGGER
 LANGUAGE plpgsql
@@ -283,11 +312,14 @@ BEGIN
 
     -- El UPDATE del padre ya mantiene su bloqueo de fila.
     -- Este UPDATE obtiene una instantánea nueva en READ COMMITTED.
-    -- El trigger del detalle vuelve a derivar ambas copias.
+    -- Incluye detalles eliminados individualmente; su eliminado no cambia.
+    -- El trigger del detalle vuelve a derivar las tres copias.
     UPDATE public.detalle_pedido
-       SET fecha_hora_pedido_cache = NEW.fecha_hora
+       SET fecha_hora_pedido_cache = NEW.fecha_hora,
+           pedido_eliminado_cache = NEW.eliminado
      WHERE id_pedido = NEW.id
-       AND fecha_hora_pedido_cache IS DISTINCT FROM NEW.fecha_hora;
+       AND (fecha_hora_pedido_cache IS DISTINCT FROM NEW.fecha_hora
+            OR pedido_eliminado_cache IS DISTINCT FROM NEW.eliminado);
 
     RETURN NEW;
 END;
@@ -296,7 +328,8 @@ $$;
 CREATE TRIGGER trg_tp6_propagar_fecha_cache
 AFTER UPDATE ON public.pedido
 FOR EACH ROW
-WHEN (OLD.fecha_hora IS DISTINCT FROM NEW.fecha_hora)
+WHEN (OLD.fecha_hora IS DISTINCT FROM NEW.fecha_hora
+      OR OLD.eliminado IS DISTINCT FROM NEW.eliminado)
 EXECUTE FUNCTION public.fn_tp6_propagar_fecha_cache();
 
 CREATE FUNCTION public.fn_tp6_propagar_categoria_cache()
@@ -342,7 +375,8 @@ EXECUTE FUNCTION public.fn_tp6_propagar_categoria_cache();
 UPDATE public.detalle_pedido AS dp
 SET
     fecha_hora_pedido_cache = ped.fecha_hora,
-    id_categoria_cache = pr.id_categoria
+    id_categoria_cache = pr.id_categoria,
+    pedido_eliminado_cache = ped.eliminado
 FROM public.pedido AS ped,
      public.producto AS pr
 WHERE ped.id = dp.id_pedido
@@ -351,6 +385,7 @@ WHERE ped.id = dp.id_pedido
 ALTER TABLE public.detalle_pedido
     ALTER COLUMN fecha_hora_pedido_cache SET NOT NULL,
     ALTER COLUMN id_categoria_cache SET NOT NULL,
+    ALTER COLUMN pedido_eliminado_cache SET NOT NULL,
     ADD CONSTRAINT fk_tp6_detalle_categoria_cache
         FOREIGN KEY (id_categoria_cache)
         REFERENCES public.categoria (id)
@@ -373,7 +408,10 @@ SELECT
     dp.fecha_hora_pedido_cache,
     ped.fecha_hora AS fecha_hora_original,
     dp.id_categoria_cache,
-    pr.id_categoria AS id_categoria_original
+    pr.id_categoria AS id_categoria_original,
+    dp.pedido_eliminado_cache,
+    ped.eliminado AS pedido_eliminado_original,
+    dp.eliminado AS detalle_eliminado
 FROM public.detalle_pedido AS dp
 LEFT JOIN public.pedido AS ped
     ON ped.id = dp.id_pedido
@@ -385,7 +423,8 @@ WHERE ped.id IS NULL
    OR pr.id IS NULL
    OR c.id IS NULL
    OR dp.fecha_hora_pedido_cache IS DISTINCT FROM ped.fecha_hora
-   OR dp.id_categoria_cache IS DISTINCT FROM pr.id_categoria;
+   OR dp.id_categoria_cache IS DISTINCT FROM pr.id_categoria
+   OR dp.pedido_eliminado_cache IS DISTINCT FROM ped.eliminado;
 
 SELECT *
 FROM pg_temp.tp6_auditoria_cache
@@ -405,8 +444,8 @@ $$;
 -- ============================================================
 -- Fecha histórica reproducible: 2026-06-25, America/Buenos_Aires.
 -- Sustituye CURRENT_DATE porque la carga no contiene pedidos de hoy.
--- No existen columnas eliminado en pedido/detalle_pedido.
--- Se consideran todos los registros del día, sin estado ni activo.
+-- Ambos atributos eliminado existen solo dentro del ensayo transaccional.
+-- No se agregan filtros por estado comercial ni por activo.
 --
 -- Estas vistas son temporales y normales, no materializadas.
 -- El planificador expande sus definiciones.
@@ -430,6 +469,8 @@ WHERE ped.fecha_hora >= (
     TIMESTAMP '2026-06-26 00:00:00'
     AT TIME ZONE 'America/Buenos_Aires'
 )
+  AND dp.eliminado = FALSE
+  AND ped.eliminado = FALSE
 GROUP BY c.nombre
 ORDER BY total_vendido DESC
 LIMIT 5;
@@ -449,6 +490,8 @@ WHERE dp.fecha_hora_pedido_cache >= (
     TIMESTAMP '2026-06-26 00:00:00'
     AT TIME ZONE 'America/Buenos_Aires'
 )
+  AND dp.eliminado = FALSE
+  AND dp.pedido_eliminado_cache = FALSE
 GROUP BY c.nombre
 ORDER BY total_vendido DESC
 LIMIT 5;
@@ -472,6 +515,60 @@ FROM (
     FROM pg_temp.tp6_top_normalizado
 ) AS d;
 
+-- Equivalencia de todas las filas elegibles del día, antes de agregar
+-- o limitar a cinco categorías. EXCEPT ALL conserva multiplicidades.
+CREATE TEMP VIEW tp6_filas_normalizadas AS
+SELECT dp.id_pedido, dp.id_producto, c.nombre AS categoria, dp.subtotal
+FROM public.detalle_pedido AS dp
+JOIN public.producto AS pr ON pr.id = dp.id_producto
+JOIN public.categoria AS c ON c.id = pr.id_categoria
+JOIN public.pedido AS ped ON ped.id = dp.id_pedido
+WHERE ped.fecha_hora >= (TIMESTAMP '2026-06-25 00:00:00' AT TIME ZONE 'America/Buenos_Aires')
+  AND ped.fecha_hora < (TIMESTAMP '2026-06-26 00:00:00' AT TIME ZONE 'America/Buenos_Aires')
+  AND dp.eliminado = FALSE AND ped.eliminado = FALSE;
+
+CREATE TEMP VIEW tp6_filas_cache AS
+SELECT dp.id_pedido, dp.id_producto, c.nombre AS categoria, dp.subtotal
+FROM public.detalle_pedido AS dp
+JOIN public.categoria AS c ON c.id = dp.id_categoria_cache
+WHERE dp.fecha_hora_pedido_cache >= (TIMESTAMP '2026-06-25 00:00:00' AT TIME ZONE 'America/Buenos_Aires')
+  AND dp.fecha_hora_pedido_cache < (TIMESTAMP '2026-06-26 00:00:00' AT TIME ZONE 'America/Buenos_Aires')
+  AND dp.eliminado = FALSE AND dp.pedido_eliminado_cache = FALSE;
+
+CREATE TEMP VIEW tp6_diferencias_filas AS
+SELECT 'normalizado_menos_cache'::TEXT AS sentido, d.*
+FROM (
+    SELECT * FROM pg_temp.tp6_filas_normalizadas
+    EXCEPT ALL
+    SELECT * FROM pg_temp.tp6_filas_cache
+) AS d
+UNION ALL
+SELECT 'cache_menos_normalizado'::TEXT AS sentido, d.*
+FROM (
+    SELECT * FROM pg_temp.tp6_filas_cache
+    EXCEPT ALL
+    SELECT * FROM pg_temp.tp6_filas_normalizadas
+) AS d;
+
+CREATE FUNCTION pg_temp.fn_tp6_assert_equivalencia(p_paso TEXT)
+RETURNS VOID
+LANGUAGE plpgsql
+AS $$
+BEGIN
+    IF EXISTS (SELECT 1 FROM pg_temp.tp6_auditoria_cache) THEN
+        RAISE EXCEPTION 'Auditoría fallida: %.', p_paso;
+    END IF;
+    IF EXISTS (SELECT 1 FROM pg_temp.tp6_diferencias_filas) THEN
+        RAISE EXCEPTION 'EXCEPT ALL de filas detectó diferencias: %.', p_paso;
+    END IF;
+    IF EXISTS (SELECT 1 FROM pg_temp.tp6_diferencias_top) THEN
+        RAISE EXCEPTION 'EXCEPT del top detectó diferencias: %.', p_paso;
+    END IF;
+END;
+$$;
+
+SELECT pg_temp.fn_tp6_assert_equivalencia('estado inicial');
+
 -- ============================================================
 -- 8. Pruebas de sincronización reversibles
 -- ============================================================
@@ -479,7 +576,7 @@ FROM (
 -- OVERRIDING SYSTEM VALUE respeta los identity ALWAYS originales.
 -- Se utiliza un cliente existente sin modificarlo.
 -- Las filas de prueba tienen cantidades positivas y fechas históricas.
--- No se cambia el estado de los pedidos ni se alteran filas originales.
+-- Se modifican estados lógicos solo en filas de prueba, no en originales.
 -- No hay triggers de usuario previos instalados en esta copia;
 -- los scripts de TP2 permanecen en el repositorio y no se ejecutan aquí.
 -- Las pruebas se deshacen mediante ROLLBACK TO SAVEPOINT.
@@ -492,6 +589,7 @@ DECLARE
     v_fecha TIMESTAMPTZ;
     v_categoria BIGINT;
     v_nombre TEXT;
+    v_caso RECORD;
 BEGIN
     IF EXISTS (
         SELECT 1 FROM public.categoria WHERE id IN (-6001, -6002)
@@ -527,6 +625,7 @@ BEGIN
     VALUES
         (-6001, 'TP6_TEST_CACHE_A'),
         (-6002, 'TP6_TEST_CACHE_B');
+    PERFORM pg_temp.fn_tp6_assert_equivalencia('categorías de prueba');
 
     INSERT INTO public.producto (
         id, id_categoria, nombre, precio_lista, stock
@@ -535,6 +634,7 @@ BEGIN
     VALUES
         (-6001, -6001, 'TP6 producto prueba A', 10.00, 100),
         (-6002, -6002, 'TP6 producto prueba B', 20.00, 100);
+    PERFORM pg_temp.fn_tp6_assert_equivalencia('productos de prueba');
 
     INSERT INTO public.pedido (
         id, id_cliente, fecha_hora, forma_pago
@@ -553,12 +653,14 @@ BEGIN
                 AT TIME ZONE 'America/Buenos_Aires',
             'EFECTIVO'
         );
+    PERFORM pg_temp.fn_tp6_assert_equivalencia('pedidos de prueba');
 
     -- INSERT: copias derivadas y subtotal generado.
     INSERT INTO public.detalle_pedido (
         id_pedido, id_producto, cantidad, precio_unitario
     )
     VALUES (-6001, -6001, 2, 10.00);
+    PERFORM pg_temp.fn_tp6_assert_equivalencia('INSERT detalle');
 
     IF NOT EXISTS (
         SELECT 1
@@ -570,6 +672,8 @@ BEGIN
               AT TIME ZONE 'America/Buenos_Aires'
           )
           AND id_categoria_cache = -6001
+          AND eliminado = FALSE
+          AND pedido_eliminado_cache = FALSE
           AND subtotal = 20.00
     ) THEN
         RAISE EXCEPTION 'Falló la prueba de INSERT.';
@@ -583,9 +687,11 @@ BEGIN
             TIMESTAMP '2000-01-01 00:00:00'
             AT TIME ZONE 'America/Buenos_Aires'
         ),
-        id_categoria_cache = -6002
+        id_categoria_cache = -6002,
+        pedido_eliminado_cache = TRUE
     WHERE id_pedido = -6001
       AND id_producto = -6001;
+    PERFORM pg_temp.fn_tp6_assert_equivalencia('UPDATE y copias arbitrarias');
 
     IF NOT EXISTS (
         SELECT 1
@@ -598,16 +704,24 @@ BEGIN
               AT TIME ZONE 'America/Buenos_Aires'
           )
           AND subtotal = 36.00
+          AND pedido_eliminado_cache = FALSE
     ) THEN
         RAISE EXCEPTION 'Falló la prueba de UPDATE del detalle.';
     END IF;
 
     -- Cambia ambos padres del detalle.
+    UPDATE public.pedido SET eliminado = TRUE WHERE id = -6002;
+    PERFORM pg_temp.fn_tp6_assert_equivalencia('pedido destino eliminado');
+    UPDATE public.detalle_pedido SET eliminado = TRUE
+    WHERE id_pedido = -6001 AND id_producto = -6001;
+    PERFORM pg_temp.fn_tp6_assert_equivalencia('eliminación propia antes de cambiar padres');
+
     UPDATE public.detalle_pedido
     SET id_pedido = -6002,
         id_producto = -6002
     WHERE id_pedido = -6001
       AND id_producto = -6001;
+    PERFORM pg_temp.fn_tp6_assert_equivalencia('cambio a pedido eliminado');
 
     IF NOT EXISTS (
         SELECT 1
@@ -615,12 +729,34 @@ BEGIN
         WHERE id_pedido = -6002
           AND id_producto = -6002
           AND id_categoria_cache = -6002
+          AND eliminado = TRUE
+          AND pedido_eliminado_cache = TRUE
           AND fecha_hora_pedido_cache = (
               TIMESTAMP '2026-06-24 10:00:00'
               AT TIME ZONE 'America/Buenos_Aires'
           )
     ) THEN
         RAISE EXCEPTION 'Falló la prueba de cambio de padres.';
+    END IF;
+
+    UPDATE public.pedido SET eliminado = FALSE WHERE id = -6002;
+    PERFORM pg_temp.fn_tp6_assert_equivalencia('restauración después de cambiar padres');
+    IF NOT EXISTS (
+        SELECT 1 FROM public.detalle_pedido
+        WHERE id_pedido = -6002 AND id_producto = -6002
+          AND eliminado = TRUE AND pedido_eliminado_cache = FALSE
+    ) THEN
+        RAISE EXCEPTION 'Restaurar el nuevo pedido cambió el eliminado propio.';
+    END IF;
+    UPDATE public.detalle_pedido SET eliminado = FALSE
+    WHERE id_pedido = -6002 AND id_producto = -6002;
+    PERFORM pg_temp.fn_tp6_assert_equivalencia('restauración individual del detalle');
+    IF NOT EXISTS (
+        SELECT 1 FROM public.detalle_pedido
+        WHERE id_pedido = -6002 AND id_producto = -6002
+          AND eliminado = FALSE AND pedido_eliminado_cache = FALSE
+    ) OR NOT EXISTS (SELECT 1 FROM public.pedido WHERE id = -6002 AND eliminado = FALSE) THEN
+        RAISE EXCEPTION 'Restauración individual incorrecta o modificación del pedido.';
     END IF;
 
     -- Fecha del pedido: el detalle vuelve al día medido.
@@ -630,6 +766,7 @@ BEGIN
         AT TIME ZONE 'America/Buenos_Aires'
     )
     WHERE id = -6002;
+    PERFORM pg_temp.fn_tp6_assert_equivalencia('propagación de fecha');
 
     SELECT fecha_hora_pedido_cache INTO v_fecha
     FROM public.detalle_pedido
@@ -646,6 +783,7 @@ BEGIN
     UPDATE public.producto
     SET id_categoria = -6001
     WHERE id = -6002;
+    PERFORM pg_temp.fn_tp6_assert_equivalencia('propagación de categoría');
 
     SELECT id_categoria_cache INTO v_categoria
     FROM public.detalle_pedido
@@ -659,6 +797,7 @@ BEGIN
     UPDATE public.categoria
     SET nombre = 'TP6_TEST_CACHE_RENOMBRADA'
     WHERE id = -6001;
+    PERFORM pg_temp.fn_tp6_assert_equivalencia('nombre vigente de categoría');
 
     SELECT c.nombre INTO v_nombre
     FROM public.detalle_pedido AS dp
@@ -678,9 +817,127 @@ BEGIN
         RAISE EXCEPTION 'Resultados diferentes durante las pruebas.';
     END IF;
 
+    -- Segundo detalle eliminado individualmente: el pedido debe
+    -- propagar también hacia él, pero nunca restaurarlo implícitamente.
+    INSERT INTO public.detalle_pedido (
+        id_pedido, id_producto, cantidad, precio_unitario, eliminado
+    ) VALUES (-6002, -6001, 1, 10.00, TRUE);
+    PERFORM pg_temp.fn_tp6_assert_equivalencia('segundo detalle eliminado individualmente');
+
+    -- Matriz completa: pedido/detalle FALSE/FALSE, FALSE/TRUE,
+    -- TRUE/FALSE y TRUE/TRUE. El segundo detalle conserva su TRUE.
+    FOR v_caso IN
+        SELECT * FROM (VALUES
+            (1, FALSE, FALSE), (2, FALSE, TRUE),
+            (3, TRUE, FALSE), (4, TRUE, TRUE)
+        ) AS casos(orden, pedido_eliminado, detalle_eliminado)
+        ORDER BY orden
+    LOOP
+        UPDATE public.pedido SET eliminado = v_caso.pedido_eliminado
+        WHERE id = -6002;
+        PERFORM pg_temp.fn_tp6_assert_equivalencia('matriz: cambio de pedido');
+        IF (SELECT COUNT(*) FROM public.detalle_pedido
+            WHERE id_pedido = -6002
+              AND pedido_eliminado_cache = v_caso.pedido_eliminado) <> 2
+           OR NOT EXISTS (
+               SELECT 1 FROM public.detalle_pedido
+               WHERE id_pedido = -6002 AND id_producto = -6001 AND eliminado = TRUE
+           ) THEN
+            RAISE EXCEPTION 'La propagación no alcanzó ambos detalles o alteró el eliminado propio.';
+        END IF;
+
+        UPDATE public.detalle_pedido SET eliminado = v_caso.detalle_eliminado
+        WHERE id_pedido = -6002 AND id_producto = -6002;
+        -- TRUE/FALSE prueba restaurar el detalle bajo pedido eliminado:
+        -- su estado propio cambia, el pedido sigue eliminado y no es visible.
+        PERFORM pg_temp.fn_tp6_assert_equivalencia('matriz: cambio propio de detalle');
+        IF NOT EXISTS (
+            SELECT 1 FROM public.detalle_pedido
+            WHERE id_pedido = -6002 AND id_producto = -6002
+              AND eliminado = v_caso.detalle_eliminado
+              AND pedido_eliminado_cache = v_caso.pedido_eliminado
+        ) OR NOT EXISTS (
+            SELECT 1 FROM public.pedido
+            WHERE id = -6002 AND eliminado = v_caso.pedido_eliminado
+        ) OR EXISTS (
+            SELECT 1 FROM pg_temp.tp6_filas_normalizadas
+            WHERE id_pedido = -6002 AND id_producto = -6002
+        ) IS DISTINCT FROM (NOT v_caso.pedido_eliminado AND NOT v_caso.detalle_eliminado)
+          OR EXISTS (
+            SELECT 1 FROM pg_temp.tp6_filas_cache
+            WHERE id_pedido = -6002 AND id_producto = -6002
+        ) IS DISTINCT FROM (NOT v_caso.pedido_eliminado AND NOT v_caso.detalle_eliminado)
+          OR EXISTS (
+            SELECT 1 FROM pg_temp.tp6_filas_cache
+            WHERE id_pedido = -6002 AND id_producto = -6001
+        ) THEN
+            RAISE EXCEPTION 'Visibilidad incorrecta en matriz pedido %, detalle %.',
+                v_caso.pedido_eliminado, v_caso.detalle_eliminado;
+        END IF;
+    END LOOP;
+
+    -- Restaurar únicamente el pedido NO restaura detalles individuales.
+    UPDATE public.pedido SET eliminado = FALSE WHERE id = -6002;
+    PERFORM pg_temp.fn_tp6_assert_equivalencia('restaurar pedido con ambos detalles eliminados');
+    IF (SELECT COUNT(*) FROM public.detalle_pedido
+        WHERE id_pedido = -6002 AND eliminado = TRUE
+          AND pedido_eliminado_cache = FALSE) <> 2
+       OR EXISTS (SELECT 1 FROM pg_temp.tp6_filas_cache WHERE id_pedido = -6002) THEN
+        RAISE EXCEPTION 'Restaurar el pedido restauró detalles individuales.';
+    END IF;
+
+    UPDATE public.detalle_pedido SET eliminado = FALSE
+    WHERE id_pedido = -6002 AND id_producto = -6002;
+    PERFORM pg_temp.fn_tp6_assert_equivalencia('restaurar un detalle con pedido vigente');
+    IF NOT EXISTS (SELECT 1 FROM pg_temp.tp6_filas_cache
+                   WHERE id_pedido = -6002 AND id_producto = -6002) THEN
+        RAISE EXCEPTION 'El detalle restaurado debe volver al conjunto diario.';
+    END IF;
+
+    -- Cambiar simultáneamente fecha y eliminado propaga ambas copias
+    -- a los dos detalles, incluso al eliminado individualmente.
+    UPDATE public.pedido
+    SET fecha_hora = (TIMESTAMP '2026-06-24 12:00:00' AT TIME ZONE 'America/Buenos_Aires'),
+        eliminado = TRUE
+    WHERE id = -6002;
+    PERFORM pg_temp.fn_tp6_assert_equivalencia('cambio simultáneo fecha y eliminado');
+    IF (SELECT COUNT(*) FROM public.detalle_pedido
+        WHERE id_pedido = -6002 AND pedido_eliminado_cache = TRUE
+          AND fecha_hora_pedido_cache = (
+              TIMESTAMP '2026-06-24 12:00:00' AT TIME ZONE 'America/Buenos_Aires'
+          )) <> 2 THEN
+        RAISE EXCEPTION 'Falló la propagación simultánea a ambos detalles.';
+    END IF;
+
+    UPDATE public.detalle_pedido SET pedido_eliminado_cache = FALSE
+    WHERE id_pedido = -6002;
+    PERFORM pg_temp.fn_tp6_assert_equivalencia('corregir cache arbitrario bajo pedido eliminado');
+    IF EXISTS (SELECT 1 FROM public.detalle_pedido
+               WHERE id_pedido = -6002 AND pedido_eliminado_cache = FALSE) THEN
+        RAISE EXCEPTION 'Se aceptó un estado redundante arbitrario.';
+    END IF;
+
+    UPDATE public.pedido
+    SET fecha_hora = (TIMESTAMP '2026-06-25 11:00:00' AT TIME ZONE 'America/Buenos_Aires'),
+        eliminado = FALSE
+    WHERE id = -6002;
+    PERFORM pg_temp.fn_tp6_assert_equivalencia('restauración simultánea fecha y eliminado');
+    IF NOT EXISTS (SELECT 1 FROM public.detalle_pedido
+                   WHERE id_pedido = -6002 AND id_producto = -6001 AND eliminado = TRUE)
+       OR (SELECT COUNT(*) FROM public.detalle_pedido
+           WHERE id_pedido = -6002 AND pedido_eliminado_cache = FALSE
+             AND fecha_hora_pedido_cache = (
+                 TIMESTAMP '2026-06-25 11:00:00' AT TIME ZONE 'America/Buenos_Aires'
+             )) <> 2
+       OR NOT EXISTS (SELECT 1 FROM pg_temp.tp6_filas_cache
+                       WHERE id_pedido = -6002 AND id_producto = -6002) THEN
+        RAISE EXCEPTION 'La restauración simultánea alteró la independencia de los detalles.';
+    END IF;
+
     -- DELETE directo.
     DELETE FROM public.detalle_pedido
     WHERE id_pedido = -6002 AND id_producto = -6002;
+    PERFORM pg_temp.fn_tp6_assert_equivalencia('DELETE directo');
 
     IF EXISTS (
         SELECT 1 FROM public.detalle_pedido
@@ -690,12 +947,79 @@ BEGIN
     END IF;
 
     -- DELETE del pedido con CASCADE.
+    UPDATE public.pedido SET eliminado = TRUE WHERE id = -6002;
+    PERFORM pg_temp.fn_tp6_assert_equivalencia('pedido eliminado antes de INSERT');
     INSERT INTO public.detalle_pedido (
         id_pedido, id_producto, cantidad, precio_unitario
     )
     VALUES (-6002, -6002, 1, 20.00);
+    PERFORM pg_temp.fn_tp6_assert_equivalencia('INSERT bajo pedido eliminado');
+    IF NOT EXISTS (
+        SELECT 1 FROM public.detalle_pedido
+        WHERE id_pedido = -6002 AND id_producto = -6002
+          AND eliminado = FALSE AND pedido_eliminado_cache = TRUE
+    ) OR EXISTS (SELECT 1 FROM pg_temp.tp6_filas_cache WHERE id_pedido = -6002) THEN
+        RAISE EXCEPTION 'INSERT bajo pedido eliminado no conservó la semántica independiente.';
+    END IF;
+
+    -- Traslado entre pedidos con distintos estados sin modificar el propio.
+    IF EXISTS (
+        SELECT 1 FROM public.detalle_pedido
+        WHERE id_pedido = -6001 AND id_producto = -6002
+    ) OR NOT EXISTS (
+        SELECT 1 FROM public.pedido WHERE id = -6001 AND eliminado = FALSE
+    ) THEN
+        RAISE EXCEPTION 'Conflicto de detalle destino o pedido de prueba no vigente.';
+    END IF;
+
+    UPDATE public.detalle_pedido SET id_pedido = -6001
+    WHERE id_pedido = -6002 AND id_producto = -6002;
+    PERFORM pg_temp.fn_tp6_assert_equivalencia('traslado de pedido eliminado a vigente');
+    IF NOT EXISTS (
+        SELECT 1 FROM public.detalle_pedido
+        WHERE id_pedido = -6001 AND id_producto = -6002
+          AND eliminado = FALSE AND pedido_eliminado_cache = FALSE
+          AND fecha_hora_pedido_cache = (
+              TIMESTAMP '2026-06-25 10:00:00' AT TIME ZONE 'America/Buenos_Aires'
+          ) AND id_categoria_cache = -6001
+    ) OR NOT EXISTS (
+        SELECT 1 FROM pg_temp.tp6_filas_normalizadas
+        WHERE id_pedido = -6001 AND id_producto = -6002
+    ) OR NOT EXISTS (
+        SELECT 1 FROM pg_temp.tp6_filas_cache
+        WHERE id_pedido = -6001 AND id_producto = -6002
+    ) THEN
+        RAISE EXCEPTION 'Falló el traslado de pedido eliminado a vigente.';
+    END IF;
+
+    IF EXISTS (
+        SELECT 1 FROM public.detalle_pedido
+        WHERE id_pedido = -6002 AND id_producto = -6002
+    ) THEN
+        RAISE EXCEPTION 'Conflicto con el detalle de retorno al pedido eliminado.';
+    END IF;
+    UPDATE public.detalle_pedido SET id_pedido = -6002
+    WHERE id_pedido = -6001 AND id_producto = -6002;
+    PERFORM pg_temp.fn_tp6_assert_equivalencia('retorno de pedido vigente a eliminado');
+    IF NOT EXISTS (
+        SELECT 1 FROM public.detalle_pedido
+        WHERE id_pedido = -6002 AND id_producto = -6002
+          AND eliminado = FALSE AND pedido_eliminado_cache = TRUE
+          AND fecha_hora_pedido_cache = (
+              TIMESTAMP '2026-06-25 11:00:00' AT TIME ZONE 'America/Buenos_Aires'
+          ) AND id_categoria_cache = -6001
+    ) OR EXISTS (
+        SELECT 1 FROM pg_temp.tp6_filas_normalizadas
+        WHERE id_pedido = -6002 AND id_producto = -6002
+    ) OR EXISTS (
+        SELECT 1 FROM pg_temp.tp6_filas_cache
+        WHERE id_pedido = -6002 AND id_producto = -6002
+    ) THEN
+        RAISE EXCEPTION 'Falló el retorno de pedido vigente a eliminado.';
+    END IF;
 
     DELETE FROM public.pedido WHERE id = -6002;
+    PERFORM pg_temp.fn_tp6_assert_equivalencia('DELETE CASCADE');
 
     IF EXISTS (
         SELECT 1 FROM public.detalle_pedido WHERE id_pedido = -6002
@@ -726,6 +1050,12 @@ ORDER BY id_pedido, id_producto;
 SELECT *
 FROM pg_temp.tp6_diferencias_top
 ORDER BY sentido, categoria;
+
+SELECT *
+FROM pg_temp.tp6_diferencias_filas
+ORDER BY sentido, id_pedido, id_producto;
+
+SELECT pg_temp.fn_tp6_assert_equivalencia('después de ROLLBACK TO SAVEPOINT');
 
 DO $$
 BEGIN
@@ -798,10 +1128,12 @@ FROM pg_temp.tp6_top_normalizado
 ORDER BY total_vendido DESC;
 
 -- No se adjudica una mejora antes de observar tiempos y buffers.
--- La referencia histórica de 47.151 ms se conserva como contexto;
--- la comparación directa usa estas mediciones bajo el mismo estado.
+-- Las evidencias históricas sin eliminado se conservan como antecedentes.
+-- Sus tiempos y planes no son resultados del script corregido.
+-- La comparación directa necesita nuevas mediciones bajo el mismo estado.
 --
--- Resultado de referencia para la carga revisada:
+-- Resultados históricos sin filtros: antecedentes, no aserciones ni
+-- resultados medidos de esta versión corregida:
 -- Bebidas  5589534.40
 -- Pizzas   5215387.22
 

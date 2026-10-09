@@ -45,7 +45,7 @@ Fuentes: [schema.sql de TP1](TP1_FoodStore/schema.sql) y [usuario de TP5](TP5_In
 
 - producto y categoria usan activo para baja lógica.
 - usuario usa eliminado.
-- pedido y detalle_pedido no tienen activo ni eliminado. No inventar esos filtros ni equiparar CANCELADO con eliminado.
+- En schema.sql de TP1, pedido y detalle_pedido no tienen activo ni eliminado; ese esquema se conserva. TP6 Parte 2 incorpora eliminado BOOLEAN NOT NULL DEFAULT FALSE en ambas tablas únicamente dentro de sus ensayos transaccionales, como estados propios independientes. La consulta normalizada filtra dp.eliminado = FALSE AND ped.eliminado = FALSE; la desnormalizada filtra dp.eliminado = FALSE AND dp.pedido_eliminado_cache = FALSE. El cache copia exclusivamente el estado del pedido y no modifica el eliminado propio del detalle. Los ensayos terminan con ROLLBACK; estas adiciones no describen un esquema instalado permanentemente. No equiparar CANCELADO con eliminado.
 - La FK detalle_pedido.id_pedido → pedido.id usa ON DELETE CASCADE.
 - Las FK producto → categoria, pedido → cliente y detalle_pedido → producto usan ON DELETE RESTRICT.
 - detalle_pedido.subtotal es GENERATED ALWAYS AS (cantidad * precio_unitario) STORED.

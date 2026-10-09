@@ -174,13 +174,33 @@ Fuentes: [informe de Parte 1](TP6_FNBC_Desnormalizacion/Parte1_FNBC/informe_part
 
 Se adaptó la consulta al esquema real mediante `dp.id_pedido`, `dp.id_producto`, `pr.id_categoria` y un intervalo semiabierto sobre `ped.fecha_hora`. Se conservó SUM(subtotal), GROUP BY nombre y LIMIT 5.
 
-La fecha histórica reproducible fue **25/06/2026 en America/Buenos_Aires**, en sustitución de CURRENT_DATE porque la carga no contenía pedidos del día de ejecución. Se omitieron los filtros eliminado, inexistentes en pedido y detalle_pedido, sin agregar filtros por estado o activo.
+La fecha histórica reproducible fue **25/06/2026 en America/Buenos_Aires**, en sustitución de CURRENT_DATE porque la carga no contenía pedidos del día de ejecución. El ensayo corregido incorpora `pedido.eliminado` y `detalle_pedido.eliminado`, ambos BOOLEAN NOT NULL DEFAULT FALSE, como estados propios independientes. La consulta normalizada exige `dp.eliminado = FALSE AND ped.eliminado = FALSE`; la desnormalizada exige `dp.eliminado = FALSE AND dp.pedido_eliminado_cache = FALSE`, sin volver a unir pedido. No se agregan filtros por estado ni por activo.
 
 La carga contiene **200005 pedidos, 499571 detalles, 50003 productos y 2 categorías**. El límite de cinco se mantiene, aunque solo se obtienen dos categorías.
 
-Se eligieron columnas precalculadas con disparadores porque la medición inicial de **47.151 ms**, con **8455 shared hit**, mostró un recorrido de pedido y búsquedas repetidas en producto; copiar fecha y categoría al detalle permite evitar esos recorridos y sincronizar cambios dentro de la transacción. Una vista materializada con refresco nocturno no satisface el requisito de actualización frecuente. La adaptación conserva los originales y puede revertirse retirando los objetos añadidos.
+Se eligieron columnas precalculadas con disparadores porque el plan inicial histórico mostró un recorrido de pedido y búsquedas repetidas en producto. Copiar al detalle los atributos de consulta permite evitar esos recorridos y sincronizar cambios dentro de la transacción. Una vista materializada con refresco nocturno no satisface el requisito de actualización frecuente. La medición inicial corregida realizada por el grupo registró **62.538 ms** y **8455 shared hit**; es una referencia previa a las copias y no interviene en el cálculo de mejora entre rondas.
 
-Se agregaron `fecha_hora_pedido_cache`, `id_categoria_cache` y un índice sobre la fecha copiada. Los triggers recalculan las copias al insertar o actualizar detalles y propagan cambios de fecha del pedido y categoría del producto. El nombre no se copia: se conserva el JOIN con categoria.
+Dentro del ensayo se agregaron los atributos propios de borrado lógico y tres copias redundantes: `fecha_hora_pedido_cache`, `id_categoria_cache` y `pedido_eliminado_cache`, manteniendo el índice sobre la fecha copiada. Los triggers recalculan las tres copias al insertar o actualizar detalles y propagan cambios de fecha o eliminado del pedido y categoría del producto. `pedido_eliminado_cache` copia exclusivamente `pedido.eliminado`, sin modificar el estado propio del detalle. Restaurar el pedido no restaura detalles eliminados individualmente. El nombre de categoría no se copia: se conserva el JOIN con categoria. Retirar la desnormalización permitiría volver a la consulta normalizada conservando los atributos propios de borrado lógico.
+
+**Resultados corregidos de Parte 2 — ejecución del grupo del 09/10/2026.**
+
+La comparación directa se realizó después de cargar, indexar y ejecutar ANALYZE:
+
+| Medición | Normalizada (ms) | Desnormalizada (ms) | Normalizada shared hit | Desnormalizada shared hit |
+|---|---:|---:|---:|---:|
+| Ronda 1 | 49.291 | 1.980 | 10942 | 565 |
+| Ronda 2 | 47.556 | 1.323 | 10942 | 565 |
+| Promedio | 48.4235 | 1.6515 | 10942 | 565 |
+
+La reducción temporal calculada sobre los promedios es **96.59 %**, con cociente normalizada/desnormalizada de **29.32**. La mejora corresponde al **conjunto columnas redundantes más índice**, sin separar el aporte de cada componente. Los **62.538 ms** iniciales no intervienen en estos cálculos. Los shared hit representan accesos resueltos en caché, no lecturas físicas ni páginas únicas.
+
+Ambas consultas corregidas devolvieron **Bebidas: 5589534.40** y **Pizzas: 5215387.22**. Las evidencias aportadas por el grupo registran auditoría inicial y posterior sin diferencias, EXCEPT bidireccional del top vacío y **EXCEPT ALL bidireccional de filas participantes vacío**. La auditoría incluye también registros eliminados.
+
+Se superaron las pruebas secuenciales de las cuatro combinaciones lógicas, restauraciones independientes, inserción bajo pedido eliminado, traslado del detalle a un pedido vigente y retorno, cambio simultáneo de fecha y eliminado y corrección de cache arbitrario, además de las pruebas anteriores de sincronización y DELETE/CASCADE. Los fixtures se deshicieron mediante **ROLLBACK TO SAVEPOINT antes de medir**, sin consumir secuencias.
+
+Ambos ensayos corregidos de Parte 2 contienen DDL transaccional —incluida la medición inicial, que ya no es READ ONLY— y terminaron con **ROLLBACK final**, registrado en los TXT completos. Según la comprobación posterior informada por el grupo, quedaron **cero columnas añadidas**, **200005 pedidos** y **499571 detalles**; ese control posterior no está incluido en los dos TXT.
+
+**Antecedentes históricos del 08/10/2026 — versión sin filtros de borrado lógico.** La medición inicial histórica fue de **47.151 ms**. Las siguientes rondas, sus buffers y su reducción corresponden a esa versión; se conservan sin mezclarlos con los resultados corregidos.
 
 La comparación directa, posterior a carga, indexación y ANALYZE, fue:
 
@@ -202,7 +222,15 @@ Las mediciones ocurrieron dentro de la transacción de carga, con calentamiento 
 
 El script terminó con **ROLLBACK**: las columnas, el índice y los triggers no quedaron instalados.
 
-Fuentes: [informe de Parte 2](TP6_FNBC_Desnormalizacion/Parte2_Desnormalizacion/informe_parte2_desnormalizacion.md), [medición inicial](TP6_FNBC_Desnormalizacion/Parte2_Desnormalizacion/medir_top_categorias_antes.sql), [script de desnormalización](TP6_FNBC_Desnormalizacion/Parte2_Desnormalizacion/tp_desnormalizacion_top_categorias.sql), [evidencia inicial](TP6_FNBC_Desnormalizacion/Parte2_Desnormalizacion/evidencias/evidencia_top_antes_20261008_225517.txt) y [evidencia comparativa](TP6_FNBC_Desnormalizacion/Parte2_Desnormalizacion/evidencias/evidencia_top_desnormalizacion_20261008_232126.txt).
+Fuentes: [informe de Parte 2](TP6_FNBC_Desnormalizacion/Parte2_Desnormalizacion/informe_parte2_desnormalizacion.md), [medición inicial](TP6_FNBC_Desnormalizacion/Parte2_Desnormalizacion/medir_top_categorias_antes.sql), [script de desnormalización](TP6_FNBC_Desnormalizacion/Parte2_Desnormalizacion/tp_desnormalizacion_top_categorias.sql).
+
+Evidencias corregidas aportadas por el grupo:
+[medición inicial con borrado lógico](TP6_FNBC_Desnormalizacion/Parte2_Desnormalizacion/evidencias/evidencia_top_antes_logico_20261009_092704.txt) y
+[pruebas, auditoría y comparación corregidas](TP6_FNBC_Desnormalizacion/Parte2_Desnormalizacion/evidencias/evidencia_top_desnormalizacion_logico_20261009_092837.txt).
+
+Antecedentes históricos sin filtros lógicos:
+[medición inicial anterior](TP6_FNBC_Desnormalizacion/Parte2_Desnormalizacion/evidencias/evidencia_top_antes_20261008_225517.txt) y
+[comparación anterior](TP6_FNBC_Desnormalizacion/Parte2_Desnormalizacion/evidencias/evidencia_top_desnormalizacion_20261008_232126.txt).
 
 ## Conclusión
 

@@ -5,7 +5,7 @@ Este directorio reúne el análisis, los scripts de validación y las evidencias
 ## Índice
 
 - [Informe final](informe_final_tp6.md)
-- [Informe final en PDF](informe_final_tp6.pdf)
+- [Informe final en PDF — versión corregida con borrado lógico](informe_final_tp6.pdf)
 - [Parte 1 — FNBC](#parte-1--fnbc)
 - [Parte 2 — Desnormalización controlada](#parte-2--desnormalización-controlada)
 - [Seguridad y ejecución](#seguridad-y-ejecución)
@@ -30,18 +30,28 @@ El script requiere `public.usuario` con `id BIGINT GENERATED ALWAYS AS IDENTITY`
 - [Medición inicial de la consulta normalizada](Parte2_Desnormalizacion/medir_top_categorias_antes.sql)
 - [Script de desnormalización, auditoría y mediciones](Parte2_Desnormalizacion/tp_desnormalizacion_top_categorias.sql)
 - [Informe de Parte 2](Parte2_Desnormalizacion/informe_parte2_desnormalizacion.md)
-- [Evidencia de la medición inicial](Parte2_Desnormalizacion/evidencias/evidencia_top_antes_20261008_225517.txt)
-- [Evidencia de desnormalización y comparación](Parte2_Desnormalizacion/evidencias/evidencia_top_desnormalizacion_20261008_232126.txt)
+- [Evidencia de la medición inicial corregida con borrado lógico](Parte2_Desnormalizacion/evidencias/evidencia_top_antes_logico_20261009_092704.txt)
+- [Evidencia corregida de desnormalización, pruebas y comparación](Parte2_Desnormalizacion/evidencias/evidencia_top_desnormalizacion_logico_20261009_092837.txt)
+- [Antecedente histórico de la medición inicial — sin filtros lógicos](Parte2_Desnormalizacion/evidencias/evidencia_top_antes_20261008_225517.txt)
+- [Antecedente histórico de desnormalización — sin filtros lógicos](Parte2_Desnormalizacion/evidencias/evidencia_top_desnormalizacion_20261008_232126.txt)
 
-### Capturas reales
+### Capturas históricas — versión sin filtros lógicos
 
 - [Plan normalizado — ronda 1](Parte2_Desnormalizacion/capturas/antes_ronda1.png)
 - [Plan desnormalizado — ronda 1](Parte2_Desnormalizacion/capturas/despues_ronda1.png)
 - [Auditoría y pruebas de sincronización](Parte2_Desnormalizacion/capturas/auditoria.png)
 
-La adaptación agrega fecha_hora_pedido_cache e id_categoria_cache a detalle_pedido, con sincronización mediante disparadores y un índice sobre la fecha copiada. Conserva el JOIN con categoria y el cálculo SUM(subtotal).
+### Capturas del ensayo corregido — 09/10/2026
 
-La fecha de medición es 2026-06-25 en America/Buenos_Aires, mediante un intervalo diario semiabierto. Se omiten los filtros eliminado porque esas columnas no existen en pedido ni detalle_pedido. No se agregan filtros por estado o activo.
+- [Plan normalizado corregido — ronda 1](Parte2_Desnormalizacion/capturas/antes_logico_ronda1.png): filtros de borrado lógico, **49.291 ms** y **shared hit=10942**.
+- [Plan desnormalizado corregido — ronda 1](Parte2_Desnormalizacion/capturas/despues_logico_ronda1.png): ambos filtros, **1.980 ms** y **shared hit=565**.
+- [Auditoría y equivalencia corregidas](Parte2_Desnormalizacion/capturas/auditoria_logico.png): pruebas secuenciales superadas, auditoría, diferencias del top y EXCEPT ALL de filas vacíos.
+
+El **ROLLBACK** visible en `auditoria_logico.png` corresponde a **ROLLBACK TO SAVEPOINT**, que descarta las filas de prueba. El **ROLLBACK final** de la transacción está registrado en el [TXT completo del ensayo corregido](Parte2_Desnormalizacion/evidencias/evidencia_top_desnormalizacion_logico_20261009_092837.txt).
+
+La adaptación agrega fecha_hora_pedido_cache, id_categoria_cache y pedido_eliminado_cache a detalle_pedido, con sincronización mediante los disparadores existentes y el mismo índice sobre la fecha copiada. Conserva el JOIN con categoria y el cálculo SUM(subtotal).
+
+La fecha de medición es 2026-06-25 en America/Buenos_Aires, mediante un intervalo diario semiabierto. El ensayo incorpora pedido.eliminado y detalle_pedido.eliminado, ambos BOOLEAN NOT NULL DEFAULT FALSE, como estados propios independientes. pedido_eliminado_cache copia exclusivamente el estado del pedido: restaurarlo no restaura detalles eliminados individualmente. La consulta normalizada filtra ambos estados propios; la desnormalizada filtra el estado propio del detalle y el cache del pedido, sin volver a unir pedido. No se agregan filtros por estado o activo.
 
 ### Requisitos de Parte 2
 
@@ -82,24 +92,40 @@ Validación de la desnormalización:
 psql -X -h localhost -U postgres -d foodstore_copia_trabajo -v ON_ERROR_STOP=1 -P pager=off -f "TP6_FNBC_Desnormalizacion/Parte2_Desnormalizacion/tp_desnormalizacion_top_categorias.sql"
 ```
 
-Los tres scripts utilizan ON_ERROR_STOP y terminan con ROLLBACK. La medición inicial abre una transacción READ ONLY; los scripts de implementación trabajan dentro de transacciones explícitas.
+Los tres scripts utilizan ON_ERROR_STOP y terminan con ROLLBACK. La medición inicial corregida de Parte 2 también contiene DDL dentro de una transacción explícita y requiere respaldo previo; ya no abre una transacción READ ONLY.
 
 Si una ejecución se detiene por un error antes del ROLLBACK final, debe descartarse la transacción mediante ROLLBACK en la misma sesión o cerrando la conexión. No reemplazar el cierre por COMMIT.
 
-El script de desnormalización toma bloqueos ACCESS EXCLUSIVE durante instalación, carga y medición. Puede impedir temporalmente el acceso de otras sesiones a las tablas involucradas; corresponde a una prueba de laboratorio.
+Ambos scripts de Parte 2 toman bloqueos ACCESS EXCLUSIVE durante el ensayo. Pueden impedir temporalmente el acceso de otras sesiones a las tablas involucradas; corresponden a pruebas de laboratorio.
 
 ## Resultados y límites
 
 Parte 1 reconstruyó las tres filas originales, con diferencias vacías en ambos sentidos y conteos 3/2/3/3.
 
-En Parte 2, ambas consultas devolvieron:
+En la ejecución corregida de Parte 2 del 09/10/2026, ambas consultas devolvieron:
 
 | Categoría | Total vendido |
 |---|---:|
 | Bebidas | 5589534.40 |
 | Pizzas | 5215387.22 |
 
-La comparación directa registró:
+La comparación directa corregida registró:
+
+| Medición | Normalizada (ms) | Desnormalizada (ms) |
+|---|---:|---:|
+| Ronda 1 | 49.291 | 1.980 |
+| Ronda 2 | 47.556 | 1.323 |
+| Promedio | 48.4235 | 1.6515 |
+
+Los shared hit fueron **10942 y 565**. Sobre los promedios, la reducción temporal es **96.59 %** y el cociente normalizada/desnormalizada es **29.32**, atribuibles al conjunto columnas más índice. La medición inicial corregida de **62.538 ms** es una referencia previa a las copias y no interviene en esos cálculos. Los shared hit representan accesos en caché, no lecturas físicas ni páginas únicas.
+
+La auditoría completa, incluida la comparación de pedido_eliminado_cache y los registros eliminados, el EXCEPT bidireccional del top y el EXCEPT ALL bidireccional de filas participantes devolvieron cero filas. Las pruebas secuenciales de las cuatro combinaciones, restauraciones independientes, inserción bajo pedido eliminado, traslado a pedido vigente y retorno, cambio simultáneo de fecha y eliminado y corrección de cache arbitrario fueron superadas, junto con las pruebas anteriores de sincronización y DELETE/CASCADE. Los fixtures se deshicieron mediante ROLLBACK TO SAVEPOINT antes de ANALYZE y las mediciones.
+
+Ambos ensayos corregidos de Parte 2 finalizaron con ROLLBACK. Según el control posterior informado por el grupo, quedaron **cero columnas añadidas** y se conservaron **200005 pedidos y 499571 detalles**. Ese control posterior no figura en los dos TXT de ejecución.
+
+### Antecedentes históricos de Parte 2 — sin filtros lógicos, 08/10/2026
+
+La comparación anterior registró:
 
 | Medición | Normalizada (ms) | Desnormalizada (ms) |
 |---|---:|---:|
@@ -107,9 +133,11 @@ La comparación directa registró:
 | Ronda 2 | 41.920 | 1.815 |
 | Promedio | 42.3635 | 1.835 |
 
-Los buffers shared hit fueron 10942 para la normalizada y 564 para la desnormalizada. La mejora observada corresponde al conjunto columnas más índice. Los 47.151 ms de la medición inicial se conservan como referencia, pero no se usan para calcular esa mejora.
+Los buffers históricos shared hit fueron 10942 para la normalizada y 564 para la desnormalizada. La reducción temporal fue 95.67 % y el cociente 23.09, correspondientes al conjunto de dos columnas más índice, sin filtros lógicos. Los 47.151 ms de la medición inicial histórica no intervinieron en ese cálculo. Estos resultados se conservan como antecedentes, sin mezclarlos con las rondas corregidas.
 
-La auditoría completa y el EXCEPT bidireccional devolvieron cero filas. Las pruebas secuenciales de sincronización fueron superadas y se deshicieron mediante SAVEPOINT antes de medir.
+La auditoría y el EXCEPT del top históricos también devolvieron cero filas, y las pruebas secuenciales anteriores se deshicieron mediante SAVEPOINT antes de medir. Esos antecedentes no validan por sí solos las pruebas nuevas de borrado lógico.
+
+### Límites del ensayo
 
 La concurrencia entre sesiones no fue probada. La sincronización soporta READ COMMITTED y puede generar interbloqueos que requieran reintentar la transacción completa.
 

@@ -183,11 +183,31 @@ Trabajo de Unidad 4 sobre `foodstore_copia_trabajo`, organizado en dos partes.
 
 - [Parte1_FNBC](TP6_FNBC_Desnormalizacion/Parte1_FNBC/) — Análisis de `R(LoteID, DepositoID, ResponsableControlID)`, con dependencias LD → C y C → D. Las claves candidatas son LD y LC y todos los atributos son primos: la relación cumple 3FN, pero viola FNBC porque C no es superclave. Se descompuso en `responsable_deposito(C,D)` y `control_lote(L,C)`, ambas en FNBC, con reunión sin pérdida porque el atributo común C determina CD. La dependencia LD → C no queda preservada mediante las restricciones locales y requeriría un control adicional entre tablas. La prueba reconstruyó las tres filas originales, con EXCEPT bidireccional vacío y conteos 3/2/3/3.
 
-- [Parte2_Desnormalizacion](TP6_FNBC_Desnormalizacion/Parte2_Desnormalizacion/) — Adaptación del top cinco de categorías por monto vendido en el día. Se mantuvieron `SUM(subtotal)`, agrupación por nombre y `LIMIT 5`, usando los nombres reales de FoodStore y un intervalo semiabierto para el **25/06/2026 en America/Buenos_Aires**. Se omitieron los filtros `eliminado`, inexistentes en pedido y detalle_pedido, sin agregar filtros por estado o activo. Se eligieron columnas redundantes con sincronización transaccional mediante disparadores y un índice de fecha, conservando el JOIN con categoria; un refresco nocturno de una vista materializada no satisface el requisito de actualización frecuente.
+- [Parte2_Desnormalizacion](TP6_FNBC_Desnormalizacion/Parte2_Desnormalizacion/) — Adaptación del top cinco de categorías por monto vendido en el día. Se mantuvieron `SUM(subtotal)`, agrupación por nombre y `LIMIT 5`, usando los nombres reales de FoodStore y un intervalo semiabierto para el **25/06/2026 en America/Buenos_Aires**. El ensayo corregido incorpora `pedido.eliminado` y `detalle_pedido.eliminado`, ambos BOOLEAN NOT NULL DEFAULT FALSE, como estados propios independientes. La consulta normalizada filtra `dp.eliminado = FALSE AND ped.eliminado = FALSE`; la desnormalizada conserva esa semántica mediante `dp.eliminado = FALSE AND dp.pedido_eliminado_cache = FALSE`. Esta tercera copia redundante representa exclusivamente el estado del pedido: restaurarlo no restaura detalles eliminados individualmente. No se agregan filtros por estado ni por activo. Se eligieron columnas redundantes con sincronización transaccional mediante disparadores y un índice de fecha, conservando el JOIN con categoria; un refresco nocturno de una vista materializada no satisface el requisito de actualización frecuente.
 
 ### Resultados medidos de Parte 2
 
-La carga utilizada contiene 200005 pedidos, 499571 detalles, 50003 productos y 2 categorías. La medición inicial de la consulta normalizada fue de **47.151 ms**.
+La carga documentada contiene 200005 pedidos, 499571 detalles, 50003 productos y 2 categorías. El grupo ejecutó los ensayos corregidos con borrado lógico el 09/10/2026. La medición normalizada inicial fue de **62.538 ms**, antes de incorporar las copias redundantes; no se utiliza para calcular la mejora entre rondas.
+
+**Resultados corregidos de Parte 2 — ejecución del grupo del 09/10/2026.**
+
+La comparación directa se realizó después de cargar, indexar y ejecutar ANALYZE:
+
+| Medición | Normalizada (ms) | Desnormalizada (ms) | Normalizada shared hit | Desnormalizada shared hit |
+|---|---:|---:|---:|---:|
+| Ronda 1 | 49.291 | 1.980 | 10942 | 565 |
+| Ronda 2 | 47.556 | 1.323 | 10942 | 565 |
+| Promedio | 48.4235 | 1.6515 | 10942 | 565 |
+
+La reducción temporal calculada sobre los promedios es **96.59 %**, con cociente normalizada/desnormalizada de **29.32**. La mejora corresponde al **conjunto columnas redundantes más índice**, sin separar el aporte de cada componente. Los **62.538 ms** iniciales no intervienen en estos cálculos. Los shared hit representan accesos resueltos en caché, no lecturas físicas ni páginas únicas.
+
+Ambas consultas corregidas devolvieron **Bebidas: 5589534.40** y **Pizzas: 5215387.22**. Las evidencias aportadas por el grupo registran auditoría inicial y posterior sin diferencias, EXCEPT bidireccional del top vacío y **EXCEPT ALL bidireccional de filas participantes vacío**. La auditoría incluye también registros eliminados.
+
+Se superaron las pruebas secuenciales de las cuatro combinaciones lógicas, restauraciones independientes, inserción bajo pedido eliminado, traslado del detalle a un pedido vigente y retorno, cambio simultáneo de fecha y eliminado y corrección de cache arbitrario, además de las pruebas anteriores de sincronización y DELETE/CASCADE. Los fixtures se deshicieron mediante **ROLLBACK TO SAVEPOINT antes de medir**, sin consumir secuencias.
+
+Ambos ensayos corregidos de Parte 2 contienen DDL transaccional —incluida la medición inicial, que ya no es READ ONLY— y terminaron con **ROLLBACK final**, registrado en los TXT completos. Según la comprobación posterior informada por el grupo, quedaron **cero columnas añadidas**, **200005 pedidos** y **499571 detalles**; ese control posterior no está incluido en los dos TXT.
+
+**Antecedentes históricos del 08/10/2026 — versión sin filtros de borrado lógico.** La medición inicial histórica fue de **47.151 ms**. Las siguientes rondas, sus buffers y su reducción corresponden a esa versión; se conservan sin mezclarlos con los resultados corregidos.
 
 La comparación directa, después de cargar e indexar, registró:
 
@@ -210,3 +230,11 @@ La sincronización propuesta soporta READ COMMITTED y puede producir interbloque
 Las mediciones se realizaron dentro de la transacción de carga, con ANALYZE, calentamiento previo, orden alternado y bloqueos que impidieron actividad concurrente. No se ejecutó VACUUM. Solo hay dos categorías y dos rondas: estos resultados no constituyen un benchmark exhaustivo ni garantizan los mismos tiempos bajo otras condiciones.
 
 El README y el informe final de TP6, enlazados en la documentación principal, reúnen requisitos, scripts, evidencias y capturas reales.
+
+Evidencias corregidas aportadas por el grupo:
+[medición inicial con borrado lógico](TP6_FNBC_Desnormalizacion/Parte2_Desnormalizacion/evidencias/evidencia_top_antes_logico_20261009_092704.txt) y
+[pruebas, auditoría y comparación corregidas](TP6_FNBC_Desnormalizacion/Parte2_Desnormalizacion/evidencias/evidencia_top_desnormalizacion_logico_20261009_092837.txt).
+
+Antecedentes históricos sin filtros lógicos:
+[medición inicial anterior](TP6_FNBC_Desnormalizacion/Parte2_Desnormalizacion/evidencias/evidencia_top_antes_20261008_225517.txt) y
+[comparación anterior](TP6_FNBC_Desnormalizacion/Parte2_Desnormalizacion/evidencias/evidencia_top_desnormalizacion_20261008_232126.txt).

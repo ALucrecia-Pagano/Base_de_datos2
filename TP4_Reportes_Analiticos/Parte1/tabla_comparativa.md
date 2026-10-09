@@ -23,7 +23,7 @@
 
 ## Archivos de planes
 
-- [plan_a_antes.txt](plan_a_antes.txt)
-- [plan_a_despues.txt](plan_a_despues.txt)
-- [plan_b_antes.txt](plan_b_antes.txt)
-- [plan_b_despues.txt](plan_b_despues.txt)
+- [plan_a_antes.txt](plan_a_antes.md)
+- [plan_a_despues.txt](plan_a_despues.md)
+- [plan_b_antes.txt](plan_b_antes.md)
+- [plan_b_despues.txt](plan_b_despues.md)

@@ -1,59 +1,109 @@
 # Practicos Base de Datos II
-Entrega de Practicos para la Materia BDII, desde un repositorio de GIT
+
+Entrega de Practicos para la Materia BDII, desde un repositorio de GIT.
+
 Alumnos: Liendo Mateo, Avila Lucas, Pagano Amanda.
 Comisión: 4.
 Profesor: Neira Sergio.
 
-## Estructura del repositorio
+## Organización y lectura
 
 Todo el trabajo gira en torno a un mismo proyecto integrador: **FoodStore**, un sistema de pedidos tipo delivery (categorías, clientes, productos, pedidos y detalle de pedidos). Cada TP retoma y amplía ese mismo esquema.
 
-```
+El repositorio conserva entregas, scripts de experimentación, respaldos y evidencias históricas. **No constituye una instalación que deba ejecutarse recorriendo todos los SQL en secuencia.** La presencia de un script tampoco implica que sus objetos estén instalados en la base utilizada actualmente. Antes de cualquier ejecución corresponde revisar los requisitos, el entorno y las instrucciones del TP correspondiente.
+
+### Documentación principal
+
+- [Instrucciones para agentes](AGENTS.md)
+- [Protocolo de seguridad](protocolo_seguridad.md)
+- [Informe integrador de TP1 a TP6](Informe_General.md)
+- [README de TP1](TP1_FoodStore/README.md)
+- [README de TP2](TP2_Concurrencia_IA/README.md)
+- [DUIA consolidada de TP3](TP3_Optimizacion/DUIA_COMPLETA.md)
+- [DUIA consolidada de TP4](TP4_Reportes_Analiticos/DUIA_TP4.md)
+- [README de TP5](TP5_Indices_Vistas/README.md)
+- [DUIA consolidada de TP5](TP5_Indices_Vistas/duia.md)
+- [README de TP6](TP6_FNBC_Desnormalizacion/README.md)
+- [Informe final de TP6 en Markdown](TP6_FNBC_Desnormalizacion/informe_final_tp6.md)
+- [Informe final de TP6 en PDF](TP6_FNBC_Desnormalizacion/informe_final_tp6.pdf)
+
+## Estructura del repositorio
+
+Árbol resumido; cada carpeta conserva documentación y evidencias adicionales.
+
+```text
 Practicos/
-├── TP1_FoodStore/                         # TP1: modelado ER, normalización y DDL en PostgreSQL
+├── AGENTS.md
+├── protocolo_seguridad.md
+├── Informe_General.md                     # Informe integrador de TP1 a TP6
+├── TP1_FoodStore/                         # Modelado ER, normalización y DDL
 │   ├── schema.sql
 │   ├── dbdiagram_code.dbml
-│   ├── diagrama_er.png / diagrama_er.pdf
+│   ├── diagrama_er.png
+│   ├── diagrama_er.pdf
 │   └── README.md
-├── TP2_Concurrencia_IA/                   # TP2: integridad, transacciones y concurrencia
-│   ├── parte1/                            # Restricciones de integridad (triggers)
+├── TP2_Concurrencia_IA/                   # Integridad, transacciones y concurrencia
+│   ├── parte1/
 │   │   ├── restricciones_integridad.sql
 │   │   ├── respaldo_foodstore_copia_trabajo.sql
 │   │   └── DUIA_parte1.md
-│   ├── parte2/                            # Laboratorio de concurrencia
+│   ├── parte2/
 │   │   ├── informe_concurrencia.md
 │   │   └── DUIA_Parte2.md
-│   ├── parte3/                            # Lectura crítica de scripts SQL
+│   ├── parte3/
 │   │   ├── ejercicio_lectura_critica.md
 │   │   └── DUIA_Parte3.md
 │   └── README.md
-├── protocolo_seguridad.md                 # Protocolo de seguridad — TP2 Parte 0
-├── AGENTS.md
-├── TP3_Optimizacion/                      # TP3: optimización de consultas con IA (EXPLAIN ANALYZE, índices)
+├── TP3_Optimizacion/                      # EXPLAIN ANALYZE e índices
 │   ├── DUIA_COMPLETA.md
 │   ├── TP3_Semana3_Unidad2_Practica.pdf
-│   ├── Parte 1 - Poblar la base masivamente con datos generados por IA/   # Amanda
-│   ├── Parte 2 - Consultas lentas, EXPLAIN y optimizacion medida/         # Amanda
-│   ├── Parte 3 - Lectura critica de planes interpretados por IA/         # Mateo
-│   ├── Parte 4 - Consultas resumen y subconsultas bajo especificacion precisa/  # Mateo
-│   └── Parte 5 -Competencia de optimizacion entre equipos/               # Equipo completo
-├── TP4_Reportes_Analiticos/               # TP4: reportes analíticos (joins, rankings, subconsultas)
+│   ├── Parte 1 - Poblar la base masivamente con datos generados por IA/
+│   ├── Parte 2 - Consultas lentas, EXPLAIN y optimizacion medida/
+│   ├── Parte 3 - Lectura critica de planes interpretados por IA/
+│   ├── Parte 4 - Consultas resumen y subconsultas bajo especificacion precisa/
+│   └── Parte 5 -Competencia de optimizacion entre equipos/
+├── TP4_Reportes_Analiticos/               # Joins, rankings y subconsultas
 │   ├── DUIA_TP4.md
 │   ├── TP4_Semana4_Unidad2_Practica.pdf
-│   ├── Parte1/                            # Mateo — consultas analíticas lentas
-│   ├── Parte2/                            # Lucas — lectura crítica de planes de join
-│   ├── Parte3/                            # Amanda — rankings y subconsultas bajo spec precisa
-│   └── Parte4/                            # Amanda — competencia de optimización
-├── TP5_Indices_Vistas/                    # TP5: índices, vistas y vista materializada
-│   ├── schema.sql / data.sql / queries.sql   # heredados
-│   ├── duia.md / informe_mediciones.md / README.md
-│   ├── indices.sql / views.sql / specs/   # puntos de entrada (sección 7 de la consigna)
-│   ├── Parte_A_Indices/                   # Amanda — plan de indexado
-│   ├── Parte_B_Vistas/                    # Lucas — vistas y seguridad por roles
-│   └── Parte_C_Vista_Materializada/       # Mateo — vista materializada
+│   ├── Parte1/
+│   ├── Parte2/
+│   ├── Parte3/
+│   └── Parte4/
+├── TP5_Indices_Vistas/                    # Índices, vistas y vista materializada
+│   ├── schema.sql
+│   ├── data.sql
+│   ├── queries.sql
+│   ├── indices.sql
+│   ├── views.sql
+│   ├── specs/
+│   ├── duia.md
+│   ├── informe_mediciones.md
+│   ├── README.md
+│   ├── Parte_A_Indices/
+│   ├── Parte_B_Vistas/
+│   └── Parte_C_Vista_Materializada/
+├── TP6_FNBC_Desnormalizacion/             # FNBC y desnormalización controlada
+│   ├── README.md
+│   ├── informe_final_tp6.md
+│   ├── informe_final_tp6.pdf
+│   ├── Parte1_FNBC/
+│   │   ├── tp_fnbc_control_lote.sql
+│   │   ├── informe_parte1_fnbc.md
+│   │   └── evidencias/
+│   │       └── evidencia_fnbc_20261008_222128.txt
+│   └── Parte2_Desnormalizacion/
+│       ├── medir_top_categorias_antes.sql
+│       ├── tp_desnormalizacion_top_categorias.sql
+│       ├── informe_parte2_desnormalizacion.md
+│       ├── evidencias/
+│       │   ├── evidencia_top_antes_20261008_225517.txt
+│       │   └── evidencia_top_desnormalizacion_20261008_232126.txt
+│       └── capturas/
+│           ├── antes_ronda1.png
+│           ├── despues_ronda1.png
+│           └── auditoria.png
 └── .kiro/steering/                        # Documentos de contexto generados con Kiro
-
-```               
+```
 
 ## TP1 — FoodStore (modelado y DDL)
 
@@ -111,51 +161,52 @@ Continuación de TP3 sobre la misma base masiva (`foodstore_tp3_carga`), ahora c
 
 - **Parte 3** (Amanda) — Dos consultas bajo especificación precisa: un ranking con función de ventana (`DENSE_RANK`) y una subconsulta correlacionada, cada una con una segunda versión de estructura distinta y verificación de equivalencia con `EXCEPT`. En el camino se detectó y corrigió una no-equivalencia real entre `COUNT(*)` y `COUNT(DISTINCT ...)` al replicar manualmente la semántica de `DENSE_RANK`.
 
-- **Parte 4** (Amanda) — Competencia de optimización sobre una consulta propia (top 3 productos por facturación y categoría). El cuello de botella real resultó ser un `Sort` con *spill* a disco, resuelto subiendo `work_mem` de sesión; un índice adicional propuesto se descartó tras confirmar, con un control de orden de mediciones intercaladas, que su aparente mejora era enteramente un efecto de caché acumulado.
+- **Parte 4** (Amanda) — Competencia de optimización sobre una consulta propia (top 3 productos por facturación y categoría). El cuello de botella real resultó ser un `Sort` con *spill* a disco, resuelto subiendo `work_mem` de sesión; un índice adicional propuesto se descartó porque el control con mediciones intercaladas no mostró una mejora adicional consistente del índice.
 
 DUIA consolidada de las 4 partes en `DUIA_TP4.md`.
 
-
 ## TP5 — Índices, vistas y vista materializada
 
-Continuación de la base masiva de TP3/TP4 (`foodstore_tp3_carga`,
-~200.000 pedidos, 499.571 líneas de detalle). El trabajo se armó
-integrando el aporte de cada integrante del equipo sobre la misma
-base heredada, con specs propios en Kiro y verificación propia antes
-de aceptar cada pieza.
+Continuación de la base masiva de TP3/TP4 (`foodstore_tp3_carga`, ~200.000 pedidos, 499.571 líneas de detalle). El trabajo se armó integrando el aporte de cada integrante del equipo sobre la misma base heredada, con specs propios en Kiro y verificación propia antes de aceptar cada pieza.
 
-- **Parte A** (Amanda) — plan de indexado sobre 4 consultas reales
-  con Seq Scan (ranking de clientes, productos vs. promedio de
-  categoría, top 3 por facturación en los últimos 6 meses y productos de una
-  categoría en un rango de precio). Quedaron 2 índices aplicados en
-  firme: el de Q6 (~41%) y el de Q2 (~37%, Seq Scan → Bitmap Heap
-  Scan). Se descartaron el índice parcial de Q5 (ignorado por el
-  planificador, baja selectividad), un índice sobre
-  `detalle_pedido(id_pedido)` redundante con la PK, el BRIN sobre
-  `fecha_hora` (correlación ~0) y el B-tree sobre `fecha_hora` de Q4:
-  se había aceptado con ~8,9%, pero tras la devolución de la cátedra
-  se remidió con 3 rondas archivadas, no mejoró de forma consistente y
-  se descartó. El costo de escritura se midió en `producto` (+47% con
-  los dos índices) y en `detalle_pedido` (sin efecto relevante), y
-  las mediciones que sostienen cada decisión final tienen su salida archivada.
+- **Parte A** (Amanda) — Plan de indexado sobre 4 consultas reales con Seq Scan (ranking de clientes, productos vs. promedio de categoría, top 3 por facturación en los últimos 6 meses y productos de una categoría en un rango de precio). Quedaron 2 índices aplicados en firme: el de Q6 (~41%) y el de Q2 (~37%, Seq Scan → Bitmap Heap Scan). Se descartaron el índice parcial de Q5 (ignorado por el planificador, baja selectividad), un índice sobre `detalle_pedido(id_pedido)` redundante con la PK, el BRIN sobre `fecha_hora` (correlación ~0) y el B-tree sobre `fecha_hora` de Q4: se había aceptado con ~8,9%, pero tras la devolución de la cátedra se remidió con 3 rondas archivadas, no mejoró de forma consistente y se descartó. El costo de escritura se midió en `producto` (+47% con los dos índices) y en `detalle_pedido` (sin efecto relevante), y las mediciones que sostienen cada decisión final tienen su salida archivada.
 
-- **Parte B** (Lucas) — 5 vistas (`vistas.sql`): productos vigentes con categoría, ventas
-  agregadas por cliente, pedidos con los datos del cliente, detalle de pedido con nombre de producto, y
-  una vista de seguridad (`v_usuario_publico`) que expone `usuario`
-  sin la columna `contrasena`. El esquema heredado usa `cliente` sin
-  tabla de autenticación; se agregó una
-  tabla `usuario` nueva sin tocar `cliente` (`usuarios.sql`). Un rol
-  de solo lectura (`seguridad_roles.sql`) tiene `SELECT` sobre las
-  vistas pero no sobre las tablas base. Cada vista se verificó contra
-  una consulta manual equivalente con `EXCEPT`
-  (`verificacion_vistas.sql`).
+- **Parte B** (Lucas) — 5 vistas (`vistas.sql`): productos vigentes con categoría, ventas agregadas por cliente, pedidos con los datos del cliente, detalle de pedido con nombre de producto, y una vista de seguridad (`v_usuario_publico`) que expone `usuario` sin la columna `contrasena`. El esquema heredado usa `cliente` sin tabla de autenticación; se agregó una tabla `usuario` nueva sin tocar `cliente` (`usuarios.sql`). Un rol de solo lectura (`seguridad_roles.sql`) tiene `SELECT` sobre las vistas pero no sobre las tablas base. Cada vista se verificó contra una consulta manual equivalente con `EXCEPT` (`verificacion_vistas.sql`).
 
-- **Parte C** (Mateo) — vista materializada
-  `mv_resumen_ventas_categoria_mes` (facturación,
-  pedidos y unidades por categoría y mes), con `WITH DATA` e índice
-  único que permite `REFRESH CONCURRENTLY`. Medición archivada: 976.1 ms
-  la consulta directa contra 0.054 ms la vista (3 rondas). Se ejecutó
-  y se midió `REFRESH CONCURRENTLY`, con el análisis de bloqueos, del
-  dato desactualizado y de la frecuencia de refresco. Aplicada en firme.
+- **Parte C** (Mateo) — Vista materializada `mv_resumen_ventas_categoria_mes` (facturación, pedidos y unidades por categoría y mes), con `WITH DATA` e índice único que permite `REFRESH CONCURRENTLY`. Medición archivada: 976.1 ms la consulta directa contra 0.054 ms la vista (3 rondas). Se ejecutó y se midió `REFRESH CONCURRENTLY`, con el análisis de bloqueos, del dato desactualizado y de la frecuencia de refresco. Aplicada en firme.
 
 DUIA consolidada en `TP5_Indices_Vistas/duia.md`.
+
+## TP6 — FNBC y desnormalización controlada
+
+Trabajo de Unidad 4 sobre `foodstore_copia_trabajo`, organizado en dos partes.
+
+- [Parte1_FNBC](TP6_FNBC_Desnormalizacion/Parte1_FNBC/) — Análisis de `R(LoteID, DepositoID, ResponsableControlID)`, con dependencias LD → C y C → D. Las claves candidatas son LD y LC y todos los atributos son primos: la relación cumple 3FN, pero viola FNBC porque C no es superclave. Se descompuso en `responsable_deposito(C,D)` y `control_lote(L,C)`, ambas en FNBC, con reunión sin pérdida porque el atributo común C determina CD. La dependencia LD → C no queda preservada mediante las restricciones locales y requeriría un control adicional entre tablas. La prueba reconstruyó las tres filas originales, con EXCEPT bidireccional vacío y conteos 3/2/3/3.
+
+- [Parte2_Desnormalizacion](TP6_FNBC_Desnormalizacion/Parte2_Desnormalizacion/) — Adaptación del top cinco de categorías por monto vendido en el día. Se mantuvieron `SUM(subtotal)`, agrupación por nombre y `LIMIT 5`, usando los nombres reales de FoodStore y un intervalo semiabierto para el **25/06/2026 en America/Buenos_Aires**. Se omitieron los filtros `eliminado`, inexistentes en pedido y detalle_pedido, sin agregar filtros por estado o activo. Se eligieron columnas redundantes con sincronización transaccional mediante disparadores y un índice de fecha, conservando el JOIN con categoria; un refresco nocturno de una vista materializada no satisface el requisito de actualización frecuente.
+
+### Resultados medidos de Parte 2
+
+La carga utilizada contiene 200005 pedidos, 499571 detalles, 50003 productos y 2 categorías. La medición inicial de la consulta normalizada fue de **47.151 ms**.
+
+La comparación directa, después de cargar e indexar, registró:
+
+| Medición | Normalizada (ms) | Desnormalizada (ms) |
+|---|---:|---:|
+| Ronda 1 | 42.807 | 1.855 |
+| Ronda 2 | 41.920 | 1.815 |
+| Promedio | 42.3635 | 1.835 |
+
+Los buffers shared hit fueron **10942** frente a **564**. La reducción de tiempo observada fue de aproximadamente **95.67 %**, atribuible al conjunto **columnas más índice**. Los 47.151 ms iniciales no se utilizaron para calcular esta mejora.
+
+Ambas consultas devolvieron Bebidas: 5589534.40 y Pizzas: 5215387.22. La auditoría completa y el EXCEPT bidireccional devolvieron cero filas; las pruebas secuenciales de sincronización fueron superadas y se deshicieron mediante SAVEPOINT antes de medir.
+
+### Validación y límites de TP6
+
+Ambos scripts de implementación se validaron dentro de transacciones que terminaron con **ROLLBACK**. La migración de Parte 1 y las columnas, índice y triggers de Parte 2 **no quedaron instalados**. El script de medición inicial también termina con ROLLBACK.
+
+La sincronización propuesta soporta READ COMMITTED y puede producir interbloqueos que requieran reintentar la transacción completa. **La concurrencia entre sesiones de esta adaptación no fue probada y su costo adicional de escritura no fue cuantificado.**
+
+Las mediciones se realizaron dentro de la transacción de carga, con ANALYZE, calentamiento previo, orden alternado y bloqueos que impidieron actividad concurrente. No se ejecutó VACUUM. Solo hay dos categorías y dos rondas: estos resultados no constituyen un benchmark exhaustivo ni garantizan los mismos tiempos bajo otras condiciones.
+
+El README y el informe final de TP6, enlazados en la documentación principal, reúnen requisitos, scripts, evidencias y capturas reales.

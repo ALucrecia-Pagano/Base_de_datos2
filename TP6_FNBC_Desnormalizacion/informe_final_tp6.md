@@ -51,9 +51,9 @@ La reducción observada del tiempo es **95.67 %**, con un cociente de tiempos de
 
 La consulta normalizada recorre pedido y busca detalles y productos. La desnormalizada accede por fecha a los 1539 detalles visibles y conserva únicamente el JOIN con categoria.
 
-![Plan normalizado — ronda 1](capturas/antes_ronda1.png)
+![Plan normalizado — ronda 1](Parte2_Desnormalizacion/capturas/antes_ronda1.png)
 
-![Plan desnormalizado — ronda 1](capturas/despues_ronda1.png)
+![Plan desnormalizado — ronda 1](Parte2_Desnormalizacion/capturas/despues_ronda1.png)
 
 ### Validación y límites
 
@@ -61,7 +61,7 @@ Ambas consultas devolvieron **Bebidas: 5589534.40** y **Pizzas: 5215387.22**. El
 
 Las pruebas secuenciales verificaron INSERT, UPDATE, cambios de padres, propagación de fecha y categoría, cambio de nombre, DELETE y CASCADE. Usaron IDs explícitos sin consumir secuencias y se deshicieron con SAVEPOINT antes de medir.
 
-![Auditoría y pruebas de sincronización](capturas/auditoria.png)
+![Auditoría y pruebas de sincronización](Parte2_Desnormalizacion/capturas/auditoria.png)
 
 La sincronización soporta **READ COMMITTED**, utiliza bloqueos FOR SHARE sobre los padres y puede generar interbloqueos que requieran reintentar la transacción completa. **La concurrencia entre sesiones no fue probada.**
 

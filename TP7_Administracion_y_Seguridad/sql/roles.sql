@@ -105,7 +105,10 @@ DO $$ BEGIN CREATE ROLE rol_reportes     NOLOGIN; EXCEPTION WHEN duplicate_objec
 DO $$ BEGIN CREATE ROLE rol_auditoria    NOLOGIN; EXCEPTION WHEN duplicate_object THEN NULL; END $$;
 
 -- 2B. Roles de login (LOGIN)
--- Passwords placeholder: reemplazar mediante Vault / variables de entorno.
+-- Passwords: 'CAMBIAR_POR_VAULT' es un placeholder NO productivo usado solo
+-- en este entorno local de laboratorio. Por política no se versionan secretos
+-- en Git: fuera del laboratorio se gestionan con Vault / variables de entorno
+-- y nunca se escriben en texto plano en el repositorio (design.md D7 / §11).
 -- CONNECTION LIMIT como defensa en profundidad (design.md D7).
 DO $$ BEGIN
     CREATE ROLE app_web LOGIN PASSWORD 'CAMBIAR_POR_VAULT' CONNECTION LIMIT 20;

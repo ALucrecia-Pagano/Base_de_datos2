@@ -16,7 +16,7 @@ El repositorio conserva entregas, scripts de experimentación, respaldos y evide
 
 - [Instrucciones para agentes](AGENTS.md)
 - [Protocolo de seguridad](protocolo_seguridad.md)
-- [Informe integrador de TP1 a TP6](Informe_General.md)
+- [Informe integrador de TP1 a TP6 con avance de TP7](Informe_General.md)
 - [README de TP1](TP1_FoodStore/README.md)
 - [README de TP2](TP2_Concurrencia_IA/README.md)
 - [DUIA consolidada de TP3](TP3_Optimizacion/DUIA_COMPLETA.md)
@@ -26,6 +26,10 @@ El repositorio conserva entregas, scripts de experimentación, respaldos y evide
 - [README de TP6](TP6_FNBC_Desnormalizacion/README.md)
 - [Informe final de TP6 en Markdown](TP6_FNBC_Desnormalizacion/informe_final_tp6.md)
 - [Informe final de TP6 en PDF](TP6_FNBC_Desnormalizacion/informe_final_tp6.pdf)
+- [TP7: plan de preparación local C/D](TP7_Administracion_y_Seguridad/docs/plan_preparacion_local.md)
+- [TP7: informe de auditoría (Parte B)](TP7_Administracion_y_Seguridad/docs/informe_auditoria.md)
+- [TP7: informe del incidente (Parte C)](TP7_Administracion_y_Seguridad/docs/informe_incidente.md)
+- [TP7: bitácora de IA](TP7_Administracion_y_Seguridad/BITACORA.md)
 
 ## Estructura del repositorio
 
@@ -35,7 +39,7 @@ El repositorio conserva entregas, scripts de experimentación, respaldos y evide
 Practicos/
 ├── AGENTS.md
 ├── protocolo_seguridad.md
-├── Informe_General.md                     # Informe integrador de TP1 a TP6
+├── Informe_General.md                     # Informe integrador de TP1 a TP6 con avance de TP7
 ├── TP1_FoodStore/                         # Modelado ER, normalización y DDL
 │   ├── schema.sql
 │   ├── dbdiagram_code.dbml
@@ -102,7 +106,11 @@ Practicos/
 │           ├── antes_ronda1.png
 │           ├── despues_ronda1.png
 │           └── auditoria.png
-└── .kiro/steering/                        # Documentos de contexto generados con Kiro
+├── .kiro/steering/                        # Documentos de contexto generados con Kiro
+└── TP7_Administracion_y_Seguridad/        # Roles, auditoría, simulacro C (D pendiente)
+    ├── sql/                               # roles, funciones, auditoría, instalación, simulacro
+    ├── docs/                              # plan, informes, log anonimizado, evidencias
+    └── BITACORA.md                        # Bitácora de IA del TP7 (E aún parcial)
 ```
 
 ## TP1 — FoodStore (modelado y DDL)
@@ -238,3 +246,15 @@ Evidencias corregidas aportadas por el grupo:
 Antecedentes históricos sin filtros lógicos:
 [medición inicial anterior](TP6_FNBC_Desnormalizacion/Parte2_Desnormalizacion/evidencias/evidencia_top_antes_20261008_225517.txt) y
 [comparación anterior](TP6_FNBC_Desnormalizacion/Parte2_Desnormalizacion/evidencias/evidencia_top_desnormalizacion_20261008_232126.txt).
+
+## TP7 — Administración y seguridad (Unidad 5, en curso)
+
+Trabajo sobre la instancia propia `foodstore_dev` (PostgreSQL 17.11). Estado real:
+
+- **Parte A** (roles y mínimo privilegio): `sql/roles.sql` con spec Kiro y verificación de permisos. Terminada.
+- **Parte B** (auditoría nativa): parámetros activados, secuencia de prueba con `ROLLBACK`, fragmento de log e [informe](TP7_Administracion_y_Seguridad/docs/informe_auditoria.md). Terminada.
+- **Parte C** (simulacro de incidente): instalación persistente, auditoría temporal `all` (restaurada después), secuencia 3 fallidos → éxito → lectura masiva por columnas → escalamiento denegado 42501, log anonimizado, reconstrucción IA conservada íntegra y [informe con contraste y decisión](TP7_Administracion_y_Seguridad/docs/informe_incidente.md). Terminada.
+- **Parte D** (anonimización y equivalencia): pendiente.
+- **Parte E** (cierre de bitácora): parcial — [BITACORA.md](TP7_Administracion_y_Seguridad/BITACORA.md) registra A–C; falta el análisis final y la revisión del historial Git.
+
+Nota de entrega: el PDF exige `BITACORA.md` en la raíz del repositorio; actualmente vive en `TP7_Administracion_y_Seguridad/BITACORA.md`. Resolver su ubicación en el cierre final.

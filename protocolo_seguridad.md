@@ -141,3 +141,15 @@ Consultar:
 ## Regla de fondo
 
 La IA propone; el grupo revisa, autoriza y decide la aplicación. La autorización se limita a la operación aprobada. Ni una explicación convincente, ni una medición favorable, ni un script histórico sustituyen esa autorización.
+
+## Alcance particular del TP7 (Administración y Seguridad)
+
+Lo anterior se mantiene íntegro; este apartado solo precisa su aplicación al TP7, sin modificar reglas ni antecedentes de otros TP.
+
+- **Instancia propia:** todo el TP7 (incluido el simulacro de incidente C) se ejecuta exclusivamente sobre la instancia propia `foodstore_dev` del equipo, nunca sobre bases de terceros ni de otros equipos.
+- **Autorización por paso:** inventario/lectura, respaldo, instalación persistente, cambios de auditoría, simulacro y restauración requieren autorización separada cada uno. Aprobar un script o su guardado no autoriza ejecutarlo.
+- **Respaldo:** custom fechado fuera del repositorio antes de instalar; `pg_restore --list` legible no equivale a restauración probada.
+- **Cambios de clúster:** `CREATE ROLE`, `ALTER SYSTEM` y `pg_reload_conf()` afectan a todo el clúster (todas las bases), aunque se ejecuten conectados a `foodstore_dev`. `ALTER SYSTEM` no admite transacción; `logging_collector=off` exigiría reinicio y queda fuera del alcance.
+- **Restauración de auditoría:** capturar valor, fuente (`pg_settings.source`) y presencia en `postgresql.auto.conf` (`pg_file_settings`) de cada parámetro antes de cambiarlo; restaurar con `SET` si estaba en `auto.conf` o `RESET` si venía de otra fuente, más recarga y verificación en conexión nueva.
+- **Evidencias:** conservar originales y producir copias anonimizadas verificadas (sin mails, nombres, IPs/puertos, contraseñas ni hashes) antes de compartir con una IA. La reconstrucción C.4 usa solo el log anonimizado.
+- **D pendiente:** la anonimización y verificación de equivalencia (Parte D) aún no se ejecutaron al cierre de la Parte C.

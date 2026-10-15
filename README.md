@@ -29,7 +29,9 @@ El repositorio conserva entregas, scripts de experimentación, respaldos y evide
 - [TP7: plan de preparación local C/D](TP7_Administracion_y_Seguridad/docs/plan_preparacion_local.md)
 - [TP7: informe de auditoría (Parte B)](TP7_Administracion_y_Seguridad/docs/informe_auditoria.md)
 - [TP7: informe del incidente (Parte C)](TP7_Administracion_y_Seguridad/docs/informe_incidente.md)
+- [TP7: verificación de equivalencia (Parte D)](TP7_Administracion_y_Seguridad/docs/verificacion_equivalencia.md)
 - [TP7: bitácora de IA](TP7_Administracion_y_Seguridad/BITACORA.md)
+- [Bitácora de IA consolidada (exigida por el PDF, Parte E)](BITACORA.md)
 
 ## Estructura del repositorio
 
@@ -107,10 +109,10 @@ Practicos/
 │           ├── despues_ronda1.png
 │           └── auditoria.png
 ├── .kiro/steering/                        # Documentos de contexto generados con Kiro
-└── TP7_Administracion_y_Seguridad/        # Roles, auditoría, simulacro C (D pendiente)
-    ├── sql/                               # roles, funciones, auditoría, instalación, simulacro
-    ├── docs/                              # plan, informes, log anonimizado, evidencias
-    └── BITACORA.md                        # Bitácora de IA del TP7 (E aún parcial)
+└── TP7_Administracion_y_Seguridad/        # Roles, auditoría, simulacro C, equivalencia D
+    ├── sql/                               # roles, funciones, auditoría, instalación, simulacro, anonimización
+    ├── docs/                              # plan, informes, log anonimizado, equivalencia, evidencias
+    └── BITACORA.md                        # Bitácora de trabajo de TP7 (antecedente; la consolidada vive en la raíz)
 ```
 
 ## TP1 — FoodStore (modelado y DDL)
@@ -254,7 +256,7 @@ Trabajo sobre la instancia propia `foodstore_dev` (PostgreSQL 17.11). Estado rea
 - **Parte A** (roles y mínimo privilegio): `sql/roles.sql` con spec Kiro y verificación de permisos. Terminada.
 - **Parte B** (auditoría nativa): parámetros activados, secuencia de prueba con `ROLLBACK`, fragmento de log e [informe](TP7_Administracion_y_Seguridad/docs/informe_auditoria.md). Terminada.
 - **Parte C** (simulacro de incidente): instalación persistente, auditoría temporal `all` (restaurada después), secuencia 3 fallidos → éxito → lectura masiva por columnas → escalamiento denegado 42501, log anonimizado, reconstrucción IA conservada íntegra y [informe con contraste y decisión](TP7_Administracion_y_Seguridad/docs/informe_incidente.md). Terminada.
-- **Parte D** (anonimización y equivalencia): pendiente.
-- **Parte E** (cierre de bitácora): parcial — [BITACORA.md](TP7_Administracion_y_Seguridad/BITACORA.md) registra A–C; falta el análisis final y la revisión del historial Git.
+- **Parte D** (anonimización y equivalencia): `sql/usuario_anon.sql` ejecutado una vez con `ROLLBACK` (equivalencia verificada sobre 2 usuarios, 2 roles y un mes; sin eliminados en la muestra ni múltiples meses; nada quedó instalado) e [informe](TP7_Administracion_y_Seguridad/docs/verificacion_equivalencia.md). Terminada técnicamente, pendiente de commit/push.
+- **Parte E** (cierre de bitácora): [BITACORA.md](BITACORA.md) consolidada en la raíz según el PDF (registros A–C intactos, D agregada, análisis del caso más significativo e historial Git). Consolidada documentalmente, pendiente de revisión y publicación final.
 
-Nota de entrega: el PDF exige `BITACORA.md` en la raíz del repositorio; actualmente vive en `TP7_Administracion_y_Seguridad/BITACORA.md`. Resolver su ubicación en el cierre final.
+Nota de entrega: el PDF exige `BITACORA.md` en la raíz del repositorio; resuelto con `BITACORA.md` (consolidada). La copia de trabajo en `TP7_Administracion_y_Seguridad/BITACORA.md` se conserva como antecedente.

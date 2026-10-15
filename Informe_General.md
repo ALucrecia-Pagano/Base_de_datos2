@@ -12,9 +12,9 @@
 
 ## Introducción
 
-Este informe integra los seis trabajos prácticos de la cursada sobre **FoodStore**. El recorrido comprende modelado y normalización (TP1), integridad y concurrencia (TP2), carga masiva y optimización (TP3), reportes analíticos (TP4), índices y vistas (TP5), y FNBC y desnormalización controlada (TP6). El TP7 (Administración y seguridad, Unidad 5) está en curso —Partes A–C terminadas, D pendiente— y tiene sección propia más abajo.
+Este informe integra los seis trabajos prácticos de la cursada sobre **FoodStore**. El recorrido comprende modelado y normalización (TP1), integridad y concurrencia (TP2), carga masiva y optimización (TP3), reportes analíticos (TP4), índices y vistas (TP5), y FNBC y desnormalización controlada (TP6). El TP7 (Administración y seguridad, Unidad 5) tiene las Partes A–D terminadas técnicamente y la Parte E consolidada documentalmente, pendiente de revisión y publicación final (commit/push manual); tiene sección propia más abajo.
 
-En TP1 a TP5 se documentó el uso de Kiro, OpenCode o GitHub Copilot según la etapa y el integrante. En las correcciones de TP5 también se utilizaron Claude Code y Claude, registrados en su DUIA. En TP6 se utilizaron **ChatGPT y Codex CLI** para analizar, proponer scripts, revisar evidencias y preparar documentación. En TP7 (Unidad 5, en curso) se utilizan **Kiro** (especificación de roles), **OpenCode con Muse Spark 1.3 Free** (preparación, validación, instalación, simulacro y reconstrucción C.4) y asistencia de **Codex** (inventario local), con revisión y autorización humana por paso. Las propuestas se revisaron y los cambios de archivos se realizaron con autorización humana; las ejecuciones en PostgreSQL fueron realizadas por el grupo y sus salidas se utilizaron como evidencia. No se atribuyen a TP6 las herramientas utilizadas en otras entregas.
+En TP1 a TP5 se documentó el uso de Kiro, OpenCode o GitHub Copilot según la etapa y el integrante. En las correcciones de TP5 también se utilizaron Claude Code y Claude, registrados en su DUIA. En TP6 se utilizaron **ChatGPT y Codex CLI** para analizar, proponer scripts, revisar evidencias y preparar documentación. En TP7 (Unidad 5) se utilizan **Kiro** (especificación de roles), **OpenCode con Muse Spark 1.3 Free** (preparación, validación, instalación, simulacro, reconstrucción C.4 y anonimización/equivalencia D) y asistencia de **Codex** (inventario local), con revisión y autorización humana por paso. Las propuestas se revisaron y los cambios de archivos se realizaron con autorización humana; las ejecuciones en PostgreSQL fueron realizadas por el grupo y sus salidas se utilizaron como evidencia. No se atribuyen a TP6 las herramientas utilizadas en otras entregas.
 
 Las fuentes principales son las declaraciones y documentos de cada trabajo: [TP1](TP1_FoodStore/README.md), [TP2](TP2_Concurrencia_IA/README.md), [DUIA de TP3](TP3_Optimizacion/DUIA_COMPLETA.md), [DUIA de TP4](TP4_Reportes_Analiticos/DUIA_TP4.md), [DUIA de TP5](TP5_Indices_Vistas/duia.md) y [documentación de TP6](TP6_FNBC_Desnormalizacion/README.md).
 
@@ -232,7 +232,7 @@ Antecedentes históricos sin filtros lógicos:
 [medición inicial anterior](TP6_FNBC_Desnormalizacion/Parte2_Desnormalizacion/evidencias/evidencia_top_antes_20261008_225517.txt) y
 [comparación anterior](TP6_FNBC_Desnormalizacion/Parte2_Desnormalizacion/evidencias/evidencia_top_desnormalizacion_20261008_232126.txt).
 
-## TP7 — Administración y seguridad (Unidad 5, en curso; Parte D pendiente)
+## TP7 — Administración y seguridad (Unidad 5; A–D terminadas, E consolidada pendiente de publicación)
 
 Trabajo sobre la instancia propia `foodstore_dev` (PostgreSQL 17.11), con autorización por paso, respaldo custom previo y restauración de auditoría.
 
@@ -246,9 +246,27 @@ Trabajo sobre la instancia propia `foodstore_dev` (PostgreSQL 17.11), con autori
 
 **Decisión humana (aprobada por la integrante que dirige la sesión).** Al tratarse de prueba autorizada con sintéticas y escalamiento rechazado, no se bloquean direcciones ni se cambian credenciales adicionales; se conservan evidencias y se verifica ausencia de membresías indebidas. Ante un caso real equivalente: validar origen y cuenta; si se confirma acceso no autorizado, revocar sesiones y restablecer la credencial; el bloqueo del origen depende de esa investigación. Medidas reales propuestas, no ejecutadas.
 
-**Límites y pendientes.** Restauración del respaldo no probada; concurrencia y costos no medidos. **Parte D pendiente** (anonimización y equivalencia). **Parte E parcial**: bitácora con A–C; falta análisis final del error más significativo y revisión del historial Git. Nota de entrega: el PDF exige `BITACORA.md` en la raíz; actualmente está en `TP7_Administracion_y_Seguridad/BITACORA.md` — resolver en el cierre final.
+**Parte D — Anonimización y equivalencia (ejecutada).** `TP7_Administracion_y_Seguridad/sql/usuario_anon.sql`
+en una sola pasada (`psql -X`, `PSQL_EXIT=0`, `ROLLBACK` final): `usuario_anon` con sintéticos
+deterministas `.invalid` (sin columna de contraseña; sin nombres, correos ni credenciales originales;
+los valores sintéticos conservan el ID como sufijo, limitación documentada de seudonimización), agregación por rol y mes
+de alta sobre ambas tablas con `EXCEPT ALL` bidireccional que aborta ante diferencias. Resultado:
+agregaciones idénticas (`VENDEDOR|2026-10-01|1`, `USUARIO|2026-10-01|1`),
+`NOTICE: equivalencia verificada: 2 filas totales, 2 grupos rol×mes`; `usuario_anon` ausente después,
+conteos originales intactos (2/3/3/5/7 + usuario 2). Alcance sin extrapolar: 2 usuarios, 2 roles, un mes;
+sin eliminados en la muestra (no se probó ese caso ni múltiples meses); el `id` original es recuperable
+desde los sintéticos (seudonimización de laboratorio, no anonimización irreversible); `pg_restore --list`
+legible (284 entradas TOC) no equivale a restauración probada. Salida íntegra en
+`TP7_Administracion_y_Seguridad/docs/evidencias/salida_psql_usuario_anon_20261015_091628.txt`; informe en
+`TP7_Administracion_y_Seguridad/docs/verificacion_equivalencia.md`.
 
-Fuentes: [informe de auditoría](TP7_Administracion_y_Seguridad/docs/informe_auditoria.md), [informe del incidente](TP7_Administracion_y_Seguridad/docs/informe_incidente.md), [respuesta IA](TP7_Administracion_y_Seguridad/docs/respuesta_ia_incidente.md), [log anonimizado](TP7_Administracion_y_Seguridad/docs/log_simulacro_anonimizado.txt), [evidencia de ejecución](TP7_Administracion_y_Seguridad/docs/evidencias/ejecucion_20261015_0215.md), [bitácora TP7](TP7_Administracion_y_Seguridad/BITACORA.md).
+**Límites y pendientes.** Restauración de respaldos no probada; concurrencia y costos no medidos.
+**Parte E consolidada documentalmente**: [BITACORA.md](BITACORA.md) en la raíz (registros A–C intactos,
+D agregada, caso más significativo y revisión Git); la copia de trabajo
+`TP7_Administracion_y_Seguridad/BITACORA.md` se conserva como antecedente. D y E **todavía no tienen
+commit** (rama `tp7-parte-d`): no están publicadas; el commit/push final lo realiza manualmente la usuaria.
+
+Fuentes: [informe de auditoría](TP7_Administracion_y_Seguridad/docs/informe_auditoria.md), [informe del incidente](TP7_Administracion_y_Seguridad/docs/informe_incidente.md), [respuesta IA](TP7_Administracion_y_Seguridad/docs/respuesta_ia_incidente.md), [log anonimizado](TP7_Administracion_y_Seguridad/docs/log_simulacro_anonimizado.txt), [evidencia de ejecución C](TP7_Administracion_y_Seguridad/docs/evidencias/ejecucion_20261015_0215.md), [informe de equivalencia D](TP7_Administracion_y_Seguridad/docs/verificacion_equivalencia.md), [salida íntegra D](TP7_Administracion_y_Seguridad/docs/evidencias/salida_psql_usuario_anon_20261015_091628.txt), [bitácora TP7](TP7_Administracion_y_Seguridad/BITACORA.md), [bitácora consolidada](BITACORA.md).
 
 ## Conclusión
 

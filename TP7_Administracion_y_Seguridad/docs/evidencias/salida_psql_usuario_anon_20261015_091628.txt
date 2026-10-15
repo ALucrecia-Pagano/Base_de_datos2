@@ -1,0 +1,29 @@
+BEGIN
+SET
+SET
+DO
+CREATE TABLE
+COMMENT
+INSERT 0 2
+   rol    |  mes_alta  | cantidad 
+----------+------------+----------
+ VENDEDOR | 2026-10-01 |        1
+ USUARIO  | 2026-10-01 |        1
+(2 rows)
+
+   rol    |  mes_alta  | cantidad 
+----------+------------+----------
+ VENDEDOR | 2026-10-01 |        1
+ USUARIO  | 2026-10-01 |        1
+(2 rows)
+
+   rol    |  mes_alta  | cantidad_anon | cantidad_real 
+----------+------------+---------------+---------------
+ VENDEDOR | 2026-10-01 |             1 |             1
+ USUARIO  | 2026-10-01 |             1 |             1
+(2 rows)
+
+psql:TP7_Administracion_y_Seguridad/sql/usuario_anon.sql:157: NOTICE:  equivalencia verificada: 2 filas totales, 2 grupos rol×mes
+DO
+ROLLBACK
+PSQL_EXIT=0

@@ -152,4 +152,11 @@ Lo anterior se mantiene íntegro; este apartado solo precisa su aplicación al T
 - **Cambios de clúster:** `CREATE ROLE`, `ALTER SYSTEM` y `pg_reload_conf()` afectan a todo el clúster (todas las bases), aunque se ejecuten conectados a `foodstore_dev`. `ALTER SYSTEM` no admite transacción; `logging_collector=off` exigiría reinicio y queda fuera del alcance.
 - **Restauración de auditoría:** capturar valor, fuente (`pg_settings.source`) y presencia en `postgresql.auto.conf` (`pg_file_settings`) de cada parámetro antes de cambiarlo; restaurar con `SET` si estaba en `auto.conf` o `RESET` si venía de otra fuente, más recarga y verificación en conexión nueva.
 - **Evidencias:** conservar originales y producir copias anonimizadas verificadas (sin mails, nombres, IPs/puertos, contraseñas ni hashes) antes de compartir con una IA. La reconstrucción C.4 usa solo el log anonimizado.
-- **D pendiente:** la anonimización y verificación de equivalencia (Parte D) aún no se ejecutaron al cierre de la Parte C.
+- **D ejecutada:** la anonimización y verificación de equivalencia (Parte D) se ejecutó una vez con
+  `ROLLBACK` final (`PSQL_EXIT=0`): `usuario_anon` se creó durante la prueba y se revirtió, **no quedó
+  instalada**; equivalencia verificada sobre 2 usuarios, 2 roles y un mes (sin eliminados en la muestra ni
+  múltiples meses); salida íntegra en `TP7_Administracion_y_Seguridad/docs/evidencias/` e informe en
+  `TP7_Administracion_y_Seguridad/docs/verificacion_equivalencia.md`.
+- **E consolidada documentalmente:** [BITACORA.md](BITACORA.md) en la raíz (versión consolidada exigida por
+  el PDF); la copia de trabajo `TP7_Administracion_y_Seguridad/BITACORA.md` se conserva como antecedente.
+  D y E pendientes de revisión y publicación final (commit/push manual).

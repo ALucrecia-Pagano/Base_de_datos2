@@ -22,14 +22,45 @@
 
 ## 2. Contraste: C.4 contra lo ejecutado
 
+El [prompt literal propio para C.4](prompts_propios_recuperados_20261015.md#p19473) se recuperó del chat de preparación, donde pedía usar exclusivamente el log anonimizado. La usuaria aportó posteriormente la reconstrucción conservada en la respuesta íntegra. Esto documenta el pedido y su seguimiento en el chat; no sustituye una exportación independiente del contexto completo de la sesión de OpenCode.
+
+### Qué acertó la IA
+
 - **Acertó** en autenticaciones fallidas/exitosas (3 `NULL` + id exacto), lectura con columnas permitidas sin credencial y escalamiento denegado 42501 bajo `app_web`.
+- Identificó a `postgres` como usuario de la sesión y los cambios explícitos a `rol_soporte` y `app_web`. La sesión administrativa orquesta `SET ROLE`; no todas las operaciones conservan privilegios efectivos de superusuario y no se trata de una intrusión real.
 - **Filas devueltas:** el log anonimizado muestra solo el texto del `SELECT` masivo, no sus filas. Las 2 filas se comprobaron en la **salida del cliente** (`salida_psql_simulacro_20261015_0210.txt`, fuera del repo), no en el log. La IA lo señaló correctamente como no verificable en el log.
-- **"Origen local":** no se demuestra con la IP sustituida del anonimizado (`198.51.100.7` es documentación, no evidencia). El origen real (`::1`, instalación propia) consta en el fragmento original y en el inventario del equipo, no en la copia entregada a la IA.
 - **SQLSTATE 42501:** la línea `DENEGADO … 42501` también es instrumentación del guion (`RAISE LOG` tras verificar), no evidencia independiente de sí misma. La corroboración independiente está en: el `script` (manejador que solo acepta 42501 y aborta como `HALLAZGO` en otro caso), la salida del cliente (`NOTICE … DENEGADO … usuario=app_web`) y la comprobación posterior de membresías (0 filas `app_web → admin_datos`).
-- **Definición interna de `fn_autenticar`:** el fragmento registra llamadas y el comentario visible del guion (`fn` no cambia identidad PG), pero no la definición completa de la función; la semántica `NULL` genérico se conoce por `sql/fn_autenticar.sql`, fuera de lo entregado a la IA.
-- **Bloquear el origen:** la IA lo propuso como hipótesis. No se justifica automáticamente: exigiría validar el origen real y contar con autorización, y aquí el origen era la propia sesión autorizada.
 - **Cambio de rol ≠ escalada por `fn_autenticar`:** los `SET LOCAL ROLE rol_soporte/app_web` son acciones explícitas del laboratorio (visibles como sentencias); `fn_autenticar` solo devolvió el id sin cambiar `session_user`. No presentarlos como escalada lograda.
 - **Instalación vs simulacro:** la instalación persistió con `COMMIT` (objetos y sintéticos quedan); el simulacro terminó con `ROLLBACK` (sin cambios de datos). La validación previa (`preparar_*.sql`) también revirtió todo y no dejó objetos.
+
+### Qué omitió o no desarrolló
+
+No se identifica una omisión comprobable adicional que deba imputarse a la IA a partir
+del log entregado. La falta de filas devueltas, secreto correcto y alcance fuera del
+fragmento son límites que la propia respuesta reconoce, no omisiones inventadas.
+
+### Qué afirmó sin respaldo suficiente del log
+
+- **"Origen local":** no se demuestra con la IP sustituida del anonimizado (`198.51.100.7` es documentación, no evidencia). El origen real (`::1`, instalación propia) consta en el fragmento original y en el inventario del equipo, no en la copia entregada a la IA.
+- **Definición interna de `fn_autenticar`:** el fragmento registra llamadas y el comentario visible del guion (`fn` no cambia identidad PG), pero no la definición completa de la función; la semántica `NULL` genérico se conoce por `sql/fn_autenticar.sql`, fuera de lo entregado a la IA.
+
+La referencia de la respuesta a un “origen local” no queda acreditada por la dirección
+anonimizada. Asimismo, la afirmación de que el diseño de NULL genérico era visible en el
+código registrado excede el fragmento: la definición completa de la función no estaba allí.
+No se le atribuye haber omitido a `postgres` ni haber afirmado una intrusión hostil.
+
+### Evaluación de la contención propuesta
+
+- **Bloquear el origen:** la IA lo propuso como hipótesis. No se justifica automáticamente: exigiría validar el origen real y contar con autorización, y aquí el origen era la propia sesión autorizada.
+
+Esta recomendación era condicional, no una afirmación de intrusión hostil ni un error
+de hecho atribuido a la IA; su aplicación real exigiría investigación y autorización.
+
+### Límite del ejercicio autodescriptivo
+
+El log incluye comentarios, marcadores y mensajes instrumentados de un laboratorio
+autodescriptivo. Esas pistas facilitaron reconocer el escenario controlado; este resultado
+no demuestra capacidad para reconstruir cualquier incidente real.
 
 ## 3. Decisión humana (aprobada por la integrante que dirige esta sesión)
 
@@ -43,7 +74,7 @@ Decisión aprobada por la integrante que dirige esta sesión; no se atribuye apr
   estaban pendientes la Parte D y el cierre de la bitácora E; estado actual: D ejecutada
   ([verificación de equivalencia](verificacion_equivalencia.md)) y bitácora consolidada en la raíz
   ([BITACORA.md](../../BITACORA.md)).
-- La Parte C cierra con this informe + respuesta IA íntegra + log anonimizado + evidencia fechada.
+- La Parte C cierra con este informe + respuesta IA íntegra + log anonimizado + evidencia fechada.
 
 ## Revisión documental de codificación (2026-10-15)
 

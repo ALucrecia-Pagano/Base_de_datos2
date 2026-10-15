@@ -1,4 +1,9 @@
--- TP7 C/D — preparar_entorno_local.sql (VALIDACIÓN REVERSIBLE, no instala).
+-- TP7 C/D — preparar_entorno_local.sql (validación reversible; no instala).
+-- Versión histórica validada con ROLLBACK:
+-- ../docs/evidencias/validacion_20261015_014013.md (funciones internas de 0060cfd).
+-- Guardas actuales: pruebas negativas directa e incluida, exit 3, según
+-- ../docs/evidencias/verificacion_guardas_public_20261015_124512.md.
+-- No se acredita una nueva ejecución completa de este preparador modificado.
 -- No modifica A/B, TP5 ni BITACORA.md. Sin COMMIT ni ALTER SYSTEM. Termina en ROLLBACK.
 -- Requiere: psql -v lab_c_password_01='…' -v lab_c_password_02='…' -f preparar_entorno_local.sql
 -- Advertencia: -v NO evita exposición en historial shell, ps ni log del servidor
@@ -127,7 +132,9 @@ CREATE UNIQUE INDEX idx_mv_resumen_ventas_categoria_mes
 -- (crypt/gen_salt sin calificar) se eliminan de este archivo por vulnerables;
 -- la evidencia previa (validacion_20261015_014013.md) corresponde a esas
 -- versiones internas del commit 0060cfd, recuperables vía git show.
--- No se afirma que las versiones corregidas hayan sido ejecutadas.
+-- Las funciones canónicas corregidas sí se aplicaron mediante el corrector:
+-- ../docs/evidencias/aplicacion_correccion_seguridad_20261015_1121.md.
+-- Esto no acredita una nueva ejecución completa de este archivo modificado.
 \ir fn_autenticar.sql
 \ir fn_resetear_password.sql
 
@@ -213,5 +220,6 @@ $$;
 RELEASE SAVEPOINT sp_hash;
 
 ROLLBACK;
--- Futuro (no ejecutado): respaldo custom fechado fuera del repo + captura pg_settings de auditoría;
+-- Previsión histórica al preparar este archivo: respaldo y captura de auditoría.
+-- Ejecución posterior acreditada en ../docs/evidencias/ejecucion_20261015_0215.md;
 -- con autorización separada, ALTER SYSTEM de logs + pg_reload_conf(). Sin ALTER SYSTEM ni COMMIT aquí.

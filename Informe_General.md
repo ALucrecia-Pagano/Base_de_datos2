@@ -234,9 +234,13 @@ Antecedentes históricos sin filtros lógicos:
 
 ## TP7 — Administración y seguridad (Unidad 5; A–E y correcciones de seguridad publicadas)
 
+> Estado editorial actual: cierre anterior publicado en `2b80fcf`; los nuevos ajustes
+> documentales de esta revisión están sin publicar y pendientes de revisión humana.
+> No se declara entrega final.
+
 Trabajo sobre la instancia propia `foodstore_dev` (PostgreSQL 17.11), con autorización por paso, respaldo custom previo y restauración de auditoría.
 
-**Parte A — Roles y mínimo privilegio (terminada).** Especificación Kiro (requirements + design, RF-01 a RF-07) y `TP7_Administracion_y_Seguridad/sql/roles.sql`: 5 roles de grupo NOLOGIN + 2 login (`app_web` hereda lectura/escritura; `admin_datos` con permisos directos, sin `SUPERUSER`), columna `usuario.contrasena` excluida de `rol_soporte`, `ALTER DEFAULT PRIVILEGES` para tablas/secuencias futuras. Verificación "ni más, ni menos" archivada; propuestas amplias de IA (`GRANT ALL`) rechazadas y registradas. Estado vigente de roles y permisos capturado el 2026-10-15 ([`\du` y `role_table_grants`](TP7_Administracion_y_Seguridad/docs/evidencias/roles_vigentes_20261015.md), posterior a la corrección).
+**Parte A — Roles y mínimo privilegio (terminada).** Especificación Kiro (requirements + design, RF-01 a RF-07) y `TP7_Administracion_y_Seguridad/sql/roles.sql`: 5 roles de grupo NOLOGIN + 2 login (`app_web` hereda lectura/escritura; `admin_datos` con permisos directos, sin `SUPERUSER`), columna `usuario.contrasena` excluida de `rol_soporte`, `ALTER DEFAULT PRIVILEGES` para tablas/secuencias futuras. Verificación "ni más, ni menos" archivada; propuestas amplias solicitadas deliberadamente a la IA (`GRANT ALL`) rechazadas por mínimo privilegio y registradas, sin presentarlas como errores espontáneos. Estado vigente de roles y permisos capturado el 2026-10-15 ([`\du` y `role_table_grants`](TP7_Administracion_y_Seguridad/docs/evidencias/roles_vigentes_20261015.md), posterior a la corrección).
 
 **Parte B — Auditoría nativa (terminada).** Activación (`log_connections`, `log_disconnections`, `log_statement=all`, `log_line_prefix`) con `logging_collector` ya en `on`, secuencia de prueba con `ROLLBACK` (lectura + INSERT/UPDATE revertidos + login fallido vía función y conexión fallida real) y fragmento de 24 líneas. Se documentó qué audita el mecanismo (quién/qué/cuándo/dónde) y sus límites (sin detalle fila por fila, sin interior de `SECURITY DEFINER`, sin filtro por objeto), y que el propio log es un activo sensible (texto plano, acceso restringido a cuenta del servicio/administradores y `SUPERUSER`/`pg_read_server_files`).
 

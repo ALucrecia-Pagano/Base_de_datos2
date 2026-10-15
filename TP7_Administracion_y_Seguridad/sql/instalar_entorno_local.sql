@@ -1,4 +1,8 @@
--- TP7 C/D — instalar_entorno_local.sql (INSTALACIÓN PERSISTENTE, para revisión).
+-- TP7 C/D — instalar_entorno_local.sql (instalación histórica acreditada).
+-- Versión histórica con COMMIT: ../docs/evidencias/ejecucion_20261015_0215.md.
+-- Guardas actuales: pruebas negativas directa e incluida, exit 3, según
+-- ../docs/evidencias/verificacion_guardas_public_20261015_124512.md.
+-- No se acredita una nueva ejecución completa del instalador modificado.
 -- Basado en preparar_entorno_local.sql, cuya validación reversible ya pasó (exit 0,
 -- ROLLBACK final). Ese archivo de validación se conserva intacto con ROLLBACK;
 -- ESTE archivo es el único destinado a persistir, y termina con COMMIT únicamente
@@ -135,7 +139,9 @@ CREATE UNIQUE INDEX idx_mv_resumen_ventas_categoria_mes
 -- (crypt/gen_salt sin calificar) se eliminan de este archivo por vulnerables;
 -- la evidencia de instalación (ejecucion_20261015_0215.md) corresponde a esas
 -- versiones internas del commit 0060cfd, recuperables vía git show.
--- No se afirma que las versiones corregidas hayan sido ejecutadas.
+-- Las funciones canónicas corregidas sí se aplicaron mediante el corrector:
+-- ../docs/evidencias/aplicacion_correccion_seguridad_20261015_1121.md.
+-- Esto no acredita una nueva ejecución completa de este archivo modificado.
 \ir fn_autenticar.sql
 \ir fn_resetear_password.sql
 

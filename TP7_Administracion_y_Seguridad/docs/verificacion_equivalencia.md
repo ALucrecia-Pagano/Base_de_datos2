@@ -34,6 +34,8 @@ anonimización irreversible: no desaparece toda posibilidad de identificación.
 
 ## 3. Consultas
 
+El [prompt literal propio de preparación de D](prompts_propios_recuperados_20261015.md#p75926) solicita las dos consultas equivalentes por rol y mes, con la misma población y comparación en ambos sentidos. Se conserva también el [pedido literal de ejecución y evidencia](prompts_propios_recuperados_20261015.md#p81604). Ambos se recuperaron del chat de trabajo y se relacionaron con los resultados aportados por la usuaria; no son reconstrucciones posteriores.
+
 Agregación — cantidad de usuarios por rol y mes de alta:
 
 - Sobre anonimizada: `SELECT rol, mes_alta, COUNT(*) … GROUP BY rol, mes_alta`.
@@ -106,8 +108,6 @@ Secuencia final de la salida: `DO` → `ROLLBACK`, `PSQL_EXIT=0`.
 
 ## 5. Qué no debe salir hacia una IA sin protección previa
 
-Los datos personales de FoodStore —nombres, apellidos, mails, celulares y
-fechas exactas de alta— no deben enviarse a un asistente de IA sin pasar antes
-por este proceso de anonimización. Las credenciales y sus hashes (`contrasena`)
-deben excluirse siempre: no se anonimizan, se omiten por completo, ya que
-exponerlos habilita robo de credenciales y escalada de privilegios.
+Los datos personales de usuario —nombre, apellido, mail, celular y fecha exacta de alta— y de cliente —`nombre_completo`, `email`, `telefono` y `direccion`— no deben enviarse a un asistente de IA sin protección previa mediante el proceso de anonimización.
+El script D ensaya la transformación de `usuario`; no transforma ni valida una copia de `cliente`, cuyos datos también deben protegerse antes de compartirlos.
+Las contraseñas y sus hashes (`contrasena`) deben excluirse siempre: no se anonimizan, se omiten por completo, porque su exposición habilita robo de credenciales y escalada de privilegios.

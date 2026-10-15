@@ -1,3 +1,6 @@
+> **Antecedente histórico conservado.** La bitácora consolidada exigida por el PDF
+> está en [BITACORA.md de la raíz](../BITACORA.md); este archivo no la reemplaza.
+
 # TP7 — BITACORA de interacciones con IA (Punto de partida + Parte A: roles)
 
 Proyecto: FoodStore — Base de Datos II (UTN FRM).

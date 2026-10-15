@@ -59,12 +59,13 @@ Los archivos siguen teniendo 24 y 209 líneas, respectivamente.
 ## Procedencia de prompts y limitaciones
 
 La consigna PDF exige el prompt enviado, respuesta relevante y validación/corrección humana.
-Se revisaron la bitácora raíz, la [bitácora histórica](../BITACORA.md), los documentos de TP7 y los
-nombres de archivos de su historial Git. No se encontraron exportaciones originales independientes
-de las conversaciones históricas. No hay archivos adjuntos accesibles en esta conversación.
-Las bitácoras son antecedentes comprobables, pero no permiten certificar literalidad de sus prompts.
-Los resúmenes reconstruidos y las transcripciones adaptadas conservan sus etiquetas; queda pendiente
-que el equipo aporte las transcripciones originales si las conserva.
+**Alcance de aquella revisión:** se revisaron la bitácora raíz, la [bitácora histórica](../BITACORA.md),
+los documentos de TP7 y los nombres de archivos de su historial Git, sin recuperar entonces el chat
+completo de trabajo. La conclusión inicial de que no había textos originales disponibles queda
+rectificada para nuestra etapa por la [recuperación posterior de 22 prompts propios](prompts_propios_recuperados_20261015.md).
+Esos textos sí constaban literalmente en el chat y ahora se conservan con su procedencia.
+Las filas resumidas o adaptadas no se convierten retrospectivamente en citas; se enlazan a sus fuentes.
+Las sesiones de otros integrantes no se recuperaron ni se modificaron en esta intervención.
 
 La [respuesta original de Parte C](respuesta_ia_incidente.md) se conserva íntegra.
 El [prompt actual](prompt_codex_revision_20261015.md) se transcribe desde el mensaje del usuario
@@ -144,3 +145,79 @@ simulacro completo ni cambios de permisos, configuración persistente o datos.
 - Scripts, evidencias anteriores, logs originales, respuesta C y README no se modificaron.
   No se reconstruyeron transcripciones históricas faltantes. Sin commit/push/merge.
   Revisión y aprobación humana del resultado pendientes.
+
+
+## Revisión editorial posterior al cierre 2b80fcf
+
+Estado al iniciar: main limpio, HEAD y referencia local origin/main en `2b80fcf`.
+Cierre anterior publicado según el historial local y el dato del usuario; no se consultó
+el remoto por red. Los presentes ajustes documentales siguen sin publicar y pendientes
+de revisión humana. Los apartados anteriores conservan sus estados históricos fechados.
+
+- Comentarios de SQL: ejecuciones históricas acreditadas, funciones canónicas corregidas
+  aplicadas mediante el corrector y guardas probadas negativamente se distinguen de los
+  instaladores completos modificados que no fueron ejecutados nuevamente.
+- Bitácora histórica: nota inicial que enlaza la consolidada raíz, sin reescribir registros.
+- D.4: tres oraciones que incluyen datos de cliente y usuario, excluyendo contraseñas y hashes;
+  el ensayo D sigue limitado a usuario y sus resultados permanecen intactos.
+- C: contraste organizado por aciertos, omisiones comprobables y afirmaciones insuficientemente
+  respaldadas, sin imputar omisiones inventadas. Se reconoce a postgres y los SET ROLE;
+  se declara el límite del laboratorio autodescriptivo y se corrige “this informe”.
+- A.4/E.2: propuestas amplias solicitadas deliberadamente separadas del error FULL JOIN;
+  no se atribuye la autoría del otorgamiento sobre pg_authid sin evidencia de procedencia.
+- No se incorporan nuevas pruebas declaradas en PostgreSQL 16 sin sus salidas disponibles.
+  No se ejecutó SQL ni se conectó a PostgreSQL; sin cambios de rama, commit, push o merge.
+
+Este registro resume la intervención de Codex, no es una transcripción histórica recuperada.
+
+Verificaciones estáticas realizadas para esta revisión editorial:
+
+- Ocho SQL cambiaron únicamente en comentarios de línea completa; su contenido no comentado
+  coincide con el cierre 2b80fcf. Los otros cuatro SQL del TP7 permanecen intactos.
+- Evidencias crudas, logs originales y copias legibles, respuesta íntegra C, README, AGENTS
+  y archivos de otros TP no presentan diferencias Git frente al inicio limpio; los SHA-256
+  de ambos logs originales coinciden además con los valores documentados.
+- La bitácora histórica conserva íntegro su contenido anterior; solo se antepuso la nota.
+  La raíz conserva las filas anteriores y tiene 22 filas contando cabecera/separador,
+  todas de tres columnas. D.4 consta de tres oraciones.
+- Se comprobaron 146 enlaces locales con destino existente, incluidas cuatro rutas con %20;
+  también el ancla del registro editorial y las rutas de evidencia citadas en comentarios.
+- Diff revisado y git diff --check sin errores. Sin nuevas ejecuciones, conexiones ni
+  pruebas de base de datos. Revisión y aprobación humana del resultado pendientes.
+
+
+## Recuperación de prompts propios desde el chat
+
+Por pedido expreso de la usuaria se recuperó el historial completo del chat «Revisar avances del TP7»
+mediante lectura paginada, y se seleccionaron 22 prompts relevantes de nuestra etapa. Sus textos
+se extrajeron de los bloques originales de los mensajes del asistente, sin reconstruirlos ni
+corregir retrospectivamente instrucciones históricas. El archivo de
+[prompts propios recuperados](prompts_propios_recuperados_20261015.md) conserva los identificadores
+de mensaje, turno y bloque y los vincula con mensajes posteriores de resultados de la usuaria.
+
+La declaración previa de que no había originales disponibles se debió a no revisar ese historial
+y queda rectificada para estas fuentes: C.4, generación y ejecución D, consolidación E y las
+correcciones seleccionadas ahora tienen textos literales recuperados. Los pedidos históricos de
+otros integrantes no se incorporaron ni se evaluaron; las filas previas A/B no se modificaron.
+No se afirma haber recuperado todos los mensajes de las herramientas de destino ni las ediciones
+que pudieran hacerse al pegar los prompts. Esa distinción no convierte los textos recuperados en
+resúmenes: son literales de su fuente original en este chat.
+
+Las filas resumidas de la bitácora conservan su contenido y añaden enlaces a las fuentes propias.
+Se conservan también el pedido inicial E y su corrección posterior, sin presentar como válida
+la interpretación inicial errónea del bloqueo del origen. El informe C y la verificación D
+enlazan sus respectivos pedidos. La respuesta íntegra C y las evidencias de ejecución permanecen
+fuera de edición. Se conserva el prompt literal de la intervención Codex ya archivado por separado.
+
+Esta intervención solo agrega y enlaza documentación; no ejecuta SQL ni modifica scripts, roles,
+datos, configuraciones, README, evidencias originales ni historial Git. No realiza commit ni push.
+El cierre técnico anterior está publicado en 2b80fcf; la recuperación y los ajustes editoriales
+locales posteriores están preparados para la publicación manual, sin inventar el hash futuro.
+
+Verificación de la recuperación: los 22 bloques coinciden exactamente con los textos extraídos
+de los mensajes fuente. Los 199 enlaces locales de navegación comprobados tienen destino existente,
+incluidas las anclas de los prompts; la tabla raíz contiene 24 filas contando cabecera y separador,
+todas de tres columnas. D.4 conserva tres oraciones. Los SHA-256 de ambos logs originales siguen
+coincidiendo con los documentados. No se ejecutaron nuevas pruebas de PostgreSQL. La consulta de
+estado/diff de Git desde este entorno no estuvo disponible por una restricción de acceso; no se
+declara una comprobación Git exitosa ni una publicación por esta intervención.

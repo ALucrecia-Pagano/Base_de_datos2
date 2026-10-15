@@ -182,3 +182,10 @@ esta intervención quedan sin commit/push y pendientes de revisión humana. No s
 Un round-trip no demuestra legibilidad: se repararon únicamente secuencias comprobadas en las
 copias de lectura, conservando los originales. El detalle y la limitación de prompts históricos
 están en la [revisión documental TP7](TP7_Administracion_y_Seguridad/docs/revision_documental_20261015.md).
+
+
+### Estado editorial posterior al cierre 2b80fcf
+
+El cierre anterior fue publicado en `2b80fcf`. Los nuevos ajustes documentales de esta
+revisión están sin publicar y pendientes de revisión humana; no se declara entrega final.
+Los estados históricos fechados se conservan y no describen esta nueva intervención.

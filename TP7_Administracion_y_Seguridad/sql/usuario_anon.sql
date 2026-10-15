@@ -1,4 +1,6 @@
--- TP7 Parte D — usuario_anon.sql (PARA REVISIÓN, NO EJECUTADO).
+-- TP7 Parte D — usuario_anon.sql (ejecución histórica con ROLLBACK, exit 0).
+-- Salida: ../docs/evidencias/salida_psql_usuario_anon_20261015_091628.txt.
+-- Muestra ejecutada: 2 usuarios, 2 roles y un mes; sin nueva ejecución ni persistencia.
 -- Anonimización de laboratorio + verificación de equivalencia agregada.
 -- Fuente de requisitos: Trabajo Practico Unidad 5.pdf, Parte D.
 -- Esquema real: TP5_Indices_Vistas/Parte_B_Vistas/usuarios.sql

@@ -1,4 +1,6 @@
--- TP7 — validar_correccion_seguridad.sql (PARA REVISIÓN, NO EJECUTADO).
+-- TP7 — validar_correccion_seguridad.sql (validación histórica ROLLBACK, exit 0).
+-- Salida: ../docs/evidencias/salida_psql_validacion_correccion_20261015_112125.txt.
+-- Sin nueva ejecución en esta revisión documental.
 -- Validador independiente: ejecuta el cuerpo compartido de comprobaciones
 -- (sql/comprobaciones_seguridad.sql) dentro de su propia transacción y
 -- termina en ROLLBACK. El cuerpo compartido no abre ni cierra transacciones.

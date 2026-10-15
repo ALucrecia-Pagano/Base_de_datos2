@@ -1,4 +1,6 @@
--- TP7 Parte C — activar_auditoria_local.sql (PARA REVISIÓN, NO EJECUTADO).
+-- TP7 Parte C — activar_auditoria_local.sql (ejecución histórica documentada).
+-- Ejecución y restauración posterior: ../docs/evidencias/ejecucion_20261015_0215.md.
+-- No se volvió a ejecutar en esta revisión documental.
 -- Activa la auditoría nativa necesaria para el simulacro C en foodstore_dev.
 --
 -- Alcance: ALTER SYSTEM escribe postgresql.auto.conf y AFECTA A TODO EL CLÚSTER

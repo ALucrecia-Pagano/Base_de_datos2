@@ -1,4 +1,8 @@
--- TP7 — comprobaciones_seguridad.sql (CUERPO COMPARTIDO, PARA REVISIÓN).
+-- TP7 — comprobaciones_seguridad.sql (cuerpo compartido, ejecución histórica).
+-- Ejecutado dentro del ensayo, aplicación y validación independiente:
+-- ../docs/evidencias/ensayo_correccion_seguridad_20261015_1117.md y
+-- ../docs/evidencias/aplicacion_correccion_seguridad_20261015_1121.md.
+-- No se ejecutó nuevamente en esta revisión documental.
 -- Comprobaciones completas de la corrección de auditoría 2026-10-15, usadas
 -- por sql/corregir_seguridad_tp7.sql (dentro de su transacción, antes de
 -- decidir COMMIT/ROLLBACK) y por sql/validar_correccion_seguridad.sql

@@ -112,3 +112,10 @@ global del clúster: roles, membresías y contraseñas, `TABLESPACE`s, ni la con
 
 - **Publicación**: correcciones de seguridad publicadas en `88675cc`. Los nuevos ajustes documentales
   quedan sin commit/push y pendientes de revisión humana; no se declara entrega final.
+
+
+### Estado editorial posterior al cierre 2b80fcf
+
+El cierre anterior fue publicado en `2b80fcf`. Los nuevos ajustes documentales de esta
+revisión están sin publicar y pendientes de revisión humana; no se declara entrega final.
+Los estados históricos fechados se conservan y no describen esta nueva intervención.

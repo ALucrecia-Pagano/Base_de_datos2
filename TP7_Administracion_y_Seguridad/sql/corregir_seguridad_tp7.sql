@@ -1,4 +1,8 @@
--- TP7 — corregir_seguridad_tp7.sql (PARA REVISIÓN, NO EJECUTADO).
+-- TP7 — corregir_seguridad_tp7.sql (ensayo y aplicación históricos acreditados).
+-- Ensayo ROLLBACK: ../docs/evidencias/ensayo_correccion_seguridad_20261015_1117.md.
+-- Aplicación COMMIT y validación posterior:
+-- ../docs/evidencias/aplicacion_correccion_seguridad_20261015_1121.md.
+-- Sin nueva ejecución en esta revisión documental.
 -- Aplica los hallazgos de la auditoría 2026-10-15 sobre un entorno donde el
 -- TP7 YA está instalado. No reinstala, no borra objetos ni datos, no toca
 -- evidencias de A–D. Requiere respaldo custom fechado fuera del repo ANTES de
@@ -13,7 +17,9 @@
 --      los EXECUTE de roles.sql §8. Las copias internas de
 --      preparar/instalar_entorno_local.sql se reemplazaron por \ir (las
 --      evidencias anteriores corresponden a sus versiones internas del commit
---      0060cfd, recuperables vía git show; no se ejecutaron las corregidas).
+--      0060cfd, recuperables vía git show). Las funciones canónicas corregidas
+--      fueron aplicadas mediante este corrector (evidencia de aplicación 11:21).
+--      No se acredita una nueva ejecución completa de los instaladores modificados.
 -- Este script NO modifica contraseñas: la instalación local anterior ya
 -- neutralizó ambos logins (evidencia de ejecución C: app_web.password_null=t,
 -- admin_datos.password_null=t). roles.sql crea los logins con PASSWORD NULL

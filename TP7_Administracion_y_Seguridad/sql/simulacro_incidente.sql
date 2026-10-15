@@ -1,9 +1,13 @@
--- TP7 Parte C — simulacro_incidente.sql (PARA REVISIÓN, NO EJECUTADO).
+-- TP7 Parte C — simulacro_incidente.sql (simulacro histórico acreditado).
+-- Cuerpo histórico: ../docs/evidencias/ejecucion_20261015_0215.md.
+-- Guarda actual: pruebas negativas directa e incluida (exit 3) en
+-- ../docs/evidencias/verificacion_guardas_public_20261015_124512.md.
+-- No se repitió el cuerpo completo tras cambiar la guarda ni en esta revisión.
 -- Secuencia PDF C.1: varios fn_autenticar fallidos → uno exitoso → lectura masiva
 -- de usuario → intento de escalamiento (membresía en admin_datos) que debe fallar.
 -- Todo con cuentas y credenciales exclusivamente SINTÉTICAS de laboratorio,
 -- unificadas con preparar_entorno_local.sql: lab_c_incidente_01/02@example.invalid.
--- Este archivo NO se ejecutó todavía; no presenta resultados reales.
+-- Las evidencias distinguen la ejecución histórica completa de las pruebas de la guarda.
 --
 -- Prerrequisitos (NO instalados por la validación anterior: preparar_entorno_local.sql
 -- terminó en ROLLBACK y revirtió todo). Antes de ejecutar se requiere, con autorización

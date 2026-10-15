@@ -1,0 +1,61 @@
+BEGIN
+SET
+SET
+SET
+DO
+DO
+psql:TP7_Administracion_y_Seguridad/sql/comprobaciones_seguridad.sql:87: NOTICE:  control catalogos: pg_monitor sí; pg_authid/pg_shadow denegados
+DO
+SET
+ pg_stat_activity_filas 
+------------------------
+                      6
+(1 row)
+
+RESET
+SAVEPOINT
+psql:TP7_Administracion_y_Seguridad/sql/comprobaciones_seguridad.sql:109: NOTICE:  control pg_authid: DENEGADO sqlstate=42501 usuario=rol_auditoria
+DO
+RELEASE
+SET
+ usuario_filas 
+---------------
+             2
+(1 row)
+
+RESET
+SAVEPOINT
+psql:TP7_Administracion_y_Seguridad/sql/comprobaciones_seguridad.sql:132: NOTICE:  control contrasena: DENEGADO sqlstate=42501 usuario=rol_soporte
+DO
+RELEASE
+DO
+INSERT 0 1
+INSERT 0 1
+SET
+SET
+psql:TP7_Administracion_y_Seguridad/sql/comprobaciones_seguridad.sql:199: NOTICE:  auth: válida=id exacto, incorrecta=NULL, eliminado=NULL
+DO
+RESET
+SET
+psql:TP7_Administracion_y_Seguridad/sql/comprobaciones_seguridad.sql:222: NOTICE:  reseteo: válido=TRUE, inválidos=FALSE
+DO
+RESET
+SET
+psql:TP7_Administracion_y_Seguridad/sql/comprobaciones_seguridad.sql:247: NOTICE:  re-auth: nueva=id exacto, anterior=NULL
+DO
+RESET
+SET
+SAVEPOINT
+psql:TP7_Administracion_y_Seguridad/sql/comprobaciones_seguridad.sql:265: NOTICE:  control escalamiento: DENEGADO sqlstate=42501 usuario=app_web
+DO
+RELEASE
+RESET
+psql:TP7_Administracion_y_Seguridad/sql/comprobaciones_seguridad.sql:298: NOTICE:  control funciones: DEFINER + proconfig cerrado + llamadas calificadas
+DO
+CREATE TABLE
+DO
+REVOKE
+psql:TP7_Administracion_y_Seguridad/sql/comprobaciones_seguridad.sql:327: NOTICE:  D11 demo: herencia verificada y excepción aplicada en la misma transacción
+DO
+ROLLBACK
+PSQL_EXIT=0

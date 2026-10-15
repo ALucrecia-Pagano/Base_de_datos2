@@ -5,7 +5,8 @@
 > `sql/simulacro_incidente.sql` (3 fallidos → 1 éxito → lectura masiva → escalamiento
 > denegado 42501, `ROLLBACK` final), auditoría restaurada. Evidencias:
 > `docs/evidencias/ejecucion_20261015_0215.md`, `docs/log_simulacro_anonimizado.txt`
-> (209 líneas, PID 21348). La reconstrucción de la IA está íntegra en
+> (209 líneas, PID 21348; codificación original ISO-8859 conservada intacta, copia legible UTF-8 con
+> contenido idéntico verificado por round-trip en `docs/log_simulacro_anonimizado.utf8.txt`). La reconstrucción de la IA está íntegra en
 > `docs/respuesta_ia_incidente.md`.
 
 ## 1. Secuencia ejecutada y evidencias
@@ -38,5 +39,8 @@ Decisión aprobada por la integrante que dirige esta sesión; no se atribuye apr
 
 ## 4. Límites
 
-- Restauración del respaldo no probada; concurrencia y costos no medidos; Parte D pendiente; bitácora E aún parcial.
+- Restauración del respaldo no probada; concurrencia y costos no medidos. Al cierre de la Parte C
+  estaban pendientes la Parte D y el cierre de la bitácora E; estado actual: D ejecutada
+  ([verificación de equivalencia](verificacion_equivalencia.md)) y bitácora consolidada en la raíz
+  ([BITACORA.md](../../BITACORA.md)).
 - La Parte C cierra con this informe + respuesta IA íntegra + log anonimizado + evidencia fechada.

@@ -6,6 +6,14 @@
 `ALTER DEFAULT PRIVILEGES FOR ROLE admin_datos`, salvedad D6).
 **Spec:** `docs/kiro_roles_spec/requirements.md` (RF-01–RF-07) y `design.md`.
 
+> **Advertencia de auditoría 2026-10-15:** este documento es **evidencia histórica** de la Parte A.3 y se
+> conserva intacto. Su veredicto anterior **no valida** las correcciones posteriores (revocación de
+> catálogos de `rol_auditoria`, logins sin contraseña, `ALTER DEFAULT PRIVILEGES` reducido a RF-07,
+> funciones endurecidas): esas correcciones se verifican únicamente con
+> `sql/validar_correccion_seguridad.sql`, ejecutado 2026-10-15 (ROLLBACK, exit 0;
+> [salida](evidencias/salida_psql_validacion_correccion_20261015_112125.txt)). No se reemplazó ningún resultado por
+> resultados inventados.
+
 Notas de lectura:
 - Mapeo de columnas vigente (decisión de equipo, bitácora fila 1):
   `id_usuario`→`id`, `email`→`mail`, `password_hash`→`contrasena`.

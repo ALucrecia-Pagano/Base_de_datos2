@@ -4,8 +4,9 @@
 -- Advertencia: -v NO evita exposición en historial shell, ps ni log del servidor
 -- (log_statement=all registra el texto). Solo sintéticas de laboratorio.
 -- \ir roles.sql se incluye sin modificarlo; sus efectos quedan en esta transacción y se revierten.
+-- \ir fn_autenticar.sql / fn_resetear_password.sql idem (canónicas corregidas).
 -- Definiciones verbatim de: usuarios.sql:7/13-27, vistas.sql:4-71,
--- vista_materializada.sql:8-27, fn_autenticar.sql:37-68, fn_resetear_password.sql:38-66.
+-- vista_materializada.sql:8-27. Las funciones YA NO van copiadas aquí.
 
 \set ON_ERROR_STOP on
 
@@ -122,27 +123,15 @@ WHERE p.estado <> 'CANCELADO' GROUP BY c.id, c.nombre, date_trunc('month', p.fec
 CREATE UNIQUE INDEX idx_mv_resumen_ventas_categoria_mes
   ON public.mv_resumen_ventas_categoria_mes (id_categoria, mes);
 
--- 5. Funciones verbatim fn_*.sql (solo se calificó el FROM a public.usuario; lógica idéntica).
-CREATE OR REPLACE FUNCTION public.fn_autenticar(p_email VARCHAR, p_password VARCHAR)
-RETURNS BIGINT LANGUAGE plpgsql SECURITY DEFINER SET search_path = public, pg_temp
-AS $func$ DECLARE v_id BIGINT;
-BEGIN
-  IF p_email IS NULL OR p_password IS NULL OR btrim(p_email) = '' OR btrim(p_password) = '' THEN RETURN NULL; END IF;
-  SELECT u.id INTO v_id FROM public.usuario AS u
-  WHERE u.mail = btrim(p_email) AND u.eliminado = FALSE AND u.contrasena = crypt(p_password, u.contrasena) LIMIT 1;
-  IF FOUND THEN RETURN v_id; END IF; RETURN NULL;
-END; $func$;
-REVOKE ALL ON FUNCTION public.fn_autenticar(VARCHAR, VARCHAR) FROM PUBLIC;
-CREATE OR REPLACE FUNCTION public.fn_resetear_password(p_id_usuario BIGINT, p_nueva_password VARCHAR)
-RETURNS BOOLEAN LANGUAGE plpgsql SECURITY DEFINER SET search_path = public, pg_temp
-AS $func$ DECLARE v_actualizadas INTEGER;
-BEGIN
-  IF p_id_usuario IS NULL OR p_nueva_password IS NULL OR char_length(btrim(p_nueva_password)) < 8 THEN RETURN FALSE; END IF;
-  UPDATE public.usuario AS u SET contrasena = crypt(btrim(p_nueva_password), gen_salt('bf'))
-  WHERE u.id = p_id_usuario AND u.eliminado = FALSE;
-  GET DIAGNOSTICS v_actualizadas = ROW_COUNT; RETURN (v_actualizadas = 1);
-END; $func$;
-REVOKE ALL ON FUNCTION public.fn_resetear_password(BIGINT, VARCHAR) FROM PUBLIC;
+-- 5. Funciones canónicas corregidas vía \ir (endurecidas 2026-10-15:
+-- SET search_path = pg_catalog, pg_temp, llamadas calificadas con tipos
+-- explícitos, REVOKE FROM PUBLIC incluido). Las copias internas anteriores
+-- (crypt/gen_salt sin calificar) se eliminan de este archivo por vulnerables;
+-- la evidencia previa (validacion_20261015_014013.md) corresponde a esas
+-- versiones internas del commit 0060cfd, recuperables vía git show.
+-- No se afirma que las versiones corregidas hayan sido ejecutadas.
+\ir fn_autenticar.sql
+\ir fn_resetear_password.sql
 
 -- 6. Permisos originales de A en esta misma transacción (sin duplicar ni modificar el archivo).
 \ir roles.sql

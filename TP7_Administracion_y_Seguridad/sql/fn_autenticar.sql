@@ -20,9 +20,17 @@
 --   La variante alternativa (id_usuario, email, password_hash, fecha_alta,
 --   activo) se rechazó porque rompería vistas.sql, roles.sql §5 y Kiro RF-03.
 --
--- SEGURIDAD:
---   - pgcrypto (crypt/gen_salt, blowfish) para verificación de hash.
---   - SECURITY DEFINER + SET search_path para ejecución controlada.
+-- SEGURIDAD (endurecido en corrección de auditoría 2026-10-15, sin cambiar
+-- firma, retorno ni comportamiento):
+--   - pgcrypto (crypt, blowfish) para verificación de hash.
+--   - SECURITY DEFINER + SET search_path = pg_catalog, pg_temp: ningún
+--     identificador de usuario se resuelve implícitamente mediante public —
+--     la tabla va como public.usuario y cada llamada va calificada.
+--   - Llamadas calificadas con tipos explícitos: ninguna resolución depende de
+--     esquemas escribibles por otros roles — public.crypt(text, text) y
+--     pg_catalog.btrim(text). El procedimiento de aplicación verifica la
+--     pertenencia a la extensión pgcrypto de las firmas exactas utilizadas;
+--     no demuestra ausencia de otras sobrecargas. Ante duda aborta, no adivina.
 --   - REVOKE ALL FROM PUBLIC: el acceso se otorga solo vía roles.sql §8
 --     (EXECUTE a rol_app_escritura y admin_datos, resto NINGUNO).
 --   - No devuelve el hash; devuelve el id o NULL (no distingue
@@ -41,22 +49,22 @@ CREATE OR REPLACE FUNCTION public.fn_autenticar(
 RETURNS BIGINT
 LANGUAGE plpgsql
 SECURITY DEFINER
-SET search_path = public, pg_temp
+SET search_path = pg_catalog, pg_temp
 AS $func$
 DECLARE
     v_id BIGINT;
 BEGIN
     -- Entradas vacías o nulas: fallo genérico sin revelar causa.
     IF p_email IS NULL OR p_password IS NULL
-       OR btrim(p_email) = '' OR btrim(p_password) = '' THEN
+       OR pg_catalog.btrim(p_email) = '' OR pg_catalog.btrim(p_password) = '' THEN
         RETURN NULL;
     END IF;
 
     SELECT u.id INTO v_id
     FROM public.usuario AS u
-    WHERE u.mail = btrim(p_email)
+    WHERE u.mail = pg_catalog.btrim(p_email)
       AND u.eliminado = FALSE
-      AND u.contrasena = crypt(p_password, u.contrasena)
+      AND u.contrasena = public.crypt(p_password::text, u.contrasena::text)
     LIMIT 1;
 
     IF FOUND THEN

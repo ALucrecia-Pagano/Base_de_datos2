@@ -25,6 +25,13 @@ Un resultado correcto permite evaluar una propuesta, pero no autoriza COMMIT ni 
 
 No se ejecutan pruebas sobre foodstore_dev. Antes de una ejecución autorizada se debe identificar la base de destino y revisar el origen y contenido de la copia.
 
+> **Excepción específica del TP7:** conforme al PDF de la Unidad 5, todo el TP7 (roles, auditoría,
+> simulacro, anonimización y correcciones) se ejecuta exclusivamente sobre la instancia propia
+> `foodstore_dev` del equipo —nunca sobre bases de terceros ni de otros equipos— y únicamente bajo el
+> procedimiento documentado con autorización por paso, respaldo previo y evidencias (ver apartado
+> «Alcance particular del TP7» más abajo). Esta excepción no habilita otros trabajos sobre
+> `foodstore_dev` ni otros entornos.
+
 ### Bases y antecedentes
 
 | Base | Uso o antecedente documentado |
@@ -157,6 +164,13 @@ Lo anterior se mantiene íntegro; este apartado solo precisa su aplicación al T
   instalada**; equivalencia verificada sobre 2 usuarios, 2 roles y un mes (sin eliminados en la muestra ni
   múltiples meses); salida íntegra en `TP7_Administracion_y_Seguridad/docs/evidencias/` e informe en
   `TP7_Administracion_y_Seguridad/docs/verificacion_equivalencia.md`.
-- **E consolidada documentalmente:** [BITACORA.md](BITACORA.md) en la raíz (versión consolidada exigida por
-  el PDF); la copia de trabajo `TP7_Administracion_y_Seguridad/BITACORA.md` se conserva como antecedente.
-  D y E pendientes de revisión y publicación final (commit/push manual).
+- **E consolidada y publicada:** [BITACORA.md](BITACORA.md) en la raíz (versión consolidada exigida por
+  el PDF, commit `fdd6116` con D/E); la copia de trabajo `TP7_Administracion_y_Seguridad/BITACORA.md` se
+  conserva como antecedente.
+- **Corrección de seguridad posterior (aplicada localmente, sin commit/push):** ensayo `ROLLBACK` (exit 0),
+  aplicación `COMMIT` (exit 0, comprobaciones previas + fixtures revertidos) y validación independiente
+  `ROLLBACK` (exit 0) el 2026-10-15, con respaldo previo; posterior verificado (catálogos denegados con
+  `pg_monitor` vigente, funciones `DEFINER` + `search_path` cerrado, defaults `aw` sin SELECT, datos y
+  secuencia intactos). Evidencias en `TP7_Administracion_y_Seguridad/docs/evidencias/`
+  (`ensayo_…_1117.md`, `aplicacion_…_1121.md` y tres salidas psql). No se declara entrega final ni
+  publicación de estos cambios.

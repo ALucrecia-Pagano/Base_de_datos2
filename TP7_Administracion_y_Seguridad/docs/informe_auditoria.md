@@ -1,7 +1,9 @@
 # TP7 Parte B — Informe de auditoría (`foodstore_dev`, PostgreSQL 17.10)
 
 Evidencia: `docs/log_auditoria_prueba.txt` (24 líneas de
-`...\data\log\postgresql-2026-10-14_000000.log`); secuencia:
+`...\data\log\postgresql-2026-10-14_000000.log`, codificación original ISO-8859 conservada intacta;
+copia legible UTF-8 con contenido idéntico verificado por round-trip en
+`docs/log_auditoria_prueba.utf8.txt`); secuencia:
 `sql/auditoria_test.sql`. Alcance: solo `foodstore_dev`
 (`foodstore_copia_trabajo` sin tocar).
 
@@ -63,8 +65,10 @@ sentencia pero **no** qué filas existían antes ni sus valores anteriores o
 nuevos (no hay antes/después por fila); tampoco resuelve el interior de
 funciones `SECURITY DEFINER` (solo se ve la llamada a `fn_autenticar`, no
 sus comparaciones internas); y no permite auditar solo `usuario` o solo
-`pedido`. Esa granularidad (filtro por objeto, detalle fila por fila) es la
-que aportan la extensión `pgaudit` o triggers de auditoría a medida.
+`pedido`. Esa granularidad de filtro por objeto es la que aporta la extensión `pgaudit`; en cambio,
+`pgaudit` no proporciona automáticamente los valores anteriores y nuevos de las filas (OLD/NEW): para el
+detalle fila por fila con antes/después se necesita una solución específica, como triggers de auditoría
+diseñados para ese fin.
 
 ## 3. El archivo de log como activo sensible (Punto B.4)
 

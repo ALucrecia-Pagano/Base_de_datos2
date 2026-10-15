@@ -1,0 +1,92 @@
+BEGIN
+SET
+DO
+DO
+psql:TP7_Administracion_y_Seguridad/sql/corregir_seguridad_tp7.sql:155: NOTICE:  procedencia verificada: crypt oid=74761, gen_salt oid=74762 (mismo-nombre en public: crypt=1, gen_salt=2)
+DO
+REVOKE
+REVOKE
+ALTER DEFAULT PRIVILEGES
+ALTER DEFAULT PRIVILEGES
+ALTER DEFAULT PRIVILEGES
+ALTER DEFAULT PRIVILEGES
+ALTER DEFAULT PRIVILEGES
+ALTER DEFAULT PRIVILEGES
+ALTER DEFAULT PRIVILEGES
+ALTER DEFAULT PRIVILEGES
+psql:TP7_Administracion_y_Seguridad/sql/fn_autenticar.sql:43: NOTICE:  la extensión «pgcrypto» ya existe, omitiendo
+CREATE EXTENSION
+CREATE FUNCTION
+COMMENT
+REVOKE
+psql:TP7_Administracion_y_Seguridad/sql/fn_resetear_password.sql:45: NOTICE:  la extensión «pgcrypto» ya existe, omitiendo
+CREATE EXTENSION
+CREATE FUNCTION
+COMMENT
+REVOKE
+GRANT
+GRANT
+GRANT
+SAVEPOINT
+SET
+SET
+SET
+DO
+DO
+psql:TP7_Administracion_y_Seguridad/sql/comprobaciones_seguridad.sql:87: NOTICE:  control catalogos: pg_monitor sí; pg_authid/pg_shadow denegados
+DO
+SET
+ pg_stat_activity_filas 
+------------------------
+                      6
+(1 row)
+
+RESET
+SAVEPOINT
+psql:TP7_Administracion_y_Seguridad/sql/comprobaciones_seguridad.sql:109: NOTICE:  control pg_authid: DENEGADO sqlstate=42501 usuario=rol_auditoria
+DO
+RELEASE
+SET
+ usuario_filas 
+---------------
+             2
+(1 row)
+
+RESET
+SAVEPOINT
+psql:TP7_Administracion_y_Seguridad/sql/comprobaciones_seguridad.sql:132: NOTICE:  control contrasena: DENEGADO sqlstate=42501 usuario=rol_soporte
+DO
+RELEASE
+DO
+INSERT 0 1
+INSERT 0 1
+SET
+SET
+psql:TP7_Administracion_y_Seguridad/sql/comprobaciones_seguridad.sql:199: NOTICE:  auth: válida=id exacto, incorrecta=NULL, eliminado=NULL
+DO
+RESET
+SET
+psql:TP7_Administracion_y_Seguridad/sql/comprobaciones_seguridad.sql:222: NOTICE:  reseteo: válido=TRUE, inválidos=FALSE
+DO
+RESET
+SET
+psql:TP7_Administracion_y_Seguridad/sql/comprobaciones_seguridad.sql:247: NOTICE:  re-auth: nueva=id exacto, anterior=NULL
+DO
+RESET
+SET
+SAVEPOINT
+psql:TP7_Administracion_y_Seguridad/sql/comprobaciones_seguridad.sql:265: NOTICE:  control escalamiento: DENEGADO sqlstate=42501 usuario=app_web
+DO
+RELEASE
+RESET
+psql:TP7_Administracion_y_Seguridad/sql/comprobaciones_seguridad.sql:298: NOTICE:  control funciones: DEFINER + proconfig cerrado + llamadas calificadas
+DO
+CREATE TABLE
+DO
+REVOKE
+psql:TP7_Administracion_y_Seguridad/sql/comprobaciones_seguridad.sql:327: NOTICE:  D11 demo: herencia verificada y excepción aplicada en la misma transacción
+DO
+ROLLBACK
+RELEASE
+COMMIT
+PSQL_EXIT=0

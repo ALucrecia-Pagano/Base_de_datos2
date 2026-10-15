@@ -16,8 +16,9 @@
 --   1. schema.sql (TP1) + usuarios.sql (TP5 Parte_B_Vistas/usuarios.sql)
 --   2. vistas.sql (TP5) + vista_materializada.sql (TP5 Parte_C)
 --   3. fn_autenticar y fn_resetear_password (Clases 1 y 2 / TP7).
---      Ver NOTA-FUNCIONES abajo: los GRANT de SECCION 8 son condicionales y
---      emiten NOTICE si las funciones aun no existen.
+--      Ver NOTA-FUNCIONES abajo: los GRANT de SECCION 8 son directos y
+--      requieren las funciones existentes (con ON_ERROR_STOP, un cambio de
+--      firma detiene el script).
 --
 -- NOTA-COLUMNA (password_hash vs contrasena):
 --   El enunciado pide excluir "password_hash". La columna real del esquema es
@@ -45,8 +46,9 @@
 --     como validacion. DDL de roles es a nivel de cluster: verificar
 --     current_database() (SECCION 0) y el rol ejecutor (se recomienda
 --     superusuario o admin_datos para SECCION 10, ver D6).
---   - Passwords de SECCION 2B son placeholders: gestionar con Vault / variables
---     de entorno, nunca en texto plano en el repositorio (design.md D7 / §11).
+--   - Passwords: SECCION 2B crea los logins con PASSWORD NULL (sin secreto
+--     habilitado); las credenciales reales se gestionan con Vault / variables
+--     de entorno, nunca en texto plano en el repositorio (design.md D7/D9).
 -- ============================================================================
 
 -- ============================================================================
@@ -105,18 +107,21 @@ DO $$ BEGIN CREATE ROLE rol_reportes     NOLOGIN; EXCEPTION WHEN duplicate_objec
 DO $$ BEGIN CREATE ROLE rol_auditoria    NOLOGIN; EXCEPTION WHEN duplicate_object THEN NULL; END $$;
 
 -- 2B. Roles de login (LOGIN)
--- Passwords: 'CAMBIAR_POR_VAULT' es un placeholder NO productivo usado solo
--- en este entorno local de laboratorio. Por política no se versionan secretos
--- en Git: fuera del laboratorio se gestionan con Vault / variables de entorno
--- y nunca se escriben en texto plano en el repositorio (design.md D7 / §11).
+-- Sin contraseña habilitada: se crean con PASSWORD NULL (sin secreto conocido
+-- ni ejecutable en el repositorio). Las credenciales reales se gestionan fuera
+-- de banda con Vault / variables de entorno y nunca se escriben en texto plano
+-- en Git (design.md D7/D9, §11). Este archivo nunca cambia contraseñas de
+-- roles existentes: la instalación local anterior ya neutralizó ambos logins
+-- (evidencia de ejecución C) y el procedimiento de corrección no toca
+-- credenciales (sql/corregir_seguridad_tp7.sql).
 -- CONNECTION LIMIT como defensa en profundidad (design.md D7).
 DO $$ BEGIN
-    CREATE ROLE app_web LOGIN PASSWORD 'CAMBIAR_POR_VAULT' CONNECTION LIMIT 20;
+    CREATE ROLE app_web LOGIN PASSWORD NULL CONNECTION LIMIT 20;
 EXCEPTION WHEN duplicate_object THEN NULL;
 END $$;
 
 DO $$ BEGIN
-    CREATE ROLE admin_datos LOGIN PASSWORD 'CAMBIAR_POR_VAULT' CONNECTION LIMIT 5;
+    CREATE ROLE admin_datos LOGIN PASSWORD NULL CONNECTION LIMIT 5;
 EXCEPTION WHEN duplicate_object THEN NULL;
 END $$;
 
@@ -269,26 +274,40 @@ TO admin_datos;
 
 -- ============================================================================
 -- SECCIÓN 9 — Permisos de monitoreo para rol_auditoria (requirements.md RF-06)
--- Solo catalogos y estadisticas del motor. Ningun acceso a datos de negocio.
+-- Solo pg_monitor. NINGÚN GRANT sobre pg_catalog ni information_schema:
+-- el acceso indiscriminado a todos los catálogos exponía secretos del motor
+-- (p. ej. pg_authid.rolpassword) a un rol de solo monitoreo.
+-- Corrección de auditoría 2026-10-15: los dos GRANT SELECT ON ALL TABLES ...
+-- fueron eliminados de esta sección. Los metadatos que el motor otorga por
+-- defecto a PUBLIC siguen visibles según sus propios defaults; nada adicional
+-- se concede aquí. La revocación de los permisos ya instalados es explícita y
+-- separada (sql/corregir_seguridad_tp7.sql); borrar el GRANT del archivo no
+-- revoca permisos existentes.
 -- ============================================================================
 GRANT pg_monitor TO rol_auditoria;
 
-GRANT SELECT ON ALL TABLES IN SCHEMA information_schema TO rol_auditoria;
-GRANT SELECT ON ALL TABLES IN SCHEMA pg_catalog TO rol_auditoria;
-
 -- ============================================================================
 -- SECCIÓN 10 — ALTER DEFAULT PRIVILEGES (requirements.md RF-07 + salvedad D6)
--- Las tablas y secuencias futuras heredan la politica de rol_app_lectura y
--- rol_app_escritura sin intervencion manual. Las 3 sentencias RF-07 (planas)
--- aplican a los objetos creados por el rol ejecutor (postgres/superusuario);
--- las 3 variantes FOR ROLE admin_datos cubren la salvedad D6: todo DDL futuro
--- debe ejecutarse como admin_datos según el contrato de mantenimiento.
+-- Las tablas y secuencias futuras heredan la politica de rol_app_lectura
+-- (SELECT) y rol_app_escritura (INSERT, UPDATE — RF-07 exacto) sin
+-- intervencion manual. Corrección de auditoría 2026-10-15: la serie de
+-- escritura otorgaba además SELECT, diferencia contra RF-07 que concedía
+-- lectura futura sobre tablas que podrían ser sensibles; se redujo a
+-- INSERT, UPDATE. Las sentencias RF-07 (planas) aplican a los objetos creados
+-- por el rol ejecutor (postgres/superusuario); las variantes FOR ROLE
+-- admin_datos cubren la salvedad D6: todo DDL futuro debe ejecutarse como
+-- admin_datos según el contrato de mantenimiento.
+-- Contrato D11 (design.md D11, RF-07): los privilegios por defecto no distinguen
+-- tablas sensibles futuras; para una tabla sensible, su CREATE y el REVOKE de
+-- permisos sensibles —incluidas sus secuencias cuando corresponda— ocurren en
+-- la MISMA transacción, antes del COMMIT. No se permite crear, confirmar y
+-- revisar después.
 -- Sin privilegios heredados para soporte/reportes/auditoria.
 -- Todas idempotentes; ejecutar este script como superusuario para que ambas
 -- series queden registradas.
 -- ============================================================================
 ALTER DEFAULT PRIVILEGES IN SCHEMA public
-    GRANT SELECT, INSERT, UPDATE ON TABLES TO rol_app_escritura;
+    GRANT INSERT, UPDATE ON TABLES TO rol_app_escritura;
 
 ALTER DEFAULT PRIVILEGES IN SCHEMA public
     GRANT SELECT ON TABLES TO rol_app_lectura;
@@ -298,7 +317,7 @@ ALTER DEFAULT PRIVILEGES IN SCHEMA public
 
 -- Serie D6: mismos privilegios para objetos futuros creados por admin_datos.
 ALTER DEFAULT PRIVILEGES FOR ROLE admin_datos IN SCHEMA public
-    GRANT SELECT, INSERT, UPDATE ON TABLES TO rol_app_escritura;
+    GRANT INSERT, UPDATE ON TABLES TO rol_app_escritura;
 
 ALTER DEFAULT PRIVILEGES FOR ROLE admin_datos IN SCHEMA public
     GRANT SELECT ON TABLES TO rol_app_lectura;

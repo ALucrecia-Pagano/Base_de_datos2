@@ -24,7 +24,12 @@
 - `preparar_entorno_local.sql` terminó en `ROLLBACK`: extensión, tipo, `usuario`, vistas, materializada, funciones y roles TP7 **no** quedaron instalados. Este script no los crea: su §0 aborta si falta `fn_autenticar`, `usuario`, `rol_soporte`, `app_web`, `admin_datos` o los sintéticos `lab_c_incidente_01/02`.
 - No incluir `preparar_entorno_local.sql` como si dejara objetos disponibles tras su `ROLLBACK`.
 
-## 4. Preparación y auditoría pendientes (documentadas, no realizadas)
+## 4. Preparación y auditoría pendientes (documentadas, no realizadas en esta etapa)
+
+> Nota histórica: este apartado describía lo pendiente al momento de redactar el procedimiento. Estado
+> actual: respaldo, instalación, auditoría temporal, simulacro, anonimizado y restauración se ejecutaron
+> ([evidencia de ejecución](evidencias/ejecucion_20261015_0215.md)); D y E se completaron después
+> ([equivalencia](verificacion_equivalencia.md), [bitácora](../../BITACORA.md)).
 
 - Respaldo custom fechado de `foodstore_dev` fuera del repo (efecto: solo lectura del origen; archivo fuera del repo). No sobrescribir anteriores.
 - Instalación persistente autorizada (efecto en base: extensión, tipo, tabla, vistas, materializada, funciones, sintéticos `lab_c_incidente_01/02` con hashes válidos; efecto en clúster: 7 roles). Vía `roles.sql` + sintéticos, sin tocar usuarios existentes.

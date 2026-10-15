@@ -19,9 +19,18 @@
 --   p_id_usuario == columna "id"; p_nueva_password se guarda como hash
 --   bcrypt en "contrasena" ("password_hash" del enunciado).
 --
--- SEGURIDAD:
+-- SEGURIDAD (endurecido en corrección de auditoría 2026-10-15, sin cambiar
+-- firma, retorno ni comportamiento):
 --   - pgcrypto crypt/gen_salt('bf') para el nuevo hash (nunca texto plano).
---   - SECURITY DEFINER + SET search_path para ejecución controlada.
+--   - SECURITY DEFINER + SET search_path = pg_catalog, pg_temp: ningún
+--     identificador de usuario se resuelve implícitamente mediante public —
+--     la tabla va como public.usuario y cada llamada va calificada.
+--   - Llamadas calificadas con tipos explícitos: ninguna resolución depende de
+--     esquemas escribibles por otros roles — public.crypt(text, text),
+--     public.gen_salt(text), pg_catalog.btrim(text), pg_catalog.char_length(text).
+--     El procedimiento de aplicación verifica la pertenencia a la extensión
+--     pgcrypto de las firmas exactas utilizadas; no demuestra ausencia de otras
+--     sobrecargas. Ante duda aborta, no adivina.
 --   - REVOKE ALL FROM PUBLIC: el acceso se otorga solo vía roles.sql §8
 --     (EXECUTE a rol_soporte y admin_datos, resto NINGUNO).
 --   - Política mínima de password: longitud >= 8 tras trim (los CHECK del
@@ -42,7 +51,7 @@ CREATE OR REPLACE FUNCTION public.fn_resetear_password(
 RETURNS BOOLEAN
 LANGUAGE plpgsql
 SECURITY DEFINER
-SET search_path = public, pg_temp
+SET search_path = pg_catalog, pg_temp
 AS $func$
 DECLARE
     v_actualizadas INTEGER;
@@ -50,12 +59,12 @@ BEGIN
     -- Validación mínima (decisión TP7): password de al menos 8 caracteres.
     IF p_id_usuario IS NULL
        OR p_nueva_password IS NULL
-       OR char_length(btrim(p_nueva_password)) < 8 THEN
+       OR pg_catalog.char_length(pg_catalog.btrim(p_nueva_password)) < 8 THEN
         RETURN FALSE;
     END IF;
 
     UPDATE public.usuario AS u
-    SET contrasena = crypt(btrim(p_nueva_password), gen_salt('bf'))
+    SET contrasena = public.crypt(pg_catalog.btrim(p_nueva_password)::text, public.gen_salt('bf'::text))
     WHERE u.id = p_id_usuario
       AND u.eliminado = FALSE;
 

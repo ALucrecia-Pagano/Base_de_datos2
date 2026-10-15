@@ -5,7 +5,7 @@
 **Motor:** PostgreSQL 17
 **Base de destino:** `foodstore_dev`
 **Script de implementación:** `TP7_Administracion_y_Seguridad/sql/roles.sql`
-**Última revisión:** 2026-10-14
+**Última revisión:** 2026-10-14; corrección de auditoría 2026-10-15 (RF-06, nota RF-07, logins sin contraseña)
 
 ---
 
@@ -44,6 +44,16 @@ Este documento se basa en el esquema instalado en `foodstore_dev` al cierre del 
 
 Ambas funciones se definen con `SECURITY DEFINER` y `REVOKE ALL FROM PUBLIC` desde su creación (`fn_autenticar.sql`, `fn_resetear_password.sql`). El acceso se otorga exclusivamente vía `roles.sql §8`.
 
+> **Endurecimiento 2026-10-15 (sin cambiar firmas, retornos ni comportamiento):** `SET search_path =
+> pg_catalog, pg_temp`; las llamadas internas están calificadas con tipos explícitos
+> (`public.crypt(text, text)`, `public.gen_salt(text)`, `pg_catalog.btrim/char_length`); ninguna
+> resolución depende de esquemas escribibles por otros roles. El procedimiento de aplicación
+> (`sql/corregir_seguridad_tp7.sql`) verifica la pertenencia a la extensión `pgcrypto` de las firmas
+> exactas utilizadas (OIDs vía `pg_depend` con `classid`/`refclassid`); no demuestra ausencia de otras
+> sobrecargas. Las copias internas de `preparar_entorno_local.sql` e `instalar_entorno_local.sql` se
+> reemplazaron por `\ir` de los canónicos (las evidencias previas corresponden a sus versiones internas
+> del commit 0060cfd; no se ejecutaron las corregidas).
+
 ### 1.4 Secuencias implícitas (GENERATED ALWAYS AS IDENTITY)
 
 `categoria_id_seq`, `cliente_id_seq`, `producto_id_seq`, `pedido_id_seq`, `usuario_id_seq`.
@@ -71,14 +81,14 @@ Ambas funciones se definen con `SECURITY DEFINER` y `REVOKE ALL FROM PUBLIC` des
 | `rol_app_escritura` | Habilita `INSERT` y `UPDATE` sobre las tablas transaccionales (`cliente`, `pedido`, `detalle_pedido`, `categoria`, `producto`) y `USAGE, SELECT` sobre sus secuencias, porque la capa de negocio debe crear pedidos y mantener el catálogo sin poder borrar registros históricos (baja lógica, R7) ni tocar credenciales. |
 | `rol_soporte` | Habilita `SELECT` sobre las columnas de identificación y estado de `usuario` y `UPDATE (eliminado)` para gestionar altas y bajas lógicas de cuentas, y `EXECUTE` sobre `fn_resetear_password` para restablecer contraseñas, porque el equipo de soporte gestiona cuentas de usuarios sin necesitar jamás leer ni escribir `contrasena`. |
 | `rol_reportes` | Habilita `SELECT` sobre las vistas de agregación (`v_reporte_ventas_cliente`, `v_usuario_publico`, `mv_resumen_ventas_categoria_mes`) porque los analistas de negocio necesitan reportes de facturación y de usuarios activos sin acceder a tablas base, datos individuales de pedidos ni credenciales. |
-| `rol_auditoria` | Habilita lectura de las vistas de estadísticas del motor vía el rol predefinido `pg_monitor` y de los catálogos `information_schema` / `pg_catalog`, porque el rol de auditoría necesita verificar el estado operativo de la instancia y los metadatos del esquema sin ningún contacto con datos transaccionales ni credenciales. |
+| `rol_auditoria` | Habilita lectura de las estadísticas del motor vía el rol predefinido `pg_monitor`, porque el rol de auditoría necesita verificar el estado operativo de la instancia sin ningún contacto con datos transaccionales, credenciales ni secretos del motor. No recibe ningún `GRANT` sobre `pg_catalog` ni `information_schema` (corrección de auditoría 2026-10-15: el acceso indiscriminado a todos los catálogos exponía secretos como `pg_authid.rolpassword`). |
 
 ### 2.2 Roles de login (LOGIN)
 
 | Rol | Hereda de | Justificación |
 |---|---|---|
-| `app_web` | `rol_app_lectura`, `rol_app_escritura` | Es el usuario de conexión de la aplicación web; hereda lectura para el catálogo y escritura para las operaciones transaccionales sin privilegios DDL ni acceso a la tabla `usuario`. |
-| `admin_datos` | *(sin herencia de roles de grupo)* | Es el usuario de administración controlada; recibe permisos directos de DDL sobre el schema `public` y acceso completo a todas las tablas —incluyendo `usuario.contrasena`— para operaciones de mantenimiento, pero sin atributo `SUPERUSER`. |
+| `app_web` | `rol_app_lectura`, `rol_app_escritura` | Es el usuario de conexión de la aplicación web; hereda lectura para el catálogo y escritura para las operaciones transaccionales sin privilegios DDL ni acceso a la tabla `usuario`. Se crea sin contraseña habilitada (`PASSWORD NULL`); las credenciales reales se gestionan fuera de banda (corrección de auditoría 2026-10-15: el placeholder ejecutable anterior se eliminó). |
+| `admin_datos` | *(sin herencia de roles de grupo)* | Es el usuario de administración controlada; recibe permisos directos de DDL sobre el schema `public` y acceso completo a todas las tablas —incluyendo `usuario.contrasena`— para operaciones de mantenimiento, pero sin atributo `SUPERUSER`. Se crea sin contraseña habilitada (`PASSWORD NULL`); igual gestión fuera de banda. |
 
 ---
 
@@ -150,11 +160,17 @@ Ningún otro rol de grupo recibe acceso directo a `usuario.contrasena`. El únic
 
 ```sql
 GRANT pg_monitor TO rol_auditoria;
-GRANT SELECT ON ALL TABLES IN SCHEMA information_schema TO rol_auditoria;
-GRANT SELECT ON ALL TABLES IN SCHEMA pg_catalog         TO rol_auditoria;
 ```
 
 `pg_monitor` es un rol predefinido de PostgreSQL (disponible desde v10) que agrupa `pg_read_all_stats`, `pg_stat_scan_tables` y `pg_read_all_settings`. Da acceso de solo lectura a `pg_stat_activity`, `pg_locks`, `pg_stat_user_tables`, `pg_stat_user_indexes`, etc., sin exponer datos de negocio de ninguna base.
+
+> **Corrección de auditoría 2026-10-15:** la versión anterior de este requisito incluía además
+> `GRANT SELECT ON ALL TABLES IN SCHEMA information_schema/pg_catalog TO rol_auditoria`. Esos dos
+> `GRANT` se eliminaron de la especificación y de `roles.sql §9`: otorgaban lectura de **todos** los
+> catálogos, incluidos secretos del motor (`pg_authid.rolpassword`), a un rol de solo monitoreo. Los
+> metadatos que el motor otorga por defecto a `PUBLIC` siguen visibles según sus propios defaults; nada
+> adicional se concede. La revocación de los permisos ya instalados es explícita y separada
+> (`sql/corregir_seguridad_tp7.sql`): borrar el `GRANT` del archivo no revoca permisos existentes.
 
 ### RF-07 — Política de ALTER DEFAULT PRIVILEGES
 
@@ -175,6 +191,18 @@ ALTER DEFAULT PRIVILEGES IN SCHEMA public
 ```
 
 `rol_soporte`, `rol_reportes` y `rol_auditoria` no reciben privilegios heredados sobre tablas nuevas. Si en el futuro se añade una tabla con datos sensibles (p. ej. `auditoria_accesos`), requiere una revisión manual antes de que `rol_app_escritura` pueda escribir en ella.
+
+> **Nota de corrección 2026-10-15:** `roles.sql §10` otorgaba a `rol_app_escritura` futuros
+> `SELECT, INSERT, UPDATE`, un `SELECT` de más respecto de este RF-07 (`INSERT, UPDATE`). Se redujo al
+> RF-07 exacto: la lectura futura la cubre `rol_app_lectura`, y ninguna tabla nueva —sensible o no—
+> concede lectura automática a la capa de escritura.
+>
+> **Contrato para tablas sensibles futuras (D11, 2026-10-15):** los defaults de negocio se mantienen
+> coherentes con este RF-07. Para una tabla sensible futura, su `CREATE` y el `REVOKE` a lectura y
+> escritura —incluidas sus secuencias cuando corresponda— deben ocurrir en la **MISMA transacción**,
+> antes del `COMMIT`. No se permite «crear, confirmar y revisar después». PostgreSQL no detecta qué
+> tabla es sensible: la declara el humano que la crea. La prueba reversible está en
+> `sql/validar_correccion_seguridad.sql §7` (ejecutada 2026-10-15 dentro del ensayo y la validación).
 
 ---
 

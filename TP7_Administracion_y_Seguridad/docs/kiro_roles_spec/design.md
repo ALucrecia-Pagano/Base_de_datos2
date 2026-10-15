@@ -6,7 +6,7 @@
 **Base de destino:** `foodstore_dev`
 **Documento complementario:** `requirements.md` (misma carpeta)
 **Script implementado:** `TP7_Administracion_y_Seguridad/sql/roles.sql`
-**Última revisión:** 2026-10-14
+**Última revisión:** 2026-10-14; corrección de auditoría 2026-10-15 (§§2, 9, 10, D9–D11)
 
 ---
 
@@ -60,7 +60,7 @@ El script divide su contenido en 12 secciones ejecutables en una sola pasada:
 | 5 | `GRANT` de columna sobre `usuario` para `rol_soporte` (RF-03) + `REVOKE ALL` previo |
 | 6 | `GRANT` de secuencia (RF-04) |
 | 7 | `GRANT` de vistas y vista materializada (RF-02) |
-| 8 | `GRANT EXECUTE` de funciones con bloques condicionales `to_regprocedure` (RF-05) |
+| 8 | `GRANT EXECUTE` directo de funciones (exige firmas existentes; RF-05) |
 | 9 | `GRANT pg_monitor` + catálogos para `rol_auditoria` (RF-06) |
 | 10 | `ALTER DEFAULT PRIVILEGES` (RF-07) |
 | 11 | `GRANT rol_app_lectura, rol_app_escritura TO app_web` (membresías) |
@@ -114,13 +114,13 @@ DO $$ BEGIN CREATE ROLE rol_soporte      NOLOGIN; EXCEPTION WHEN duplicate_objec
 DO $$ BEGIN CREATE ROLE rol_reportes     NOLOGIN; EXCEPTION WHEN duplicate_object THEN NULL; END $$;
 DO $$ BEGIN CREATE ROLE rol_auditoria    NOLOGIN; EXCEPTION WHEN duplicate_object THEN NULL; END $$;
 
--- Roles de login (passwords: placeholders; gestionar con Vault / env vars)
+-- Roles de login: sin contraseña habilitada (D9); credenciales fuera de banda
 DO $$ BEGIN
-    CREATE ROLE app_web LOGIN PASSWORD 'CAMBIAR_POR_VAULT' CONNECTION LIMIT 20;
+    CREATE ROLE app_web LOGIN PASSWORD NULL CONNECTION LIMIT 20;
 EXCEPTION WHEN duplicate_object THEN NULL; END $$;
 
 DO $$ BEGIN
-    CREATE ROLE admin_datos LOGIN PASSWORD 'CAMBIAR_POR_VAULT' CONNECTION LIMIT 5;
+    CREATE ROLE admin_datos LOGIN PASSWORD NULL CONNECTION LIMIT 5;
 EXCEPTION WHEN duplicate_object THEN NULL; END $$;
 ```
 
@@ -214,55 +214,43 @@ TO admin_datos;
 
 ### § 8 — Funciones (RF-05)
 
-Los bloques son condicionales vía `to_regprocedure`; si una función no existe emiten `NOTICE` en lugar de abortar, lo que hace a `roles.sql` ejecutable tanto antes como después de crear las funciones.
+Sentencias directas e idempotentes (sin bloques condicionales): las funciones existen en
+`foodstore_dev` desde el punto de partida TP7, por lo que `roles.sql §8` exige sus firmas y, con
+`ON_ERROR_STOP`, un cambio futuro de firma detiene el script en lugar de pasar en silencio.
+
+> Nota histórica: versiones anteriores de este diseño describían bloques condicionales vía
+> `to_regprocedure` con `NOTICE` si la función no existía. La implementación vigente usa `REVOKE`/`GRANT`
+> directos (ver `roles.sql §8` y su NOTA-FUNCIONES).
 
 ```sql
--- Revocar de PUBLIC (condicional):
-DO $$ BEGIN
-    IF to_regprocedure('public.fn_autenticar(varchar, varchar)') IS NOT NULL THEN
-        EXECUTE 'REVOKE ALL ON FUNCTION public.fn_autenticar(VARCHAR, VARCHAR) FROM PUBLIC';
-    ELSE RAISE NOTICE 'fn_autenticar no existe aún; REVOKE omitido.'; END IF;
-END $$;
-
-DO $$ BEGIN
-    IF to_regprocedure('public.fn_resetear_password(bigint, varchar)') IS NOT NULL THEN
-        EXECUTE 'REVOKE ALL ON FUNCTION public.fn_resetear_password(BIGINT, VARCHAR) FROM PUBLIC';
-    ELSE RAISE NOTICE 'fn_resetear_password no existe aún; REVOKE omitido.'; END IF;
-END $$;
+-- Revocar EXECUTE de PUBLIC en ambas funciones sensibles.
+REVOKE ALL ON FUNCTION public.fn_autenticar(VARCHAR, VARCHAR) FROM PUBLIC;
+REVOKE ALL ON FUNCTION public.fn_resetear_password(BIGINT, VARCHAR) FROM PUBLIC;
 
 -- fn_autenticar → rol_app_escritura (login de la app web)
-DO $$ BEGIN
-    IF to_regprocedure('public.fn_autenticar(varchar, varchar)') IS NOT NULL THEN
-        EXECUTE 'GRANT EXECUTE ON FUNCTION public.fn_autenticar(VARCHAR, VARCHAR) TO rol_app_escritura';
-    ELSE RAISE NOTICE 'Pendiente GRANT fn_autenticar → rol_app_escritura.'; END IF;
-END $$;
+GRANT EXECUTE ON FUNCTION public.fn_autenticar(VARCHAR, VARCHAR)
+    TO rol_app_escritura;
 
 -- fn_resetear_password → rol_soporte (restablecimiento de credenciales)
-DO $$ BEGIN
-    IF to_regprocedure('public.fn_resetear_password(bigint, varchar)') IS NOT NULL THEN
-        EXECUTE 'GRANT EXECUTE ON FUNCTION public.fn_resetear_password(BIGINT, VARCHAR) TO rol_soporte';
-    ELSE RAISE NOTICE 'Pendiente GRANT fn_resetear_password → rol_soporte.'; END IF;
-END $$;
+GRANT EXECUTE ON FUNCTION public.fn_resetear_password(BIGINT, VARCHAR)
+    TO rol_soporte;
 
 -- Ambas → admin_datos (administración)
-DO $$ BEGIN
-    IF to_regprocedure('public.fn_autenticar(varchar, varchar)') IS NOT NULL
-       AND to_regprocedure('public.fn_resetear_password(bigint, varchar)') IS NOT NULL THEN
-        EXECUTE 'GRANT EXECUTE ON FUNCTION
-                     public.fn_autenticar(VARCHAR, VARCHAR),
-                     public.fn_resetear_password(BIGINT, VARCHAR)
-                 TO admin_datos';
-    ELSE RAISE NOTICE 'Pendiente GRANT ambas funciones → admin_datos.'; END IF;
-END $$;
+GRANT EXECUTE ON FUNCTION
+    public.fn_autenticar(VARCHAR, VARCHAR),
+    public.fn_resetear_password(BIGINT, VARCHAR)
+TO admin_datos;
 ```
 
 ### § 9 — Monitoreo para `rol_auditoria` (RF-06)
 
 ```sql
 GRANT pg_monitor TO rol_auditoria;
-GRANT SELECT ON ALL TABLES IN SCHEMA information_schema TO rol_auditoria;
-GRANT SELECT ON ALL TABLES IN SCHEMA pg_catalog         TO rol_auditoria;
 ```
+
+Sin `GRANT` sobre `pg_catalog` ni `information_schema` (corrección de auditoría 2026-10-15; ver RF-06).
+La revocación de los permisos ya instalados es explícita y separada
+(`sql/corregir_seguridad_tp7.sql`).
 
 ### § 10 — ALTER DEFAULT PRIVILEGES (RF-07)
 
@@ -276,6 +264,10 @@ ALTER DEFAULT PRIVILEGES IN SCHEMA public
 
 ALTER DEFAULT PRIVILEGES IN SCHEMA public
     GRANT USAGE, SELECT ON SEQUENCES TO rol_app_escritura;
+
+Nota de corrección 2026-10-15: el `§10` implementado en `roles.sql` otorgaba a `rol_app_escritura`
+futuros `SELECT, INSERT, UPDATE`; se redujo al RF-07 exacto (`INSERT, UPDATE`, serie plana y serie
+`FOR ROLE admin_datos`). Ver el contrato D11 ya definido para tablas sensibles futuras.
 ```
 
 ### § 11 — Membresías
@@ -357,17 +349,65 @@ Aunque `app_web` hereda ambos, la separación permite crear en el futuro un rol 
 ### D4 — Permisos de columna para `rol_soporte` en lugar de vista adicional
 Se podría haber creado una vista `v_usuario_soporte` que excluya `contrasena`. La decisión de usar `GRANT ON COLUMN` es intencional: ejercita la característica de seguridad a nivel de columna como objetivo pedagógico del TP7, y evita añadir vistas al schema. La restricción es más directa: `SELECT contrasena FROM usuario` falla con `permission denied` independientemente de cómo se llame a la tabla. Registrado en BITACORA.md fila 3 (propuesta de `GRANT SELECT ON usuario TO rol_soporte` rechazada).
 
-### D5 — Bloques condicionales en §8 para las funciones
-`fn_autenticar` y `fn_resetear_password` fueron creadas durante el punto de partida del TP7 (`sql/fn_autenticar.sql`, `sql/fn_resetear_password.sql`). Los bloques `to_regprocedure` en `roles.sql §8` permiten re-ejecutar el script en cualquier estado: si las funciones existen aplica los `GRANT`; si no, emite `NOTICE` sin abortar. Esto preserva la idempotencia del script completo.
+### D5 — Sentencias directas en §8 para las funciones (comportamiento vigente)
+`fn_autenticar` y `fn_resetear_password` existen en `foodstore_dev` desde el punto de partida del TP7
+(`sql/fn_autenticar.sql`, `sql/fn_resetear_password.sql`), por lo que `roles.sql §8` usa `REVOKE`/`GRANT`
+directos e idempotentes y exige las firmas: con `ON_ERROR_STOP`, un cambio futuro de firma detiene el
+script en lugar de pasar en silencio.
 
-### D6 — `ALTER DEFAULT PRIVILEGES` se ejecuta como `admin_datos`
-`ALTER DEFAULT PRIVILEGES` aplica a los objetos creados por el rol que ejecuta la sentencia. El contrato de mantenimiento del proyecto debe garantizar que toda migración DDL futura se ejecute como `admin_datos`. Si el superusuario crea una tabla nueva directamente, los privilegios heredados no aplican sobre ella; se requeriría `ALTER DEFAULT PRIVILEGES FOR ROLE admin_datos` o un `GRANT` explícito posterior.
+> Nota histórica: este diseño describió antes bloques condicionales vía `to_regprocedure` (aplicar `GRANT`
+> si la función existe, `NOTICE` si no). Esa variante no es la implementada: la decisión vigente es la
+> sentencia directa.
+
+### D6 — `ALTER DEFAULT PRIVILEGES`: serie del ejecutor y serie `FOR ROLE admin_datos`
+Hay defaults registrados para el rol ejecutor (`postgres`, serie plana) y explícitamente
+`FOR ROLE admin_datos` (serie D6): los objetos creados por `postgres` heredan la serie plana y los
+creados por `admin_datos` heredan la serie `FOR ROLE`. El contrato de mantenimiento del proyecto debe
+garantizar que toda migración DDL futura se ejecute como `admin_datos`; no se afirma que los objetos
+creados por `postgres` carezcan de defaults —tienen los de la serie plana.
 
 ### D7 — `CONNECTION LIMIT` como defensa en profundidad
 `CONNECTION LIMIT 20` para `app_web` y `5` para `admin_datos` no es un control de seguridad primario, pero previene que un bug de conexión o un ataque de agotamiento de recursos monopolice `max_connections` de la instancia.
 
 ### D8 — `password_hash` vs columna real `contrasena`
 El enunciado usa el nombre genérico `password_hash`. La columna física es `usuario.contrasena VARCHAR(255)` (definida en `TP5_Indices_Vistas/Parte_B_Vistas/usuarios.sql`). La propuesta de renombrarla o crear una tabla alternativa con columna `password_hash` fue rechazada por el equipo (BITACORA.md fila 1) porque rompería `vistas.sql`, `roles.sql §5` y RF-03. En toda la implementación, `password_hash == contrasena`.
+
+### D9 — Logins sin contraseña habilitada (corrección de auditoría 2026-10-15)
+`roles.sql §2B` creaba `app_web` y `admin_datos` con `PASSWORD 'CAMBIAR_POR_VAULT'`: un secreto conocido,
+versionado y ejecutable. Se reemplazó por `PASSWORD NULL` (sin secreto habilitado); las credenciales reales
+se gestionan fuera de banda con Vault. Distinción obligatoria: la **creación inicial** (este diseño) nunca
+fija secretos; este diseño tampoco cambia contraseñas de roles existentes. La instalación local anterior ya
+neutralizó ambos logins (evidencia de ejecución C: `password_null=t`); el procedimiento de corrección
+(`sql/corregir_seguridad_tp7.sql`) no modifica credenciales. Otra instalación que hubiera recibido el
+placeholder deberá neutralizarlo explícitamente, fuera de banda y con autorización —nunca en silencio—;
+no se publica aquí ninguna contraseña ni hash.
+
+### D10 — Funciones SECURITY DEFINER con resolución cerrada (corrección de auditoría 2026-10-15)
+Los cuerpos resolvían `crypt/gen_salt/btrim` por `search_path`, delegando la resolución a esquemas
+escribibles. Sin cambiar firmas, retornos ni comportamiento, se fijó
+`SET search_path = pg_catalog, pg_temp` y las llamadas se calificaron con tipos explícitos
+(`public.crypt(text, text)`, `public.gen_salt(text)`, `pg_catalog.btrim/char_length`); ningún
+identificador de usuario se resuelve implícitamente mediante `public`. El procedimiento de aplicación
+verifica la pertenencia a la extensión `pgcrypto` de las firmas exactas utilizadas (OIDs vía `pg_depend`
+con `classid`/`refclassid` correctos); no demuestra ausencia de otras sobrecargas. Ante duda aborta.
+`REVOKE FROM PUBLIC` y los accesos de `roles.sql §8` se preservan. Las copias internas de
+`preparar_entorno_local.sql` e `instalar_entorno_local.sql` se reemplazaron por `\ir` de los canónicos
+(las evidencias previas corresponden a sus versiones internas del commit 0060cfd).
+
+### D11 — Tablas sensibles futuras: contrato explícito (corrección de auditoría 2026-10-15)
+
+Propuesta concreta, sin reorganizar el esquema: se mantienen los defaults de las tablas de negocio
+coherentes con RF-07 (herencia automática `SELECT` → lectura, `INSERT, UPDATE` → escritura, series plana
+y `FOR ROLE admin_datos`). Para una tabla sensible futura rige este contrato: su `CREATE` y el `REVOKE` a
+lectura y escritura —incluidas sus secuencias cuando corresponda (identity/serial)— ocurren en la **MISMA
+transacción**, antes del `COMMIT`. No se permite «crear, confirmar y revisar después»: entre el `CREATE` y
+el `REVOKE` no puede haber ningún `COMMIT` ni ninguna ventana donde la tabla herede accesos.
+
+Esto satisface el requisito `ALTER DEFAULT PRIVILEGES` del PDF sin conceder automáticamente nada fuera de
+RF-07, y cierra la ventana que dejaba la alternativa de «revisar después». Límite declarado: PostgreSQL no
+detecta automáticamente qué tabla es sensible —la declara el humano que la crea—, por lo que el contrato
+depende de disciplina del equipo, no del motor. La prueba reversible que demuestra la excepción está en
+`sql/validar_correccion_seguridad.sql §7` (ejecutada 2026-10-15 dentro del ensayo y la validación).
 
 ---
 
@@ -377,7 +417,10 @@ El enunciado usa el nombre genérico `password_hash`. La columna física es `usu
 |---|---|---|
 | `sql/fn_autenticar.sql` | Creado | `fn_autenticar(VARCHAR, VARCHAR) RETURNS BIGINT` — autenticación bcrypt con SECURITY DEFINER |
 | `sql/fn_resetear_password.sql` | Creado | `fn_resetear_password(BIGINT, VARCHAR) RETURNS BOOLEAN` — reseteo bcrypt con SECURITY DEFINER |
-| `sql/roles.sql` | Creado y auditado | Implementación completa §§0–12 del modelo de roles |
+| `sql/roles.sql` | Corregido (auditoría 2026-10-15) | Implementación completa §§0–12 del modelo de roles |
+| `sql/corregir_seguridad_tp7.sql` | Ejecutado 2026-10-15: ensayo ROLLBACK exit 0 + aplicación COMMIT exit 0 ([salidas](../evidencias/salida_psql_ensayo_correccion_20261015_111731.txt), [aplicación](../evidencias/salida_psql_aplicacion_correccion_20261015_112112.txt)) | Ensayo (ROLLBACK) por defecto; con `-v aplicar=1` aplica sobre TP7 instalado tras ejecutar el cuerpo compartido de comprobaciones; fixtures en SAVEPOINT revertido antes del COMMIT |
+| `sql/validar_correccion_seguridad.sql` | Ejecutado 2026-10-15: ROLLBACK exit 0 ([salida](../evidencias/salida_psql_validacion_correccion_20261015_112125.txt)) | Validador independiente (ROLLBACK): ejecuta `sql/comprobaciones_seguridad.sql` |
+| `sql/comprobaciones_seguridad.sql` | Ejecutado 2026-10-15 dentro de ambos (sin control propio de transacción) | Cuerpo compartido sin control de transacción: roles, catálogos, auth/reset con fixtures de IDs explícitos, 42501, DEFINER+proconfig, demo D11 |
 | `docs/kiro_roles_spec/requirements.md` | Este documento | Requisitos funcionales RF-01 a RF-07 |
 | `docs/kiro_roles_spec/design.md` | Este documento | Diseño técnico, DDL de referencia y matrices |
 | `BITACORA.md` | Activo | Registro de interacciones IA / decisiones del equipo |

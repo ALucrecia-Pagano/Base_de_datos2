@@ -12,7 +12,7 @@
 
 ## Introducción
 
-Este informe integra los seis trabajos prácticos de la cursada sobre **FoodStore**. El recorrido comprende modelado y normalización (TP1), integridad y concurrencia (TP2), carga masiva y optimización (TP3), reportes analíticos (TP4), índices y vistas (TP5), y FNBC y desnormalización controlada (TP6). El TP7 (Administración y seguridad, Unidad 5) tiene las Partes A–D terminadas técnicamente y la Parte E consolidada documentalmente, pendiente de revisión y publicación final (commit/push manual); tiene sección propia más abajo.
+Este informe integra los seis trabajos prácticos de la cursada sobre **FoodStore**. El recorrido comprende modelado y normalización (TP1), integridad y concurrencia (TP2), carga masiva y optimización (TP3), reportes analíticos (TP4), índices y vistas (TP5), y FNBC y desnormalización controlada (TP6). El TP7 (Administración y seguridad, Unidad 5) tiene las Partes A–E terminadas y publicadas, más una corrección de seguridad posterior aplicada localmente y todavía sin commit/push; tiene sección propia más abajo.
 
 En TP1 a TP5 se documentó el uso de Kiro, OpenCode o GitHub Copilot según la etapa y el integrante. En las correcciones de TP5 también se utilizaron Claude Code y Claude, registrados en su DUIA. En TP6 se utilizaron **ChatGPT y Codex CLI** para analizar, proponer scripts, revisar evidencias y preparar documentación. En TP7 (Unidad 5) se utilizan **Kiro** (especificación de roles), **OpenCode con Muse Spark 1.3 Free** (preparación, validación, instalación, simulacro, reconstrucción C.4 y anonimización/equivalencia D) y asistencia de **Codex** (inventario local), con revisión y autorización humana por paso. Las propuestas se revisaron y los cambios de archivos se realizaron con autorización humana; las ejecuciones en PostgreSQL fueron realizadas por el grupo y sus salidas se utilizaron como evidencia. No se atribuyen a TP6 las herramientas utilizadas en otras entregas.
 
@@ -232,11 +232,11 @@ Antecedentes históricos sin filtros lógicos:
 [medición inicial anterior](TP6_FNBC_Desnormalizacion/Parte2_Desnormalizacion/evidencias/evidencia_top_antes_20261008_225517.txt) y
 [comparación anterior](TP6_FNBC_Desnormalizacion/Parte2_Desnormalizacion/evidencias/evidencia_top_desnormalizacion_20261008_232126.txt).
 
-## TP7 — Administración y seguridad (Unidad 5; A–D terminadas, E consolidada pendiente de publicación)
+## TP7 — Administración y seguridad (Unidad 5; A–E publicadas, corrección posterior aplicada sin publicar)
 
 Trabajo sobre la instancia propia `foodstore_dev` (PostgreSQL 17.11), con autorización por paso, respaldo custom previo y restauración de auditoría.
 
-**Parte A — Roles y mínimo privilegio (terminada).** Especificación Kiro (requirements + design, RF-01 a RF-07) y `TP7_Administracion_y_Seguridad/sql/roles.sql`: 5 roles de grupo NOLOGIN + 2 login (`app_web` hereda lectura/escritura; `admin_datos` con permisos directos, sin `SUPERUSER`), columna `usuario.contrasena` excluida de `rol_soporte`, `ALTER DEFAULT PRIVILEGES` para tablas/secuencias futuras. Verificación "ni más, ni menos" archivada; propuestas amplias de IA (`GRANT ALL`) rechazadas y registradas.
+**Parte A — Roles y mínimo privilegio (terminada).** Especificación Kiro (requirements + design, RF-01 a RF-07) y `TP7_Administracion_y_Seguridad/sql/roles.sql`: 5 roles de grupo NOLOGIN + 2 login (`app_web` hereda lectura/escritura; `admin_datos` con permisos directos, sin `SUPERUSER`), columna `usuario.contrasena` excluida de `rol_soporte`, `ALTER DEFAULT PRIVILEGES` para tablas/secuencias futuras. Verificación "ni más, ni menos" archivada; propuestas amplias de IA (`GRANT ALL`) rechazadas y registradas. Estado vigente de roles y permisos capturado el 2026-10-15 ([`\du` y `role_table_grants`](TP7_Administracion_y_Seguridad/docs/evidencias/roles_vigentes_20261015.md), posterior a la corrección).
 
 **Parte B — Auditoría nativa (terminada).** Activación (`log_connections`, `log_disconnections`, `log_statement=all`, `log_line_prefix`) con `logging_collector` ya en `on`, secuencia de prueba con `ROLLBACK` (lectura + INSERT/UPDATE revertidos + login fallido vía función y conexión fallida real) y fragmento de 24 líneas. Se documentó qué audita el mecanismo (quién/qué/cuándo/dónde) y sus límites (sin detalle fila por fila, sin interior de `SECURITY DEFINER`, sin filtro por objeto), y que el propio log es un activo sensible (texto plano, acceso restringido a cuenta del servicio/administradores y `SUPERUSER`/`pg_read_server_files`).
 
@@ -261,12 +261,20 @@ legible (284 entradas TOC) no equivale a restauración probada. Salida íntegra 
 `TP7_Administracion_y_Seguridad/docs/verificacion_equivalencia.md`.
 
 **Límites y pendientes.** Restauración de respaldos no probada; concurrencia y costos no medidos.
-**Parte E consolidada documentalmente**: [BITACORA.md](BITACORA.md) en la raíz (registros A–C intactos,
-D agregada, caso más significativo y revisión Git); la copia de trabajo
-`TP7_Administracion_y_Seguridad/BITACORA.md` se conserva como antecedente. D y E **todavía no tienen
-commit** (rama `tp7-parte-d`): no están publicadas; el commit/push final lo realiza manualmente la usuaria.
+D y E están publicadas (`fdd6116`); la [BITACORA.md](BITACORA.md) raíz es la versión consolidada y la copia
+de trabajo `TP7_Administracion_y_Seguridad/BITACORA.md` se conserva como antecedente.
 
-Fuentes: [informe de auditoría](TP7_Administracion_y_Seguridad/docs/informe_auditoria.md), [informe del incidente](TP7_Administracion_y_Seguridad/docs/informe_incidente.md), [respuesta IA](TP7_Administracion_y_Seguridad/docs/respuesta_ia_incidente.md), [log anonimizado](TP7_Administracion_y_Seguridad/docs/log_simulacro_anonimizado.txt), [evidencia de ejecución C](TP7_Administracion_y_Seguridad/docs/evidencias/ejecucion_20261015_0215.md), [informe de equivalencia D](TP7_Administracion_y_Seguridad/docs/verificacion_equivalencia.md), [salida íntegra D](TP7_Administracion_y_Seguridad/docs/evidencias/salida_psql_usuario_anon_20261015_091628.txt), [bitácora TP7](TP7_Administracion_y_Seguridad/BITACORA.md), [bitácora consolidada](BITACORA.md).
+**Corrección de seguridad posterior (aplicada localmente, sin commit/push).** Hallazgos de auditoría:
+`rol_auditoria` leía todos los catálogos (incluido `pg_authid`), logins con placeholder ejecutable,
+defaults con `SELECT` de más vs RF-07 y funciones con resolución por `search_path`. Correcciones aplicadas
+el 2026-10-15 con respaldo previo: ensayo `ROLLBACK` (exit 0), aplicación `COMMIT` (exit 0, comprobaciones
+previas + fixtures revertidos por SAVEPOINT) y validación independiente `ROLLBACK` (exit 0); posterior:
+`rol_auditoria` sin leer `pg_authid`/`pg_shadow` (con `pg_monitor`), funciones `DEFINER` + `search_path`
+cerrado, defaults escritura `aw` sin SELECT en ambas series, conteos y secuencia intactos. Persistido:
+catálogos revocados, defaults RF-07, funciones endurecidas; sin contraseñas, sin reinstalación, sin
+`ALTER SYSTEM`. No se declara entrega final ni publicación de estos cambios.
+
+Fuentes: [informe de auditoría](TP7_Administracion_y_Seguridad/docs/informe_auditoria.md), [informe del incidente](TP7_Administracion_y_Seguridad/docs/informe_incidente.md), [respuesta IA](TP7_Administracion_y_Seguridad/docs/respuesta_ia_incidente.md), [log anonimizado](TP7_Administracion_y_Seguridad/docs/log_simulacro_anonimizado.txt), [evidencia de ejecución C](TP7_Administracion_y_Seguridad/docs/evidencias/ejecucion_20261015_0215.md), [informe de equivalencia D](TP7_Administracion_y_Seguridad/docs/verificacion_equivalencia.md), [salida íntegra D](TP7_Administracion_y_Seguridad/docs/evidencias/salida_psql_usuario_anon_20261015_091628.txt), [bitácora TP7](TP7_Administracion_y_Seguridad/BITACORA.md), [bitácora consolidada](BITACORA.md), [procedimiento de corrección](TP7_Administracion_y_Seguridad/docs/aplicacion_correccion_seguridad.md), [evidencia de ensayo](TP7_Administracion_y_Seguridad/docs/evidencias/ensayo_correccion_seguridad_20261015_1117.md), [evidencia de aplicación](TP7_Administracion_y_Seguridad/docs/evidencias/aplicacion_correccion_seguridad_20261015_1121.md).
 
 ## Conclusión
 

@@ -1,8 +1,8 @@
 # TP7 Parte B — Informe de auditoría (`foodstore_dev`, PostgreSQL 17.10)
 
 Evidencia: `docs/log_auditoria_prueba.txt` (24 líneas de
-`...\data\log\postgresql-2026-10-14_000000.log`, codificación original ISO-8859 conservada intacta;
-copia legible UTF-8 con contenido idéntico verificado por round-trip en
+`...\data\log\postgresql-2026-10-14_000000.log`, bytes originales conservados intactos;
+copia de lectura UTF-8 con reparación localizada de mojibake en
 `docs/log_auditoria_prueba.utf8.txt`); secuencia:
 `sql/auditoria_test.sql`. Alcance: solo `foodstore_dev`
 (`foodstore_copia_trabajo` sin tocar).
@@ -85,3 +85,10 @@ o el equivalente ACL NTFS de Windows restringido exclusivamente a
 `MATEOWS\Mateows`, presente en este entorno de desarrollo). A nivel del
 motor, el acceso debe restringirse a `SUPERUSER` o a miembros explícitos de
 `pg_read_server_files`, nunca `app_web`, `rol_soporte` ni `PUBLIC`.
+
+## Revisión documental de codificación (2026-10-15)
+
+El round-trip Latin-1 anterior conservaba bytes, pero no demostraba legibilidad. Los originales
+mezclan fragmentos Latin-1 y secuencias UTF-8: no tienen una codificación uniforme. Solo se
+repararon secuencias comprobadas en la copia de lectura; no se repitió el laboratorio.
+Transformación, líneas y hashes antes/después en la [revisión documental](revision_documental_20261015.md).

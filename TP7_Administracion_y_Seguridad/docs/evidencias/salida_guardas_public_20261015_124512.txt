@@ -1,0 +1,122 @@
+TP7: verificacion negativa de guardas y consulta PUBLIC
+
+=== PREPARACION INICIAL SIN PGPASSFILE ===
+STDOUT (bytes capturados):
+
+STDERR (bytes capturados):
+psql: error: connection to server at "localhost" (::1), port 5432 failed: fe_sendauth: no password supplied
+
+PSQL_EXIT=2
+
+=== IDENTIDAD SOLO LECTURA ===
+STDOUT (bytes capturados):
+     base      | usuario  | usuario_sesion | version | default_solo_lectura | transaccion_solo_lectura 
+---------------+----------+----------------+---------+----------------------+--------------------------
+ foodstore_dev | postgres | postgres       | 17.11   | on                   | on
+(1 row)
+
+
+STDERR (bytes capturados):
+
+PSQL_EXIT=0
+
+=== CASO 01: preparar_entorno_local.sql / lab_c_password_01 / directa ===
+STDOUT (bytes capturados):
+
+STDERR (bytes capturados):
+psql:C:/Users/hp/Practicos/TP7_Administracion_y_Seguridad/sql/preparar_entorno_local.sql:15: ERROR:  Falta -v lab_c_password_01 (sintética, no real), STOP
+CONTEXT:  función PL/pgSQL inline_code_block en la línea 1 en RAISE
+
+PSQL_EXIT=3
+
+=== CASO 02: preparar_entorno_local.sql / lab_c_password_01 / incluida ===
+STDOUT (bytes capturados):
+
+STDERR (bytes capturados):
+psql:C:/Users/hp/Practicos/TP7_Administracion_y_Seguridad/sql/preparar_entorno_local.sql:15: ERROR:  Falta -v lab_c_password_01 (sintética, no real), STOP
+CONTEXT:  función PL/pgSQL inline_code_block en la línea 1 en RAISE
+
+PSQL_EXIT=3
+
+=== CASO 03: preparar_entorno_local.sql / lab_c_password_02 / directa ===
+STDOUT (bytes capturados):
+
+STDERR (bytes capturados):
+psql:C:/Users/hp/Practicos/TP7_Administracion_y_Seguridad/sql/preparar_entorno_local.sql:19: ERROR:  Falta -v lab_c_password_02 (sintética, no real), STOP
+CONTEXT:  función PL/pgSQL inline_code_block en la línea 1 en RAISE
+
+PSQL_EXIT=3
+
+=== CASO 04: preparar_entorno_local.sql / lab_c_password_02 / incluida ===
+STDOUT (bytes capturados):
+
+STDERR (bytes capturados):
+psql:C:/Users/hp/Practicos/TP7_Administracion_y_Seguridad/sql/preparar_entorno_local.sql:19: ERROR:  Falta -v lab_c_password_02 (sintética, no real), STOP
+CONTEXT:  función PL/pgSQL inline_code_block en la línea 1 en RAISE
+
+PSQL_EXIT=3
+
+=== CASO 05: instalar_entorno_local.sql / lab_c_password_01 / directa ===
+STDOUT (bytes capturados):
+
+STDERR (bytes capturados):
+psql:C:/Users/hp/Practicos/TP7_Administracion_y_Seguridad/sql/instalar_entorno_local.sql:23: ERROR:  Falta -v lab_c_password_01 (sintética, no real), STOP
+CONTEXT:  función PL/pgSQL inline_code_block en la línea 1 en RAISE
+
+PSQL_EXIT=3
+
+=== CASO 06: instalar_entorno_local.sql / lab_c_password_01 / incluida ===
+STDOUT (bytes capturados):
+
+STDERR (bytes capturados):
+psql:C:/Users/hp/Practicos/TP7_Administracion_y_Seguridad/sql/instalar_entorno_local.sql:23: ERROR:  Falta -v lab_c_password_01 (sintética, no real), STOP
+CONTEXT:  función PL/pgSQL inline_code_block en la línea 1 en RAISE
+
+PSQL_EXIT=3
+
+=== CASO 07: instalar_entorno_local.sql / lab_c_password_02 / directa ===
+STDOUT (bytes capturados):
+
+STDERR (bytes capturados):
+psql:C:/Users/hp/Practicos/TP7_Administracion_y_Seguridad/sql/instalar_entorno_local.sql:27: ERROR:  Falta -v lab_c_password_02 (sintética, no real), STOP
+CONTEXT:  función PL/pgSQL inline_code_block en la línea 1 en RAISE
+
+PSQL_EXIT=3
+
+=== CASO 08: instalar_entorno_local.sql / lab_c_password_02 / incluida ===
+STDOUT (bytes capturados):
+
+STDERR (bytes capturados):
+psql:C:/Users/hp/Practicos/TP7_Administracion_y_Seguridad/sql/instalar_entorno_local.sql:27: ERROR:  Falta -v lab_c_password_02 (sintética, no real), STOP
+CONTEXT:  función PL/pgSQL inline_code_block en la línea 1 en RAISE
+
+PSQL_EXIT=3
+
+=== CASO 09: simulacro_incidente.sql / lab_sim_password_ok / directa ===
+STDOUT (bytes capturados):
+
+STDERR (bytes capturados):
+psql:C:/Users/hp/Practicos/TP7_Administracion_y_Seguridad/sql/simulacro_incidente.sql:34: ERROR:  Falta -v lab_sim_password_ok (sintética, no real), STOP
+CONTEXT:  función PL/pgSQL inline_code_block en la línea 1 en RAISE
+
+PSQL_EXIT=3
+
+=== CASO 10: simulacro_incidente.sql / lab_sim_password_ok / incluida ===
+STDOUT (bytes capturados):
+
+STDERR (bytes capturados):
+psql:C:/Users/hp/Practicos/TP7_Administracion_y_Seguridad/sql/simulacro_incidente.sql:34: ERROR:  Falta -v lab_sim_password_ok (sintética, no real), STOP
+CONTEXT:  función PL/pgSQL inline_code_block en la línea 1 en RAISE
+
+PSQL_EXIT=3
+
+=== PUBLIC ===
+STDOUT (bytes capturados):
+ grantor | grantee | table_schema | table_name | privilege_type | is_grantable 
+---------+---------+--------------+------------+----------------+--------------
+(0 rows)
+
+
+STDERR (bytes capturados):
+
+PSQL_EXIT=0

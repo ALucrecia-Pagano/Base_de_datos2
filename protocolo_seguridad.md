@@ -167,10 +167,18 @@ Lo anterior se mantiene íntegro; este apartado solo precisa su aplicación al T
 - **E consolidada y publicada:** [BITACORA.md](BITACORA.md) en la raíz (versión consolidada exigida por
   el PDF, commit `fdd6116` con D/E); la copia de trabajo `TP7_Administracion_y_Seguridad/BITACORA.md` se
   conserva como antecedente.
-- **Corrección de seguridad posterior (aplicada localmente, sin commit/push):** ensayo `ROLLBACK` (exit 0),
+- **Corrección de seguridad posterior (aplicada y publicada en `88675cc`):** ensayo `ROLLBACK` (exit 0),
   aplicación `COMMIT` (exit 0, comprobaciones previas + fixtures revertidos) y validación independiente
   `ROLLBACK` (exit 0) el 2026-10-15, con respaldo previo; posterior verificado (catálogos denegados con
   `pg_monitor` vigente, funciones `DEFINER` + `search_path` cerrado, defaults `aw` sin SELECT, datos y
   secuencia intactos). Evidencias en `TP7_Administracion_y_Seguridad/docs/evidencias/`
-  (`ensayo_…_1117.md`, `aplicacion_…_1121.md` y tres salidas psql). No se declara entrega final ni
-  publicación de estos cambios.
+  (`ensayo_…_1117.md`, `aplicacion_…_1121.md` y tres salidas psql). No se declara entrega final; los nuevos ajustes
+  documentales quedan pendientes de publicación.
+
+### TP7 — Aclaración documental del 2026-10-15
+
+Las correcciones de seguridad fueron publicadas en `88675cc`. Los ajustes documentales de
+esta intervención quedan sin commit/push y pendientes de revisión humana. No se declara entrega final.
+Un round-trip no demuestra legibilidad: se repararon únicamente secuencias comprobadas en las
+copias de lectura, conservando los originales. El detalle y la limitación de prompts históricos
+están en la [revisión documental TP7](TP7_Administracion_y_Seguridad/docs/revision_documental_20261015.md).

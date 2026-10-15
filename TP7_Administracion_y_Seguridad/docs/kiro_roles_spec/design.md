@@ -12,37 +12,26 @@
 
 ## 1. Modelo de herencia de roles
 
-```
-              ┌──────────────────────────────────────────┐
-              │          postgres (superusuario)          │
-              │  crea roles + ejecuta ALTER DEFAULT PRIV  │
-              └──────────┬──────────────┬────────────────┘
-                         │              │
-          ┌──────────────▼──┐    ┌──────▼──────────────────────────┐
-          │  rol_app_lectura │    │          admin_datos             │
-          │   (NOLOGIN)      │    │  (LOGIN, permisos directos ALL)  │
-          └──────────┬───────┘    └──────────────────────────────────┘
-                     │
-          ┌──────────▼──────────┐
-          │   rol_app_escritura  │
-          │     (NOLOGIN)        │
-          └──────────┬───────────┘
-                     │
-          ┌──────────▼───────────────┐
-          │         app_web           │
-          │  (LOGIN, hereda lectura   │
-          │       + escritura)        │
-          └───────────────────────────┘
+Las flechas indican únicamente membresías: rol concedido → rol miembro.
 
-          ┌──────────────┐   ┌──────────────┐   ┌──────────────┐
-          │  rol_soporte  │   │ rol_reportes  │   │rol_auditoria │
-          │  (NOLOGIN)    │   │  (NOLOGIN)    │   │  (NOLOGIN)   │
-          └──────────────┘   └──────────────┘   └──────────────┘
-          (sin roles de login asignados en esta especificación;
-           se asignarán a roles de login específicos cuando se creen)
+```text
+rol_app_lectura   ──────┐
+                       ├──→ app_web (LOGIN)
+rol_app_escritura ──────┘
+
+pg_monitor ────────────────→ rol_auditoria (NOLOGIN)
 ```
 
-`app_web` hereda la unión de permisos de `rol_app_lectura` y `rol_app_escritura`. Todos los permisos se administran en los roles de grupo; nunca se otorgan directamente sobre `app_web`.
+No existe membresía entre `rol_app_lectura` y `rol_app_escritura`.
+`app_web` recibe ambos roles directamente y hereda la unión de sus permisos.
+`rol_soporte` y `rol_reportes` son grupos NOLOGIN sin login asignado en esta
+especificación. `admin_datos` es LOGIN con permisos directos, sin membresías
+en los grupos TP7.
+
+**Acciones administrativas, no membresías:** `postgres` crea los roles y objetos,
+otorga permisos y establece los defaults de su propia serie y de `admin_datos`.
+Estas acciones no hacen a los roles TP7 miembros de `postgres`.
+
 
 ---
 
@@ -61,7 +50,7 @@ El script divide su contenido en 12 secciones ejecutables en una sola pasada:
 | 6 | `GRANT` de secuencia (RF-04) |
 | 7 | `GRANT` de vistas y vista materializada (RF-02) |
 | 8 | `GRANT EXECUTE` directo de funciones (exige firmas existentes; RF-05) |
-| 9 | `GRANT pg_monitor` + catálogos para `rol_auditoria` (RF-06) |
+| 9 | `GRANT pg_monitor` para `rol_auditoria`, sin los GRANT indiscriminados sobre catálogos eliminados (RF-06) |
 | 10 | `ALTER DEFAULT PRIVILEGES` (RF-07) |
 | 11 | `GRANT rol_app_lectura, rol_app_escritura TO app_web` (membresías) |
 | 12 | Consultas de verificación (comentadas; ejecutar manualmente con autorización) |
@@ -344,7 +333,12 @@ R7 del proyecto establece baja lógica (`UPDATE activo = FALSE` / `UPDATE elimin
 Aunque `app_web` hereda ambos, la separación permite crear en el futuro un rol de login de solo lectura (API pública, informes en tiempo real) sin modificar el modelo existente.
 
 ### D3 — `rol_auditoria` con `pg_monitor` en lugar de GRANTs individuales
-`GRANT pg_monitor` es el mecanismo declarativo recomendado por PostgreSQL desde v10 para acceso de lectura a estadísticas del motor. Reduce superficie de configuración manual y se actualiza automáticamente con nuevas vistas de sistema en versiones futuras del motor.
+`pg_monitor` agrupa capacidades de monitoreo, incluidas las de `pg_read_all_stats`,
+`pg_read_all_settings` y `pg_stat_scan_tables`. No concede por sí mismo SELECT directo
+sobre tablas de negocio ni sobre `pg_authid`. Sí permite observar estadísticas e información
+de otras sesiones, incluido el texto de consultas que puede contener datos sensibles.
+Por ello es acceso privilegiado y no garantiza confidencialidad absoluta. Se conserva la
+membresía existente, sin agregar ni revocar permisos.
 
 ### D4 — Permisos de columna para `rol_soporte` en lugar de vista adicional
 Se podría haber creado una vista `v_usuario_soporte` que excluya `contrasena`. La decisión de usar `GRANT ON COLUMN` es intencional: ejercita la característica de seguridad a nivel de columna como objetivo pedagógico del TP7, y evita añadir vistas al schema. La restricción es más directa: `SELECT contrasena FROM usuario` falla con `permission denied` independientemente de cómo se llame a la tabla. Registrado en BITACORA.md fila 3 (propuesta de `GRANT SELECT ON usuario TO rol_soporte` rechazada).
@@ -393,6 +387,12 @@ con `classid`/`refclassid` correctos); no demuestra ausencia de otras sobrecarga
 `REVOKE FROM PUBLIC` y los accesos de `roles.sql §8` se preservan. Las copias internas de
 `preparar_entorno_local.sql` e `instalar_entorno_local.sql` se reemplazaron por `\ir` de los canónicos
 (las evidencias previas corresponden a sus versiones internas del commit 0060cfd).
+Las funciones canónicas corregidas fueron aplicadas y validadas mediante el corrector
+([aplicación y validación](../evidencias/aplicacion_correccion_seguridad_20261015_1121.md)).
+No se acredita una nueva ejecución completa de los instaladores modificados. Las guardas
+se comprobaron después con diez pruebas negativas (directas e incluidas mediante `\ir`):
+error esperado, exit 3 y marcadores posteriores ausentes
+([evidencia](../evidencias/verificacion_guardas_public_20261015_124512.md)). No son pruebas de instalación completa.
 
 ### D11 — Tablas sensibles futuras: contrato explícito (corrección de auditoría 2026-10-15)
 
@@ -468,10 +468,21 @@ FROM information_schema.role_routine_grants
 WHERE routine_name IN ('fn_autenticar', 'fn_resetear_password')
 ORDER BY routine_name, grantee;
 
--- 7.6 Confirmar que PUBLIC no tiene acceso a las tablas
-SELECT grantee, table_name, privilege_type
-FROM information_schema.role_table_grants
+-- 7.6 Otorgamientos de tabla a PUBLIC: ejecutada 2026-10-15, 0 filas, exit 0.
+SELECT grantor, grantee, table_schema, table_name, privilege_type, is_grantable
+FROM information_schema.table_privileges
 WHERE grantee = 'PUBLIC'
   AND table_schema = 'public'
-ORDER BY table_name;
+ORDER BY table_name, privilege_type, grantor;
 ```
+
+
+**Alcance y estado de §7.6:** ejecutada una vez el 2026-10-15 como `postgres` en
+`foodstore_dev`, con conexión de solo lectura: **0 filas, exit 0**
+([evidencia y salida](../evidencias/verificacion_guardas_public_20261015_124512.md)). `role_table_grants` omite los otorgamientos
+a `PUBLIC`, por lo que no sirve para demostrar su ausencia. `table_privileges` informa
+otorgamientos sobre tablas y vistas regulares visibles en el contexto de la sesión
+(grantor o grantee entre los roles habilitados, incluidos los otorgamientos a PUBLIC).
+La consulta filtra los objetos del esquema `public`; no verifica permisos del esquema,
+columnas, secuencias, funciones ni vistas materializadas, y no sustituye un examen
+completo de privilegios efectivos por herencia. Este resultado corresponde únicamente a la consulta indicada.

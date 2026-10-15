@@ -21,4 +21,4 @@
 2026-10-14 11:52:56.783 -03 [26120] postgres@foodstore_dev ::1(62151) psql LOG:  sentencia: ROLLBACK;
 2026-10-14 11:52:56.783 -03 [26120] postgres@foodstore_dev ::1(62151) psql LOG:  sentencia: SELECT fn_autenticar('admin@foodstore.com', 'clave_erronea_test') AS login_fallido;
 2026-10-14 11:52:56.823 -03 [26120] postgres@foodstore_dev ::1(62151) psql LOG:  sentencia: SELECT 'AUDITORIA_TEST_FIN_B2' AS marca, clock_timestamp() AS ts;
-2026-10-14 11:52:56.823 -03 [26120] postgres@foodstore_dev ::1(62151) psql LOG:  desconexiÃ³n: duraciÃ³n de sesiÃ³n: 0:00:00.094 usuario=postgres base=foodstore_dev host=::1 port=62151
+2026-10-14 11:52:56.823 -03 [26120] postgres@foodstore_dev ::1(62151) psql LOG:  desconexión: duración de sesión: 0:00:00.094 usuario=postgres base=foodstore_dev host=::1 port=62151

@@ -5,8 +5,8 @@
 > `sql/simulacro_incidente.sql` (3 fallidos → 1 éxito → lectura masiva → escalamiento
 > denegado 42501, `ROLLBACK` final), auditoría restaurada. Evidencias:
 > `docs/evidencias/ejecucion_20261015_0215.md`, `docs/log_simulacro_anonimizado.txt`
-> (209 líneas, PID 21348; codificación original ISO-8859 conservada intacta, copia legible UTF-8 con
-> contenido idéntico verificado por round-trip en `docs/log_simulacro_anonimizado.utf8.txt`). La reconstrucción de la IA está íntegra en
+> (209 líneas, PID 21348; bytes originales conservados intactos, copia de lectura UTF-8 con
+> reparación localizada de mojibake en `docs/log_simulacro_anonimizado.utf8.txt`). La reconstrucción de la IA está íntegra en
 > `docs/respuesta_ia_incidente.md`.
 
 ## 1. Secuencia ejecutada y evidencias
@@ -44,3 +44,10 @@ Decisión aprobada por la integrante que dirige esta sesión; no se atribuye apr
   ([verificación de equivalencia](verificacion_equivalencia.md)) y bitácora consolidada en la raíz
   ([BITACORA.md](../../BITACORA.md)).
 - La Parte C cierra con this informe + respuesta IA íntegra + log anonimizado + evidencia fechada.
+
+## Revisión documental de codificación (2026-10-15)
+
+El round-trip Latin-1 anterior conservaba bytes, pero no demostraba legibilidad. Los originales
+mezclan fragmentos Latin-1 y secuencias UTF-8: no tienen una codificación uniforme. Solo se
+repararon secuencias comprobadas en la copia de lectura; no se repitió el laboratorio.
+Transformación, líneas y hashes antes/después en la [revisión documental](revision_documental_20261015.md).

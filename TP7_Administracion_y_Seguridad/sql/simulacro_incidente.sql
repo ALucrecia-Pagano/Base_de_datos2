@@ -31,8 +31,7 @@
 
 \if :{?lab_sim_password_ok}
 \else
-\echo 'Falta -v lab_sim_password_ok (sintética del sintético 01, no real)'
-\q 1
+DO $$ BEGIN RAISE EXCEPTION 'Falta -v lab_sim_password_ok (sintética, no real), STOP'; END $$;
 \endif
 
 BEGIN;

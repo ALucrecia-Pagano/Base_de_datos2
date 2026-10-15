@@ -2,7 +2,8 @@
 
 > Estado: **ejecutado el 2026-10-15 (~11:17–11:21 UTC-3)**: ensayo con `ROLLBACK` (exit 0),
 > aplicación con `COMMIT` (exit 0) y validación independiente con `ROLLBACK` (exit 0).
-> Las correcciones están aplicadas localmente, todavía sin commit/push.
+> Las correcciones fueron aplicadas y publicadas en `88675cc`. Los nuevos ajustes documentales
+> quedan sin publicar hasta su commit y pendientes de revisión humana.
 
 ## 1. Hallazgos que motivan la corrección
 
@@ -33,7 +34,8 @@
 Las copias internas anteriores de funciones vivían en `preparar/instalar_entorno_local.sql §5` del commit
 0060cfd (recuperables vía `git show 0060cfd:...`); las evidencias previas
 (`validacion_20261015_014013.md`, `ejecucion_20261015_0215.md`) corresponden a esas versiones internas.
-No se afirma que las versiones corregidas hayan sido ejecutadas.
+Esas evidencias previas no validan las versiones corregidas. Las ejecuciones posteriores de las
+versiones corregidas constan en §6 (ensayo, aplicación y validación independiente).
 
 ## 3. Respaldo previo (obligatorio, fuera del repo)
 
@@ -108,5 +110,5 @@ global del clúster: roles, membresías y contraseñas, `TABLESPACE`s, ni la con
 
 ## 7. Puntos pendientes (no inventar autorización)
 
-- **Publicación**: correcciones aplicadas localmente, todavía sin commit/push; documentación general y
-  bitácora en revisión (este paso no las actualiza).
+- **Publicación**: correcciones de seguridad publicadas en `88675cc`. Los nuevos ajustes documentales
+  quedan sin commit/push y pendientes de revisión humana; no se declara entrega final.

@@ -12,13 +12,11 @@
 
 \if :{?lab_c_password_01}
 \else
-\echo 'Falta -v lab_c_password_01 (sintética, no real)'
-\q 1
+DO $$ BEGIN RAISE EXCEPTION 'Falta -v lab_c_password_01 (sintética, no real), STOP'; END $$;
 \endif
 \if :{?lab_c_password_02}
 \else
-\echo 'Falta -v lab_c_password_02 (sintética, no real)'
-\q 1
+DO $$ BEGIN RAISE EXCEPTION 'Falta -v lab_c_password_02 (sintética, no real), STOP'; END $$;
 \endif
 
 BEGIN;

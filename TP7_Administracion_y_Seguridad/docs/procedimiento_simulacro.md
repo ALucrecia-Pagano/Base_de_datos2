@@ -1,7 +1,20 @@
-# TP7 Parte C — Procedimiento del simulacro (para revisión, no ejecutado)
+# TP7 Parte C — Procedimiento del simulacro (antecedente de preparación)
 
-> `sql/simulacro_incidente.sql` está preparado para revisión. No se ejecutó:
-> no hay resultados reales, no hay decisión humana de contención redactada.
+> **Antecedente histórico:** las instrucciones siguientes describen la preparación previa
+> a la ejecución; las referencias a “no ejecutado” o “pendiente” corresponden a esa etapa.
+>
+> **Estado documentado actual:** la instalación, auditoría temporal, simulacro y restauración
+> constan en la [evidencia de ejecución](evidencias/ejecucion_20261015_0215.md).
+> El [informe del incidente y decisión humana de contención](informe_incidente.md)
+> conserva el contraste y la decisión existentes; no son nuevas ejecuciones.
+> Las funciones canónicas corregidas se aplicaron y validaron mediante el corrector
+> ([evidencia](evidencias/aplicacion_correccion_seguridad_20261015_1121.md)).
+> No se acredita una nueva ejecución de los instaladores completos modificados.
+> **Verificación posterior autorizada:** diez pruebas negativas de guardas, directas e incluidas
+> mediante `\ir`, dieron el error esperado y exit 3; los cinco marcadores posteriores estuvieron
+> ausentes. Consulta PUBLIC: 0 filas, exit 0. Conexiones de solo lectura
+> ([evidencia](evidencias/verificacion_guardas_public_20261015_124512.md)). No se ejecutaron instalaciones ni el simulacro completo.
+> La preparación anterior solo tuvo verificaciones estáticas; estas son comprobaciones posteriores.
 
 ## 1. Decisiones tomadas en el script
 

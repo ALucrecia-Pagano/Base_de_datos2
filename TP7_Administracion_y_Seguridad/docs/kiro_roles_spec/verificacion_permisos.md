@@ -11,7 +11,7 @@
 > catálogos de `rol_auditoria`, logins sin contraseña, `ALTER DEFAULT PRIVILEGES` reducido a RF-07,
 > funciones endurecidas): esas correcciones se verifican únicamente con
 > `sql/validar_correccion_seguridad.sql`, ejecutado 2026-10-15 (ROLLBACK, exit 0;
-> [salida](evidencias/salida_psql_validacion_correccion_20261015_112125.txt)). No se reemplazó ningún resultado por
+> [salida](../evidencias/salida_psql_validacion_correccion_20261015_112125.txt)). No se reemplazó ningún resultado por
 > resultados inventados.
 
 Notas de lectura:
@@ -146,6 +146,15 @@ Notas de lectura:
 
 `rol_soporte`, `rol_auditoria` y `app_web`: 0 filas a nivel tabla (correcto:
 columnas / monitoreo / herencia). `PUBLIC` en tablas de `public`: **0 filas**.
+
+> **Aclaración posterior (2026-10-15):** se conserva el resultado histórico anterior.
+> Cero filas al filtrar `PUBLIC` sobre `role_table_grants` no probaba ausencia de
+> privilegios: esa vista omite los otorgamientos a `PUBLIC`. La consulta propuesta
+> sobre `information_schema.table_privileges` está en [diseño §7.6](design.md).
+> **Actualización posterior:** la consulta nueva se ejecutó el 2026-10-15 como `postgres`
+> en `foodstore_dev`, en modo de solo lectura: **0 filas, exit 0**
+> ([evidencia](../evidencias/verificacion_guardas_public_20261015_124512.md)). Este resultado nuevo no sustituye el histórico.
+> Su alcance es de tabla/vista regular, no de esquema, columna, secuencia o función.
 
 ## 3. `information_schema.role_column_grants` (`usuario`)
 

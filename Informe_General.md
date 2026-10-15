@@ -12,7 +12,7 @@
 
 ## Introducción
 
-Este informe integra los seis trabajos prácticos de la cursada sobre **FoodStore**. El recorrido comprende modelado y normalización (TP1), integridad y concurrencia (TP2), carga masiva y optimización (TP3), reportes analíticos (TP4), índices y vistas (TP5), y FNBC y desnormalización controlada (TP6). El TP7 (Administración y seguridad, Unidad 5) tiene las Partes A–E terminadas y publicadas, más una corrección de seguridad posterior aplicada localmente y todavía sin commit/push; tiene sección propia más abajo.
+Este informe integra los seis trabajos prácticos de la cursada sobre **FoodStore**. El recorrido comprende modelado y normalización (TP1), integridad y concurrencia (TP2), carga masiva y optimización (TP3), reportes analíticos (TP4), índices y vistas (TP5), y FNBC y desnormalización controlada (TP6). El TP7 (Administración y seguridad, Unidad 5) tiene las Partes A–E terminadas y publicadas, más una corrección de seguridad posterior aplicada y publicada en `88675cc`; los nuevos ajustes documentales quedan sin publicar hasta su commit; tiene sección propia más abajo.
 
 En TP1 a TP5 se documentó el uso de Kiro, OpenCode o GitHub Copilot según la etapa y el integrante. En las correcciones de TP5 también se utilizaron Claude Code y Claude, registrados en su DUIA. En TP6 se utilizaron **ChatGPT y Codex CLI** para analizar, proponer scripts, revisar evidencias y preparar documentación. En TP7 (Unidad 5) se utilizan **Kiro** (especificación de roles), **OpenCode con Muse Spark 1.3 Free** (preparación, validación, instalación, simulacro, reconstrucción C.4 y anonimización/equivalencia D) y asistencia de **Codex** (inventario local), con revisión y autorización humana por paso. Las propuestas se revisaron y los cambios de archivos se realizaron con autorización humana; las ejecuciones en PostgreSQL fueron realizadas por el grupo y sus salidas se utilizaron como evidencia. No se atribuyen a TP6 las herramientas utilizadas en otras entregas.
 
@@ -232,7 +232,7 @@ Antecedentes históricos sin filtros lógicos:
 [medición inicial anterior](TP6_FNBC_Desnormalizacion/Parte2_Desnormalizacion/evidencias/evidencia_top_antes_20261008_225517.txt) y
 [comparación anterior](TP6_FNBC_Desnormalizacion/Parte2_Desnormalizacion/evidencias/evidencia_top_desnormalizacion_20261008_232126.txt).
 
-## TP7 — Administración y seguridad (Unidad 5; A–E publicadas, corrección posterior aplicada sin publicar)
+## TP7 — Administración y seguridad (Unidad 5; A–E y correcciones de seguridad publicadas)
 
 Trabajo sobre la instancia propia `foodstore_dev` (PostgreSQL 17.11), con autorización por paso, respaldo custom previo y restauración de auditoría.
 
@@ -264,7 +264,7 @@ legible (284 entradas TOC) no equivale a restauración probada. Salida íntegra 
 D y E están publicadas (`fdd6116`); la [BITACORA.md](BITACORA.md) raíz es la versión consolidada y la copia
 de trabajo `TP7_Administracion_y_Seguridad/BITACORA.md` se conserva como antecedente.
 
-**Corrección de seguridad posterior (aplicada localmente, sin commit/push).** Hallazgos de auditoría:
+**Corrección de seguridad posterior (aplicada y publicada en `88675cc`).** Hallazgos de auditoría:
 `rol_auditoria` leía todos los catálogos (incluido `pg_authid`), logins con placeholder ejecutable,
 defaults con `SELECT` de más vs RF-07 y funciones con resolución por `search_path`. Correcciones aplicadas
 el 2026-10-15 con respaldo previo: ensayo `ROLLBACK` (exit 0), aplicación `COMMIT` (exit 0, comprobaciones
@@ -272,7 +272,7 @@ previas + fixtures revertidos por SAVEPOINT) y validación independiente `ROLLBA
 `rol_auditoria` sin leer `pg_authid`/`pg_shadow` (con `pg_monitor`), funciones `DEFINER` + `search_path`
 cerrado, defaults escritura `aw` sin SELECT en ambas series, conteos y secuencia intactos. Persistido:
 catálogos revocados, defaults RF-07, funciones endurecidas; sin contraseñas, sin reinstalación, sin
-`ALTER SYSTEM`. No se declara entrega final ni publicación de estos cambios.
+`ALTER SYSTEM`. No se declara entrega final; los nuevos ajustes documentales quedan pendientes de publicación.
 
 Fuentes: [informe de auditoría](TP7_Administracion_y_Seguridad/docs/informe_auditoria.md), [informe del incidente](TP7_Administracion_y_Seguridad/docs/informe_incidente.md), [respuesta IA](TP7_Administracion_y_Seguridad/docs/respuesta_ia_incidente.md), [log anonimizado](TP7_Administracion_y_Seguridad/docs/log_simulacro_anonimizado.txt), [evidencia de ejecución C](TP7_Administracion_y_Seguridad/docs/evidencias/ejecucion_20261015_0215.md), [informe de equivalencia D](TP7_Administracion_y_Seguridad/docs/verificacion_equivalencia.md), [salida íntegra D](TP7_Administracion_y_Seguridad/docs/evidencias/salida_psql_usuario_anon_20261015_091628.txt), [bitácora TP7](TP7_Administracion_y_Seguridad/BITACORA.md), [bitácora consolidada](BITACORA.md), [procedimiento de corrección](TP7_Administracion_y_Seguridad/docs/aplicacion_correccion_seguridad.md), [evidencia de ensayo](TP7_Administracion_y_Seguridad/docs/evidencias/ensayo_correccion_seguridad_20261015_1117.md), [evidencia de aplicación](TP7_Administracion_y_Seguridad/docs/evidencias/aplicacion_correccion_seguridad_20261015_1121.md).
 
@@ -285,3 +285,11 @@ Las revisiones permitieron identificar problemas concretos: aleatorización no c
 El informe conserva los resultados históricos y sus condiciones. Los ensayos de índices de TP4 Parte 1 y las dos implementaciones de TP6 finalizaron con ROLLBACK. Las aplicaciones permanentes registradas en otras etapas no se extrapolan al estado actual de `foodstore_copia_trabajo`.
 
 La validación de TP6 demuestra equivalencia y sincronización secuencial para los casos ensayados, pero deja pendientes las pruebas concurrentes y la cuantificación del costo de escritura. Por ello, los resultados de lectura respaldan la adaptación evaluada sin presentarla como una instalación persistente ni como una garantía de rendimiento bajo cualquier carga.
+
+### TP7 — Aclaración documental del 2026-10-15
+
+Las correcciones de seguridad fueron publicadas en `88675cc`. Los ajustes documentales de
+esta intervención quedan sin commit/push y pendientes de revisión humana. No se declara entrega final.
+Un round-trip no demuestra legibilidad: se repararon únicamente secuencias comprobadas en las
+copias de lectura, conservando los originales. El detalle y la limitación de prompts históricos
+están en la [revisión documental TP7](TP7_Administracion_y_Seguridad/docs/revision_documental_20261015.md).

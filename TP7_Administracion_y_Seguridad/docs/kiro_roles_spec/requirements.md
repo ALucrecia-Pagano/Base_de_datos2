@@ -52,7 +52,12 @@ Ambas funciones se definen con `SECURITY DEFINER` y `REVOKE ALL FROM PUBLIC` des
 > exactas utilizadas (OIDs vía `pg_depend` con `classid`/`refclassid`); no demuestra ausencia de otras
 > sobrecargas. Las copias internas de `preparar_entorno_local.sql` e `instalar_entorno_local.sql` se
 > reemplazaron por `\ir` de los canónicos (las evidencias previas corresponden a sus versiones internas
-> del commit 0060cfd; no se ejecutaron las corregidas).
+> del commit 0060cfd). Las funciones canónicas corregidas fueron aplicadas y validadas mediante
+> el corrector ([evidencia](../evidencias/aplicacion_correccion_seguridad_20261015_1121.md)).
+> No se acredita una nueva ejecución completa de los instaladores modificados. Las guardas
+> sí se comprobaron mediante diez pruebas negativas (directas e incluidas con `\ir`):
+> error esperado, exit 3 y marcadores posteriores ausentes
+> ([evidencia](../evidencias/verificacion_guardas_public_20261015_124512.md)). Estas pruebas no ejecutan los instaladores completos.
 
 ### 1.4 Secuencias implícitas (GENERATED ALWAYS AS IDENTITY)
 
@@ -81,7 +86,7 @@ Ambas funciones se definen con `SECURITY DEFINER` y `REVOKE ALL FROM PUBLIC` des
 | `rol_app_escritura` | Habilita `INSERT` y `UPDATE` sobre las tablas transaccionales (`cliente`, `pedido`, `detalle_pedido`, `categoria`, `producto`) y `USAGE, SELECT` sobre sus secuencias, porque la capa de negocio debe crear pedidos y mantener el catálogo sin poder borrar registros históricos (baja lógica, R7) ni tocar credenciales. |
 | `rol_soporte` | Habilita `SELECT` sobre las columnas de identificación y estado de `usuario` y `UPDATE (eliminado)` para gestionar altas y bajas lógicas de cuentas, y `EXECUTE` sobre `fn_resetear_password` para restablecer contraseñas, porque el equipo de soporte gestiona cuentas de usuarios sin necesitar jamás leer ni escribir `contrasena`. |
 | `rol_reportes` | Habilita `SELECT` sobre las vistas de agregación (`v_reporte_ventas_cliente`, `v_usuario_publico`, `mv_resumen_ventas_categoria_mes`) porque los analistas de negocio necesitan reportes de facturación y de usuarios activos sin acceder a tablas base, datos individuales de pedidos ni credenciales. |
-| `rol_auditoria` | Habilita lectura de las estadísticas del motor vía el rol predefinido `pg_monitor`, porque el rol de auditoría necesita verificar el estado operativo de la instancia sin ningún contacto con datos transaccionales, credenciales ni secretos del motor. No recibe ningún `GRANT` sobre `pg_catalog` ni `information_schema` (corrección de auditoría 2026-10-15: el acceso indiscriminado a todos los catálogos exponía secretos como `pg_authid.rolpassword`). |
+| `rol_auditoria` | Habilita lectura de las estadísticas del motor vía el rol predefinido `pg_monitor`, porque el rol de auditoría necesita verificar el estado operativo de la instancia. `pg_monitor` no concede por sí mismo SELECT directo sobre tablas de negocio ni `pg_authid`, pero permite observar información de otras sesiones, incluido texto de consultas que puede contener datos sensibles; no garantiza confidencialidad absoluta. No recibe ningún `GRANT` sobre `pg_catalog` ni `information_schema` (corrección de auditoría 2026-10-15: el acceso indiscriminado a todos los catálogos exponía secretos como `pg_authid.rolpassword`). |
 
 ### 2.2 Roles de login (LOGIN)
 
@@ -162,7 +167,11 @@ Ningún otro rol de grupo recibe acceso directo a `usuario.contrasena`. El únic
 GRANT pg_monitor TO rol_auditoria;
 ```
 
-`pg_monitor` es un rol predefinido de PostgreSQL (disponible desde v10) que agrupa `pg_read_all_stats`, `pg_stat_scan_tables` y `pg_read_all_settings`. Da acceso de solo lectura a `pg_stat_activity`, `pg_locks`, `pg_stat_user_tables`, `pg_stat_user_indexes`, etc., sin exponer datos de negocio de ninguna base.
+`pg_monitor` es un rol predefinido de PostgreSQL (disponible desde v10) que agrupa `pg_read_all_stats`, `pg_stat_scan_tables` y `pg_read_all_settings`. Permite observar estadísticas e información de sesiones mediante `pg_stat_activity`,
+`pg_locks`, `pg_stat_user_tables`, `pg_stat_user_indexes`, etc. No concede por sí mismo
+SELECT directo sobre tablas de negocio ni `pg_authid`; sí permite ver información de otras
+sesiones, incluido texto de consultas que puede contener datos sensibles. Es acceso privilegiado,
+sin garantía de confidencialidad absoluta. Se conserva `pg_monitor`, sin agregar ni revocar permisos.
 
 > **Corrección de auditoría 2026-10-15:** la versión anterior de este requisito incluía además
 > `GRANT SELECT ON ALL TABLES IN SCHEMA information_schema/pg_catalog TO rol_auditoria`. Esos dos
@@ -214,7 +223,7 @@ ALTER DEFAULT PRIVILEGES IN SCHEMA public
 | `rol_app_escritura` | Sin DELETE sobre ninguna tabla (la baja lógica usa `UPDATE activo = FALSE` / `UPDATE eliminado = TRUE`, R7) |
 | `rol_soporte` | Sin leer ni escribir `usuario.contrasena` bajo ninguna circunstancia; sin acceso a tablas de negocio |
 | `rol_reportes` | Sin acceso directo a tablas base; sin acceso a `usuario.contrasena` (la vista `v_usuario_publico` la excluye) |
-| `rol_auditoria` | Sin acceso a datos transaccionales ni a credenciales; solo catálogos y estadísticas del motor |
+| `rol_auditoria` | Sin SELECT directo concedido por este modelo sobre tablas de negocio ni `pg_authid`; monitoreo privilegiado que puede exponer datos sensibles en el texto de consultas de otras sesiones |
 | `app_web` | Sin privilegios DDL; no puede crear, alterar ni borrar objetos del esquema |
 | `admin_datos` | Sin atributo `SUPERUSER`; sus privilegios se limitan al schema `public` de `foodstore_dev` |
 

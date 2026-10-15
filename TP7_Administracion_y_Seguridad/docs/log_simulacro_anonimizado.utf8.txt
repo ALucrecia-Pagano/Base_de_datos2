@@ -10,7 +10,7 @@
 	    RAISE EXCEPTION 'abortado: base actual=% se esperaba foodstore_dev', current_database();
 	  END IF;
 	  IF to_regprocedure('public.fn_autenticar(varchar,varchar)') IS NULL THEN
-	    RAISE EXCEPTION 'prerrequisito ausente: fn_autenticar, STOP (la validaciÃ³n anterior revirtiÃ³ todo)';
+	    RAISE EXCEPTION 'prerrequisito ausente: fn_autenticar, STOP (la validación anterior revirtió todo)';
 	  END IF;
 	  IF to_regclass('public.usuario') IS NULL THEN
 	    RAISE EXCEPTION 'prerrequisito ausente: tabla public.usuario, STOP';
@@ -25,10 +25,10 @@
 	    RAISE EXCEPTION 'prerrequisito ausente: rol admin_datos, STOP';
 	  END IF;
 	  IF NOT EXISTS (SELECT 1 FROM public.usuario WHERE mail = 'usuario_anon_01@anon.invalid' AND eliminado = FALSE) THEN
-	    RAISE EXCEPTION 'prerrequisito ausente: sintÃ©tico usuario_anon_01, STOP';
+	    RAISE EXCEPTION 'prerrequisito ausente: sintético usuario_anon_01, STOP';
 	  END IF;
 	  IF NOT EXISTS (SELECT 1 FROM public.usuario WHERE mail = 'usuario_anon_02@anon.invalid' AND eliminado = FALSE) THEN
-	    RAISE EXCEPTION 'prerrequisito ausente: sintÃ©tico usuario_anon_02, STOP';
+	    RAISE EXCEPTION 'prerrequisito ausente: sintético usuario_anon_02, STOP';
 	  END IF;
 	END
 	$$;
@@ -40,7 +40,7 @@
 	BEGIN
 	  IF v_pw_ok IS NULL OR btrim(v_pw_ok) = '' THEN RAISE EXCEPTION 'secreto lab no recuperado, STOP'; END IF;
 	  IF v_pw_ok IN ('clave_erronea_anon_01', 'clave_erronea_anon_02', 'clave_erronea_anon_03') THEN
-	    RAISE EXCEPTION 'la contraseÃ±a correcta coincide con una incorrecta, STOP';
+	    RAISE EXCEPTION 'la contraseña correcta coincide con una incorrecta, STOP';
 	  END IF;
 	  v_f1 := public.fn_autenticar('usuario_anon_01@anon.invalid', 'clave_erronea_anon_01');
 	  IF v_f1 IS NOT NULL THEN RAISE EXCEPTION 'control fallido 1: se esperaba NULL, obtenido %', v_f1; END IF;
@@ -57,7 +57,7 @@
 	END
 	$$;
 2026-10-15 02:10:24.479 -03 [21348] postgres@foodstore_dev 198.51.100.7(40001) psql LOG:  simulacro C auth intento 1 resultado FALLIDO
-2026-10-15 02:10:24.479 -03 [21348] postgres@foodstore_dev 198.51.100.7(40001) psql CONTEXTO:  funciÃ³n PL/pgSQL inline_code_block en la lÃ­nea 12 en RAISE
+2026-10-15 02:10:24.479 -03 [21348] postgres@foodstore_dev 198.51.100.7(40001) psql CONTEXTO:  función PL/pgSQL inline_code_block en la línea 12 en RAISE
 2026-10-15 02:10:24.479 -03 [21348] postgres@foodstore_dev 198.51.100.7(40001) psql SENTENCIA:  DO $$
 	DECLARE
 	  v_pw_ok TEXT := current_setting('my.sim_pw_ok', true);
@@ -65,7 +65,7 @@
 	BEGIN
 	  IF v_pw_ok IS NULL OR btrim(v_pw_ok) = '' THEN RAISE EXCEPTION 'secreto lab no recuperado, STOP'; END IF;
 	  IF v_pw_ok IN ('clave_erronea_anon_01', 'clave_erronea_anon_02', 'clave_erronea_anon_03') THEN
-	    RAISE EXCEPTION 'la contraseÃ±a correcta coincide con una incorrecta, STOP';
+	    RAISE EXCEPTION 'la contraseña correcta coincide con una incorrecta, STOP';
 	  END IF;
 	  v_f1 := public.fn_autenticar('usuario_anon_01@anon.invalid', 'clave_erronea_anon_01');
 	  IF v_f1 IS NOT NULL THEN RAISE EXCEPTION 'control fallido 1: se esperaba NULL, obtenido %', v_f1; END IF;
@@ -82,7 +82,7 @@
 	END
 	$$;
 2026-10-15 02:10:24.483 -03 [21348] postgres@foodstore_dev 198.51.100.7(40001) psql LOG:  simulacro C auth intento 2 resultado FALLIDO
-2026-10-15 02:10:24.483 -03 [21348] postgres@foodstore_dev 198.51.100.7(40001) psql CONTEXTO:  funciÃ³n PL/pgSQL inline_code_block en la lÃ­nea 16 en RAISE
+2026-10-15 02:10:24.483 -03 [21348] postgres@foodstore_dev 198.51.100.7(40001) psql CONTEXTO:  función PL/pgSQL inline_code_block en la línea 16 en RAISE
 2026-10-15 02:10:24.483 -03 [21348] postgres@foodstore_dev 198.51.100.7(40001) psql SENTENCIA:  DO $$
 	DECLARE
 	  v_pw_ok TEXT := current_setting('my.sim_pw_ok', true);
@@ -90,7 +90,7 @@
 	BEGIN
 	  IF v_pw_ok IS NULL OR btrim(v_pw_ok) = '' THEN RAISE EXCEPTION 'secreto lab no recuperado, STOP'; END IF;
 	  IF v_pw_ok IN ('clave_erronea_anon_01', 'clave_erronea_anon_02', 'clave_erronea_anon_03') THEN
-	    RAISE EXCEPTION 'la contraseÃ±a correcta coincide con una incorrecta, STOP';
+	    RAISE EXCEPTION 'la contraseña correcta coincide con una incorrecta, STOP';
 	  END IF;
 	  v_f1 := public.fn_autenticar('usuario_anon_01@anon.invalid', 'clave_erronea_anon_01');
 	  IF v_f1 IS NOT NULL THEN RAISE EXCEPTION 'control fallido 1: se esperaba NULL, obtenido %', v_f1; END IF;
@@ -107,7 +107,7 @@
 	END
 	$$;
 2026-10-15 02:10:24.487 -03 [21348] postgres@foodstore_dev 198.51.100.7(40001) psql LOG:  simulacro C auth intento 3 resultado FALLIDO
-2026-10-15 02:10:24.487 -03 [21348] postgres@foodstore_dev 198.51.100.7(40001) psql CONTEXTO:  funciÃ³n PL/pgSQL inline_code_block en la lÃ­nea 20 en RAISE
+2026-10-15 02:10:24.487 -03 [21348] postgres@foodstore_dev 198.51.100.7(40001) psql CONTEXTO:  función PL/pgSQL inline_code_block en la línea 20 en RAISE
 2026-10-15 02:10:24.487 -03 [21348] postgres@foodstore_dev 198.51.100.7(40001) psql SENTENCIA:  DO $$
 	DECLARE
 	  v_pw_ok TEXT := current_setting('my.sim_pw_ok', true);
@@ -115,7 +115,7 @@
 	BEGIN
 	  IF v_pw_ok IS NULL OR btrim(v_pw_ok) = '' THEN RAISE EXCEPTION 'secreto lab no recuperado, STOP'; END IF;
 	  IF v_pw_ok IN ('clave_erronea_anon_01', 'clave_erronea_anon_02', 'clave_erronea_anon_03') THEN
-	    RAISE EXCEPTION 'la contraseÃ±a correcta coincide con una incorrecta, STOP';
+	    RAISE EXCEPTION 'la contraseña correcta coincide con una incorrecta, STOP';
 	  END IF;
 	  v_f1 := public.fn_autenticar('usuario_anon_01@anon.invalid', 'clave_erronea_anon_01');
 	  IF v_f1 IS NOT NULL THEN RAISE EXCEPTION 'control fallido 1: se esperaba NULL, obtenido %', v_f1; END IF;
@@ -139,15 +139,15 @@
 	  SELECT id INTO v_id_esp FROM public.usuario WHERE mail = 'usuario_anon_01@anon.invalid';
 	  v_ok := public.fn_autenticar('usuario_anon_01@anon.invalid', v_pw_ok);
 	  IF v_ok IS DISTINCT FROM v_id_esp THEN
-	    RAISE EXCEPTION 'control Ã©xito: esperado id=%, obtenido=% (fn no cambia identidad PG)', v_id_esp, v_ok;
+	    RAISE EXCEPTION 'control éxito: esperado id=%, obtenido=% (fn no cambia identidad PG)', v_id_esp, v_ok;
 	  END IF;
 	  RAISE LOG 'simulacro C auth intento 4 resultado EXITOSO id=%', v_ok;
 	  RAISE NOTICE 'simulacro C auth intento 4 resultado EXITOSO id=%', v_ok;
-	  -- Nota: session_user/current_user siguen siendo los de la conexiÃ³n; fn solo devolviÃ³ el id.
+	  -- Nota: session_user/current_user siguen siendo los de la conexión; fn solo devolvió el id.
 	END
 	$$;
 2026-10-15 02:10:24.492 -03 [21348] postgres@foodstore_dev 198.51.100.7(40001) psql LOG:  simulacro C auth intento 4 resultado EXITOSO id=1
-2026-10-15 02:10:24.492 -03 [21348] postgres@foodstore_dev 198.51.100.7(40001) psql CONTEXTO:  funciÃ³n PL/pgSQL inline_code_block en la lÃ­nea 11 en RAISE
+2026-10-15 02:10:24.492 -03 [21348] postgres@foodstore_dev 198.51.100.7(40001) psql CONTEXTO:  función PL/pgSQL inline_code_block en la línea 11 en RAISE
 2026-10-15 02:10:24.492 -03 [21348] postgres@foodstore_dev 198.51.100.7(40001) psql SENTENCIA:  DO $$
 	DECLARE
 	  v_pw_ok TEXT := current_setting('my.sim_pw_ok', true);
@@ -156,11 +156,11 @@
 	  SELECT id INTO v_id_esp FROM public.usuario WHERE mail = 'usuario_anon_01@anon.invalid';
 	  v_ok := public.fn_autenticar('usuario_anon_01@anon.invalid', v_pw_ok);
 	  IF v_ok IS DISTINCT FROM v_id_esp THEN
-	    RAISE EXCEPTION 'control Ã©xito: esperado id=%, obtenido=% (fn no cambia identidad PG)', v_id_esp, v_ok;
+	    RAISE EXCEPTION 'control éxito: esperado id=%, obtenido=% (fn no cambia identidad PG)', v_id_esp, v_ok;
 	  END IF;
 	  RAISE LOG 'simulacro C auth intento 4 resultado EXITOSO id=%', v_ok;
 	  RAISE NOTICE 'simulacro C auth intento 4 resultado EXITOSO id=%', v_ok;
-	  -- Nota: session_user/current_user siguen siendo los de la conexiÃ³n; fn solo devolviÃ³ el id.
+	  -- Nota: session_user/current_user siguen siendo los de la conexión; fn solo devolvió el id.
 	END
 	$$;
 2026-10-15 02:10:24.493 -03 [21348] postgres@foodstore_dev 198.51.100.7(40001) psql LOG:  sentencia: SET LOCAL ROLE rol_soporte;
@@ -174,31 +174,31 @@
 	BEGIN
 	  BEGIN
 	    EXECUTE 'GRANT admin_datos TO app_web';
-	    RAISE EXCEPTION 'HALLAZGO: el escalamiento tuvo Ã©xito; esquema defectuoso, detener y revertir (no aprobado)';
+	    RAISE EXCEPTION 'HALLAZGO: el escalamiento tuvo éxito; esquema defectuoso, detener y revertir (no aprobado)';
 	  EXCEPTION WHEN insufficient_privilege THEN
 	    IF SQLSTATE <> '42501' THEN
 	      RAISE EXCEPTION 'escalamiento: SQLSTATE inesperado=% (se esperaba 42501)', SQLSTATE;
 	    END IF;
 	    RAISE LOG 'simulacro C escalamiento resultado DENEGADO sqlstate=% usuario=%', SQLSTATE, current_user;
 	    RAISE NOTICE 'simulacro C escalamiento resultado DENEGADO sqlstate=% usuario=%', SQLSTATE, current_user;
-	    -- Esperado: membresÃ­a denegada a app_web. ContinÃºa al ROLLBACK final.
+	    -- Esperado: membresía denegada a app_web. Continúa al ROLLBACK final.
 	  END;
 	END
 	$$;
 2026-10-15 02:10:24.500 -03 [21348] postgres@foodstore_dev 198.51.100.7(40001) psql LOG:  simulacro C escalamiento resultado DENEGADO sqlstate=42501 usuario=app_web
-2026-10-15 02:10:24.500 -03 [21348] postgres@foodstore_dev 198.51.100.7(40001) psql CONTEXTO:  funciÃ³n PL/pgSQL inline_code_block en la lÃ­nea 10 en RAISE
+2026-10-15 02:10:24.500 -03 [21348] postgres@foodstore_dev 198.51.100.7(40001) psql CONTEXTO:  función PL/pgSQL inline_code_block en la línea 10 en RAISE
 2026-10-15 02:10:24.500 -03 [21348] postgres@foodstore_dev 198.51.100.7(40001) psql SENTENCIA:  DO $$
 	BEGIN
 	  BEGIN
 	    EXECUTE 'GRANT admin_datos TO app_web';
-	    RAISE EXCEPTION 'HALLAZGO: el escalamiento tuvo Ã©xito; esquema defectuoso, detener y revertir (no aprobado)';
+	    RAISE EXCEPTION 'HALLAZGO: el escalamiento tuvo éxito; esquema defectuoso, detener y revertir (no aprobado)';
 	  EXCEPTION WHEN insufficient_privilege THEN
 	    IF SQLSTATE <> '42501' THEN
 	      RAISE EXCEPTION 'escalamiento: SQLSTATE inesperado=% (se esperaba 42501)', SQLSTATE;
 	    END IF;
 	    RAISE LOG 'simulacro C escalamiento resultado DENEGADO sqlstate=% usuario=%', SQLSTATE, current_user;
 	    RAISE NOTICE 'simulacro C escalamiento resultado DENEGADO sqlstate=% usuario=%', SQLSTATE, current_user;
-	    -- Esperado: membresÃ­a denegada a app_web. ContinÃºa al ROLLBACK final.
+	    -- Esperado: membresía denegada a app_web. Continúa al ROLLBACK final.
 	  END;
 	END
 	$$;
@@ -206,4 +206,4 @@
 2026-10-15 02:10:24.500 -03 [21348] postgres@foodstore_dev 198.51.100.7(40001) psql LOG:  sentencia: RESET ROLE;
 2026-10-15 02:10:24.500 -03 [21348] postgres@foodstore_dev 198.51.100.7(40001) psql LOG:  sentencia: SELECT 'SIMULACRO_INCIDENTE_FIN_C' AS marca, clock_timestamp() AS ts;
 2026-10-15 02:10:24.500 -03 [21348] postgres@foodstore_dev 198.51.100.7(40001) psql LOG:  sentencia: ROLLBACK;
-2026-10-15 02:10:24.501 -03 [21348] postgres@foodstore_dev 198.51.100.7(40001) psql LOG:  desconexiÃ³n: duraciÃ³n de sesiÃ³n: 0:00:00.091 usuario=postgres base=foodstore_dev host=198.51.100.7 port=40001
+2026-10-15 02:10:24.501 -03 [21348] postgres@foodstore_dev 198.51.100.7(40001) psql LOG:  desconexión: duración de sesión: 0:00:00.091 usuario=postgres base=foodstore_dev host=198.51.100.7 port=40001

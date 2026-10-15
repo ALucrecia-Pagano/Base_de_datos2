@@ -3,7 +3,7 @@
 - Fecha: 2026-10-15 (UTC-3). Inicio de preparación: 12:45:12.
   Registro completado: 2026-10-15T12:47:38-03:00.
 - Autorización: pedido del usuario para estos diez casos negativos y la consulta de diseño §7.6.
-  La aprobación humana del resultado está pendiente; no se atribuye al grupo.
+  Los resultados fueron revisados por la usuaria responsable y publicados posteriormente en `2b80fcf`; no se atribuye aprobación individual a otros integrantes.
 - Base/usuario confirmados: `foodstore_dev`, `postgres` (session_user también postgres).
   Motor: PostgreSQL 17.11. `default_transaction_read_only=on` y `transaction_read_only=on`.
 - Sin instalación, simulacro completo, cambios de permisos/datos/configuración persistente,
@@ -342,7 +342,7 @@ ni sustituye una comprobación exhaustiva de privilegios efectivos por herencia.
 No se ejecutaron los cuerpos de instalación, preparación o simulacro; no se proporcionó nunca
 el conjunto completo de variables. Estas pruebas no revalidan las ejecuciones completas históricas,
 ni prueban todos los caminos de error. No se ejecutaron DDL/DML ni ajustes de permisos/configuración.
-La revisión humana y la publicación de los nuevos cambios documentales siguen pendientes.
+Los resultados se incorporaron al cierre publicado en `2b80fcf`.
 No se reconstruyen prompts históricos faltantes.
 
 La copia Markdown normaliza solo la visualización de saltos CR en los bloques citados;

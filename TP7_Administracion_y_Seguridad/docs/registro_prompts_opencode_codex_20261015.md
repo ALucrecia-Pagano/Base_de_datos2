@@ -1,6 +1,6 @@
-# TP7 — Prompts propios recuperados del chat
+# TP7 — Registro de prompts de trabajo: OpenCode y Codex
 
-Recuperación documental: 2026-10-15. Se conservan 22 pedidos relevantes de nuestra etapa de preparación, ejecución y revisión, sin incorporar sesiones de Mateo.
+Registro de 22 pedidos de preparación, ejecución y revisión de nuestra etapa de trabajo. Se conserva la procedencia de cada texto y no se incorporan sesiones de otros integrantes.
 
 ## Procedencia y alcance
 
@@ -1036,5 +1036,4 @@ Detenete después para revisión, sin publicar.
 
 La recuperación prueba la literalidad de estos 22 textos preparados en este chat y su relación cronológica con los resultados aportados. Los resúmenes de las filas anteriores de la bitácora se conservan como resúmenes y ahora remiten a estas fuentes cuando corresponde. No se afirma haber recuperado todas las sesiones de OpenCode/Kiro ni conversaciones de otros integrantes.
 
-Esta intervención solo incorpora documentación: no ejecuta SQL ni modifica scripts, datos, roles, logs originales o resultados de pruebas. No realiza commit ni push. La publicación de los cambios documentales corresponde al cierre manual del equipo.
-
+La recuperación incorporó únicamente documentación y se publicó en `39e4c6e`. No ejecutó SQL ni modificó scripts, datos, roles, logs originales o resultados de pruebas.

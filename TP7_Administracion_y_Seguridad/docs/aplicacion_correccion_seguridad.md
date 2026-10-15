@@ -2,8 +2,7 @@
 
 > Estado: **ejecutado el 2026-10-15 (~11:17–11:21 UTC-3)**: ensayo con `ROLLBACK` (exit 0),
 > aplicación con `COMMIT` (exit 0) y validación independiente con `ROLLBACK` (exit 0).
-> Las correcciones fueron aplicadas y publicadas en `88675cc`. Los nuevos ajustes documentales
-> quedan sin publicar hasta su commit y pendientes de revisión humana.
+> Las correcciones fueron aplicadas y publicadas en `88675cc`; el cierre documental posterior consta en `39e4c6e`.
 
 ## 1. Hallazgos que motivan la corrección
 
@@ -108,14 +107,6 @@ global del clúster: roles, membresías y contraseñas, `TABLESPACE`s, ni la con
   describiendo las versiones internas del commit 0060cfd; no se reescriben como pruebas de las
   funciones actuales.
 
-## 7. Puntos pendientes (no inventar autorización)
+## 7. Publicación
 
-- **Publicación**: correcciones de seguridad publicadas en `88675cc`. Los nuevos ajustes documentales
-  quedan sin commit/push y pendientes de revisión humana; no se declara entrega final.
-
-
-### Estado editorial posterior al cierre 2b80fcf
-
-El cierre anterior fue publicado en `2b80fcf`. Los nuevos ajustes documentales de esta
-revisión están sin publicar y pendientes de revisión humana; no se declara entrega final.
-Los estados históricos fechados se conservan y no describen esta nueva intervención.
+Las correcciones de seguridad se publicaron en `88675cc`; las verificaciones posteriores y el cierre documental se incorporaron hasta `39e4c6e`.

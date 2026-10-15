@@ -5,8 +5,7 @@ PostgreSQL, cambios de scripts, commit, push ni merge. Sin nuevas pruebas de bas
 Inicio: `main`, árbol limpio, `HEAD` y referencia local `origin/main` en `88675cc`.
 El historial local confirma que ese commit incluye las correcciones de seguridad y sus evidencias;
 la publicación se registra conforme al dato del usuario y la referencia local, sin consulta de red.
-Los nuevos ajustes documentales quedan sin publicar hasta su commit y pendientes de revisión humana.
-No se declara entrega final.
+El registro describe las intervenciones de su fecha; su cierre se incorporó al commit `39e4c6e`.
 
 ## Codificación: diagnóstico y transformación exacta
 
@@ -62,7 +61,7 @@ La consigna PDF exige el prompt enviado, respuesta relevante y validación/corre
 **Alcance de aquella revisión:** se revisaron la bitácora raíz, la [bitácora histórica](../BITACORA.md),
 los documentos de TP7 y los nombres de archivos de su historial Git, sin recuperar entonces el chat
 completo de trabajo. La conclusión inicial de que no había textos originales disponibles queda
-rectificada para nuestra etapa por la [recuperación posterior de 22 prompts propios](prompts_propios_recuperados_20261015.md).
+rectificada para nuestra etapa por la [recuperación posterior de 22 prompts propios](registro_prompts_opencode_codex_20261015.md).
 Esos textos sí constaban literalmente en el chat y ahora se conservan con su procedencia.
 Las filas resumidas o adaptadas no se convierten retrospectivamente en citas; se enlazan a sus fuentes.
 Las sesiones de otros integrantes no se recuperaron ni se modificaron en esta intervención.
@@ -70,7 +69,7 @@ Las sesiones de otros integrantes no se recuperaron ni se modificaron en esta in
 La [respuesta original de Parte C](respuesta_ia_incidente.md) se conserva íntegra.
 El [prompt actual](prompt_codex_revision_20261015.md) se transcribe desde el mensaje del usuario
 de esta conversación, no desde un resumen reconstruido. Esta intervención es de Codex, no de OpenCode.
-La autorización de edición no se presenta como aprobación humana del resultado.
+La usuaria responsable revisó los resultados y realizó su publicación manual.
 
 ## Verificación documental
 
@@ -88,8 +87,7 @@ contra la transformación documentada. Se revisó el diff y se ejecutó git diff
 
 Intervención posterior de Codex del 2026-10-15, autorizada por el pedido del usuario.
 Este apartado es un registro resumido, no una transcripción literal ni un reemplazo
-de los prompts históricos faltantes. La revisión y aprobación humana del resultado
-están pendientes. Se conservan los ajustes locales anteriores, sin commit/push/merge.
+de las conversaciones de otros integrantes. Se conservaron los ajustes anteriores; la publicación manual posterior consta en el historial.
 
 | Hallazgo | Cambio preparado | Estado de comprobación |
 |---|---|---|
@@ -144,15 +142,14 @@ simulacro completo ni cambios de permisos, configuración persistente o datos.
   completa de los instaladores o del simulacro.
 - Scripts, evidencias anteriores, logs originales, respuesta C y README no se modificaron.
   No se reconstruyeron transcripciones históricas faltantes. Sin commit/push/merge.
-  Revisión y aprobación humana del resultado pendientes.
+  Revisión de resultados y publicación manual posterior registradas en `39e4c6e`.
 
 
 ## Revisión editorial posterior al cierre 2b80fcf
 
 Estado al iniciar: main limpio, HEAD y referencia local origin/main en `2b80fcf`.
 Cierre anterior publicado según el historial local y el dato del usuario; no se consultó
-el remoto por red. Los presentes ajustes documentales siguen sin publicar y pendientes
-de revisión humana. Los apartados anteriores conservan sus estados históricos fechados.
+el remoto por red. Estos ajustes se incorporaron posteriormente a `39e4c6e`. Los apartados anteriores describen las intervenciones realizadas en su momento.
 
 - Comentarios de SQL: ejecuciones históricas acreditadas, funciones canónicas corregidas
   aplicadas mediante el corrector y guardas probadas negativamente se distinguen de los
@@ -183,7 +180,7 @@ Verificaciones estáticas realizadas para esta revisión editorial:
 - Se comprobaron 146 enlaces locales con destino existente, incluidas cuatro rutas con %20;
   también el ancla del registro editorial y las rutas de evidencia citadas en comentarios.
 - Diff revisado y git diff --check sin errores. Sin nuevas ejecuciones, conexiones ni
-  pruebas de base de datos. Revisión y aprobación humana del resultado pendientes.
+  pruebas de base de datos. Revisión de resultados y publicación manual posterior registradas en `39e4c6e`.
 
 
 ## Recuperación de prompts propios desde el chat
@@ -192,7 +189,7 @@ Por pedido expreso de la usuaria se recuperó el historial completo del chat «R
 mediante lectura paginada, y se seleccionaron 22 prompts relevantes de nuestra etapa. Sus textos
 se extrajeron de los bloques originales de los mensajes del asistente, sin reconstruirlos ni
 corregir retrospectivamente instrucciones históricas. El archivo de
-[prompts propios recuperados](prompts_propios_recuperados_20261015.md) conserva los identificadores
+[prompts propios recuperados](registro_prompts_opencode_codex_20261015.md) conserva los identificadores
 de mensaje, turno y bloque y los vincula con mensajes posteriores de resultados de la usuaria.
 
 La declaración previa de que no había originales disponibles se debió a no revisar ese historial
@@ -211,8 +208,7 @@ fuera de edición. Se conserva el prompt literal de la intervención Codex ya ar
 
 Esta intervención solo agrega y enlaza documentación; no ejecuta SQL ni modifica scripts, roles,
 datos, configuraciones, README, evidencias originales ni historial Git. No realiza commit ni push.
-El cierre técnico anterior está publicado en 2b80fcf; la recuperación y los ajustes editoriales
-locales posteriores están preparados para la publicación manual, sin inventar el hash futuro.
+El cierre técnico se publicó en `2b80fcf`; la recuperación y los ajustes editoriales posteriores se publicaron en `39e4c6e`.
 
 Verificación de la recuperación: los 22 bloques coinciden exactamente con los textos extraídos
 de los mensajes fuente. Los 199 enlaces locales de navegación comprobados tienen destino existente,
@@ -221,3 +217,17 @@ todas de tres columnas. D.4 conserva tres oraciones. Los SHA-256 de ambos logs o
 coincidiendo con los documentados. No se ejecutaron nuevas pruebas de PostgreSQL. La consulta de
 estado/diff de Git desde este entorno no estuvo disponible por una restricción de acceso; no se
 declara una comprobación Git exitosa ni una publicación por esta intervención.
+
+
+## Limpieza del estado de entrega y título del registro
+
+Se sustituyeron los avisos editoriales desactualizados por los commits reales de publicación.
+La validación humana se atribuye únicamente a la usuaria responsable que revisó resultados y
+realizó las publicaciones, sin afirmar aprobación de todos los integrantes. Los resultados de
+pruebas y sus salidas crudas no se reescribieron. Esta limpieza no realiza operaciones Git de escritura.
+
+El registro de prompts utiliza un título neutral que identifica OpenCode y Codex; conserva la
+procedencia de los textos, los destinos previstos y sus límites. No se presenta todo el archivo
+como mensajes enviados a OpenCode porque contiene también pedidos para Codex y no certifica el
+contenido del portapapeles de cada sesión. Las rutas locales dentro de bloques literales se
+conservan para no alterar las transcripciones. Los enlaces de navegación son relativos.

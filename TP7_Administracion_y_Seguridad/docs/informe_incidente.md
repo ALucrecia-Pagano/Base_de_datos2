@@ -22,7 +22,7 @@
 
 ## 2. Contraste: C.4 contra lo ejecutado
 
-El [prompt literal propio para C.4](prompts_propios_recuperados_20261015.md#p19473) se recuperó del chat de preparación, donde pedía usar exclusivamente el log anonimizado. La usuaria aportó posteriormente la reconstrucción conservada en la respuesta íntegra. Esto documenta el pedido y su seguimiento en el chat; no sustituye una exportación independiente del contexto completo de la sesión de OpenCode.
+El [prompt literal propio para C.4](registro_prompts_opencode_codex_20261015.md#p19473) se recuperó del chat de preparación, donde pedía usar exclusivamente el log anonimizado. La usuaria aportó posteriormente la reconstrucción conservada en la respuesta íntegra. Esto documenta el pedido y su seguimiento en el chat; no sustituye una exportación independiente del contexto completo de la sesión de OpenCode.
 
 ### Qué acertó la IA
 

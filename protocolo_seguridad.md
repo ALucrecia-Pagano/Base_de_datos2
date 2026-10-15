@@ -172,20 +172,11 @@ Lo anterior se mantiene íntegro; este apartado solo precisa su aplicación al T
   `ROLLBACK` (exit 0) el 2026-10-15, con respaldo previo; posterior verificado (catálogos denegados con
   `pg_monitor` vigente, funciones `DEFINER` + `search_path` cerrado, defaults `aw` sin SELECT, datos y
   secuencia intactos). Evidencias en `TP7_Administracion_y_Seguridad/docs/evidencias/`
-  (`ensayo_…_1117.md`, `aplicacion_…_1121.md` y tres salidas psql). No se declara entrega final; los nuevos ajustes
-  documentales quedan pendientes de publicación.
+  (`ensayo_…_1117.md`, `aplicacion_…_1121.md` y tres salidas psql). Cierre documental publicado en `39e4c6e`.
 
 ### TP7 — Aclaración documental del 2026-10-15
 
-Las correcciones de seguridad fueron publicadas en `88675cc`. Los ajustes documentales de
-esta intervención quedan sin commit/push y pendientes de revisión humana. No se declara entrega final.
+Las correcciones de seguridad se publicaron en `88675cc`; el cierre documental consta en `39e4c6e`.
 Un round-trip no demuestra legibilidad: se repararon únicamente secuencias comprobadas en las
 copias de lectura, conservando los originales. El detalle y la limitación de prompts históricos
 están en la [revisión documental TP7](TP7_Administracion_y_Seguridad/docs/revision_documental_20261015.md).
-
-
-### Estado editorial posterior al cierre 2b80fcf
-
-El cierre anterior fue publicado en `2b80fcf`. Los nuevos ajustes documentales de esta
-revisión están sin publicar y pendientes de revisión humana; no se declara entrega final.
-Los estados históricos fechados se conservan y no describen esta nueva intervención.

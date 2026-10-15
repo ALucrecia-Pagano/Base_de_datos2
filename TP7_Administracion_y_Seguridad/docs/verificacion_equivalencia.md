@@ -34,7 +34,7 @@ anonimización irreversible: no desaparece toda posibilidad de identificación.
 
 ## 3. Consultas
 
-El [prompt literal propio de preparación de D](prompts_propios_recuperados_20261015.md#p75926) solicita las dos consultas equivalentes por rol y mes, con la misma población y comparación en ambos sentidos. Se conserva también el [pedido literal de ejecución y evidencia](prompts_propios_recuperados_20261015.md#p81604). Ambos se recuperaron del chat de trabajo y se relacionaron con los resultados aportados por la usuaria; no son reconstrucciones posteriores.
+El [prompt literal propio de preparación de D](registro_prompts_opencode_codex_20261015.md#p75926) solicita las dos consultas equivalentes por rol y mes, con la misma población y comparación en ambos sentidos. Se conserva también el [pedido literal de ejecución y evidencia](registro_prompts_opencode_codex_20261015.md#p81604). Ambos se recuperaron del chat de trabajo y se relacionaron con los resultados aportados por la usuaria; no son reconstrucciones posteriores.
 
 Agregación — cantidad de usuarios por rol y mes de alta:
 

@@ -249,14 +249,28 @@ Antecedentes históricos sin filtros lógicos:
 [medición inicial anterior](TP6_FNBC_Desnormalizacion/Parte2_Desnormalizacion/evidencias/evidencia_top_antes_20261008_225517.txt) y
 [comparación anterior](TP6_FNBC_Desnormalizacion/Parte2_Desnormalizacion/evidencias/evidencia_top_desnormalizacion_20261008_232126.txt).
 
-## TP7 — Administración y seguridad (Unidad 5, en curso)
+## TP7 — Administración y seguridad (Unidad 5)
 
-Trabajo sobre la instancia propia `foodstore_dev` (PostgreSQL 17.11). Estado real:
+[Carpeta del TP7 — Administración y Seguridad](TP7_Administracion_y_Seguridad/)
 
-- **Parte A** (roles y mínimo privilegio): `sql/roles.sql` con spec Kiro y verificación de permisos. Terminada.
-- **Parte B** (auditoría nativa): parámetros activados, secuencia de prueba con `ROLLBACK`, fragmento de log e [informe](TP7_Administracion_y_Seguridad/docs/informe_auditoria.md). Terminada.
-- **Parte C** (simulacro de incidente): instalación persistente, auditoría temporal `all` (restaurada después), secuencia 3 fallidos → éxito → lectura masiva por columnas → escalamiento denegado 42501, log anonimizado, reconstrucción IA conservada íntegra y [informe con contraste y decisión](TP7_Administracion_y_Seguridad/docs/informe_incidente.md). Terminada.
-- **Parte D** (anonimización y equivalencia): `sql/usuario_anon.sql` ejecutado una vez con `ROLLBACK` (equivalencia verificada sobre 2 usuarios, 2 roles y un mes; sin eliminados en la muestra ni múltiples meses; nada quedó instalado) e [informe](TP7_Administracion_y_Seguridad/docs/verificacion_equivalencia.md). Terminada técnicamente, pendiente de commit/push.
-- **Parte E** (cierre de bitácora): [BITACORA.md](BITACORA.md) consolidada en la raíz según el PDF (registros A–C intactos, D agregada, análisis del caso más significativo e historial Git). Consolidada documentalmente, pendiente de revisión y publicación final.
+Trabajo sobre la instancia propia `foodstore_dev` (PostgreSQL 17.11). Estado real y entregables:
 
-Nota de entrega: el PDF exige `BITACORA.md` en la raíz del repositorio; resuelto con `BITACORA.md` (consolidada). La copia de trabajo en `TP7_Administracion_y_Seguridad/BITACORA.md` se conserva como antecedente.
+- **Parte A** (roles y mínimo privilegio): `sql/roles.sql` con especificación Kiro y verificación de permisos. Terminada.
+- **Parte B** (auditoría nativa): parámetros activados, secuencia de prueba con `ROLLBACK`, fragmento de log e [informe de auditoría](TP7_Administracion_y_Seguridad/docs/informe_auditoria.md). Terminada.
+- **Parte C** (simulacro de incidente): instalación persistente, auditoría temporal `all` (restaurada después), secuencia 3 fallidos → éxito → lectura masiva por columnas → escalamiento denegado 42501, log anonimizado, reconstrucción IA conservada íntegra e [informe del incidente](TP7_Administracion_y_Seguridad/docs/informe_incidente.md). Terminada.
+- **Parte D** (anonimización y equivalencia): `sql/usuario_anon.sql` ejecutado con `ROLLBACK` (equivalencia verificada sobre 2 usuarios, 2 roles y un mes de operaciones; sin eliminados en la muestra ni múltiples meses; nada quedó instalado) e [informe de equivalencia](TP7_Administracion_y_Seguridad/docs/verificacion_equivalencia.md). **Terminada y publicada.**
+- **Parte E** (cierre de bitácora y gobernanza):
+  - La bitácora de uso de IA se encuentra consolidada y publicada.
+  - El archivo [`BITACORA.md`](BITACORA.md) en la raíz constituye la versión consolidada oficial para la entrega.
+  - Se conserva [`TP7_Administracion_y_Seguridad/BITACORA.md`](TP7_Administracion_y_Seguridad/BITACORA.md) como antecedente histórico.
+  - Registro de prompts: [`registro_prompts_opencode_codex_20261015.md`](TP7_Administracion_y_Seguridad/docs/registro_prompts_opencode_codex_20261015.md).
+
+### Correcciones de Seguridad y Verificaciones
+Se publicaron las correcciones de seguridad aplicadas junto con sus verificaciones posteriores:
+- [Aplicación de corrección de seguridad](TP7_Administracion_y_Seguridad/docs/evidencias/aplicacion_correccion_seguridad_20261015_1121.md)
+- [Verificación de guardas en esquema public](TP7_Administracion_y_Seguridad/docs/evidencias/verificacion_guardas_public_20261015_124512.md)
+
+### Logs de Auditoría Legibles
+Los archivos de log originales se preservan intactos como evidencia histórica. Para facilitar la lectura y auditoría, se enlazan sus versiones convertidas a UTF-8:
+- [Log de auditoría de prueba (.utf8.txt)](TP7_Administracion_y_Seguridad/docs/log_auditoria_prueba.utf8.txt)
+- [Log de simulacro anonimizado (.utf8.txt)](TP7_Administracion_y_Seguridad/docs/log_simulacro_anonimizado.utf8.txt)

@@ -132,5 +132,4 @@ es de Codex; los trabajos reportados de OpenCode no se le reasignan a Codex.
 
 La asignación del README registrada arriba corresponde a su momento: el aporte de Lucas
 se incorporó en `04bafb9` y se integró en `main` mediante `6bb6c09`, cuyo segundo padre
-es aquel commit, según el historial Git comprobado. Esta nota conserva el antecedente
-y no declara publicada la presente etapa documental.
+es aquel commit, según el historial Git comprobado. Esta nota conserva el antecedente.

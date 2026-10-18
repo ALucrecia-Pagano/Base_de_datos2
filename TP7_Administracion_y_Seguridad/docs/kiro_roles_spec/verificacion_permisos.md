@@ -291,6 +291,11 @@ ROLLBACK
 SELECT count(*) AS pedidos_tras_rollback FROM pedido;  -->  5 (nada persistió)
 ```
 
+**Aclaración documental posterior (2026-10-17):** el conteo histórico anterior acredita
+la ausencia de filas añadidas; «nada persistió» se limita a esos datos transaccionales.
+`ROLLBACK` no revierte los avances de secuencias producidos por `nextval`, por lo que
+ese conteo no acredita la conservación de sus valores. La salida histórica se conserva intacta.
+
 ## 7. Contraste contra la spec y veredicto
 
 | RF / diseño | Esperado | Observado | Estado |

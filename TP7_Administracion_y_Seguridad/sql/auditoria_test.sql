@@ -18,7 +18,7 @@
 -- que foodstore_dev no conserva el registro de prueba. Las marcas INICIO/FIN
 -- delimitan el fragmento a extraer del log en docs/log_auditoria_prueba.txt.
 -- Columnas reales del esquema: id, nombre, mail, contrasena, eliminado.
--- Idempotente y re-ejecutable (el INSERT vive solo dentro de la transacción).
+-- ROLLBACK revierte las filas de prueba; no garantiza revertir avances de secuencias.
 -- ============================================================================
 
 -- Marca de inicio del fragmento de log (log_statement='all' la registra).

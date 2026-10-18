@@ -1,8 +1,12 @@
 # TP7 Parte D — Verificación de equivalencia (usuario_anon)
 
-> Estado: **ejecutado una vez** el 2026-10-15 (~09:16 UTC-3) sobre `foodstore_dev`
-> (PostgreSQL 17.11), `PSQL_EXIT=0`, `ROLLBACK` final. Salida íntegra en
-> `docs/evidencias/salida_psql_usuario_anon_20261015_091628.txt`.
+> Estado: dos ensayos sobre `foodstore_dev` (PostgreSQL 17.11), ambos con `PSQL_EXIT=0`
+> y `ROLLBACK` final:
+>
+> - **Muestra original** (2026-10-15, ~09:16 UTC-3): 2 usuarios, §§1–4. Salida íntegra en
+>   `docs/evidencias/salida_psql_usuario_anon_20261015_091628.txt`.
+> - **Ensayo adicional de cobertura** (2026-10-17, 23:37 UTC-3): 8 usuarios, con tres roles,
+>   tres meses y eliminados, §6.
 
 ## 1. Transformación
 
@@ -105,9 +109,73 @@ Secuencia final de la salida: `DO` → `ROLLBACK`, `PSQL_EXIT=0`.
   (`USUARIO`, `VENDEDOR`). No había usuarios eliminados en la muestra
   (`eliminado=f`: 2), por lo que **no** se probó el caso eliminado, ni
   múltiples meses: el resultado solo valida los datos presentes.
+  Esos casos se cubren en el ensayo adicional (§6).
 
 ## 5. Qué no debe salir hacia una IA sin protección previa
 
 Los datos personales de usuario —nombre, apellido, mail, celular y fecha exacta de alta— y de cliente —`nombre_completo`, `email`, `telefono` y `direccion`— no deben enviarse a un asistente de IA sin protección previa mediante el proceso de anonimización.
 El script D ensaya la transformación de `usuario`; no transforma ni valida una copia de `cliente`, cuyos datos también deben protegerse antes de compartirlos.
 Las contraseñas y sus hashes (`contrasena`) deben excluirse siempre: no se anonimizan, se omiten por completo, porque su exposición habilita robo de credenciales y escalada de privilegios.
+
+## 6. Ensayo adicional de cobertura (2026-10-17)
+
+Amplía la muestra de §4 para cubrir varios roles, varios meses, usuarios eliminados y
+grupos con más de un usuario. La muestra original y su evidencia se conservan sin cambios.
+
+- Script: [`sql/usuario_anon_cobertura.sql`](../sql/usuario_anon_cobertura.sql), autónomo.
+  Reproduce la transformación y la comparación de `usuario_anon.sql` (misma población sin
+  filtros, mismo truncado mensual, misma zona horaria, agrupación solo por rol × mes,
+  `FULL OUTER JOIN`, `EXCEPT ALL` en ambos sentidos y totales). Cambian solo la preparación
+  y los nombres: fixtures, guardas, revocación de ACL heredadas y tabla de ensayo
+  `usuario_anon_cobertura_tp7` sin identity. Diseño y justificación en el
+  [plan de ampliación](plan_ampliacion_d.md).
+- Evidencia: [informe de ejecución](evidencias/usuario_anon_cobertura_20261017_233704.md) y
+  [salida psql íntegra](evidencias/salida_psql_usuario_anon_cobertura_20261017_233704.txt),
+  con respaldo previo, controles previos y posteriores.
+
+### Fixtures agregados dentro de la transacción
+
+Seis usuarios sintéticos (`lab_d_cobertura_N@example.invalid`, IDs explícitos -770701 a
+-770706 con `OVERRIDING SYSTEM VALUE`, sin consumir secuencias). Su `contrasena` es un
+marcador bloqueado que no es contraseña ni hash, y no se usa para autenticar.
+
+| N | Rol | Alta | Eliminado |
+|---|---|---|---|
+| 1 | ADMIN | 2026-01-10 | false |
+| 2 | ADMIN | 2026-01-20 | true |
+| 3 | VENDEDOR | 2026-02-10 | false |
+| 4 | VENDEDOR | 2026-02-20 | false |
+| 5 | USUARIO | 2026-03-10 | false |
+| 6 | USUARIO | 2026-03-20 | true |
+
+Esperado de los fixtures: ADMIN/enero = 2 (uno eliminado), VENDEDOR/febrero = 2,
+USUARIO/marzo = 2 (uno eliminado). El script lo comprueba con excepciones, junto con la
+presencia de los dos eliminados en la copia; ese bloque terminó sin error.
+
+### Resultados obtenidos (2 usuarios originales + 6 fixtures)
+
+```text
+   rol    |  mes_alta  | cantidad_anon | cantidad_real
+----------+------------+---------------+---------------
+ ADMIN    | 2026-01-01 |             2 |             2
+ VENDEDOR | 2026-02-01 |             2 |             2
+ VENDEDOR | 2026-10-01 |             1 |             1
+ USUARIO  | 2026-03-01 |             2 |             2
+ USUARIO  | 2026-10-01 |             1 |             1
+(5 rows)
+```
+
+`NOTICE: Comparacion adicional: diferencias 0/0, totales 8/8`, seguido de `ROLLBACK` y
+`PSQL_EXIT=0`. Los grupos de octubre corresponden a los dos usuarios originales.
+
+### Comprobación posterior (conexión nueva de solo lectura)
+
+Fixtures, tabla de ensayo y su tipo ausentes; conteos originales sin cambios
+(2/3/3/5/7 + usuario 2); las cinco secuencias con los mismos `last_value`/`is_called`;
+ACL originales sin cambios.
+
+### Alcance
+
+La equivalencia queda demostrada para estas 8 filas, 5 grupos, tres roles, tres meses y
+dos eliminados que se cuentan dentro de su grupo. Los fixtures son sintéticos y la
+transformación sigue siendo seudonimización de laboratorio (§1).

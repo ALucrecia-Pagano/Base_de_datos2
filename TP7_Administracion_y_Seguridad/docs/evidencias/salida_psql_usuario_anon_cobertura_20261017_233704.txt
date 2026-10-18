@@ -1,0 +1,2213 @@
+TP7-D COBERTURA: evidencia nueva; una sola pasada
+RESPALDO
+{
+  "path": "C:/Users/hp/Respaldos_BD2/respaldo_foodstore_dev_20261017_233704_antes_tp7_d_cobertura.dump",
+  "size": 46877,
+  "sha256": "0094b46d8e36c95a949dd2cf7506edb33b7b230e37e569c821c3b182102849af",
+  "pg_dump_exit": 0,
+  "pg_restore_list_exit": 0,
+  "list_lines": 155,
+  "database_header_confirmed": true
+}
+ARCHIVOS SHA256
+{
+  "TP7_Administracion_y_Seguridad\\sql\\usuario_anon_cobertura.sql": "cae200aeaf347eaa776a5f8da32499ce904ef0886d2002b931a4ceca6ff5b579",
+  "TP7_Administracion_y_Seguridad\\docs\\plan_ampliacion_d.md": "1d370acd96e6a8b5af4b5b645f0c3266c6986c16ee078c14c0e2c48b80a4aac8"
+}
+PREVIO (sesion de solo lectura, BEGIN READ ONLY / ROLLBACK, PSQL_EXIT=0)
+{
+  "identity": {
+    "database": "foodstore_dev",
+    "user": "postgres",
+    "session": "postgres",
+    "version": "17.11",
+    "server": "::1",
+    "port": 5432,
+    "read_only": "on"
+  },
+  "activity": 0,
+  "prepared": 0,
+  "counts": {
+    "categoria": 2,
+    "cliente": 3,
+    "pedido": 5,
+    "producto": 3,
+    "detalle_pedido": 7,
+    "usuario": 2
+  },
+  "conflicts": {
+    "ids": 0,
+    "mails": 0,
+    "table": false,
+    "type": false
+  },
+  "sequences": {
+    "categoria": {
+      "last_value": 2,
+      "is_called": true
+    },
+    "cliente": {
+      "last_value": 3,
+      "is_called": true
+    },
+    "pedido": {
+      "last_value": 5,
+      "is_called": true
+    },
+    "producto": {
+      "last_value": 3,
+      "is_called": true
+    },
+    "usuario": {
+      "last_value": 2,
+      "is_called": true
+    }
+  },
+  "acls": [
+    {
+      "name": "column:categoria.activo",
+      "owner": "10",
+      "acl": null
+    },
+    {
+      "name": "column:categoria.created_at",
+      "owner": "10",
+      "acl": null
+    },
+    {
+      "name": "column:categoria.descripcion",
+      "owner": "10",
+      "acl": null
+    },
+    {
+      "name": "column:categoria.id",
+      "owner": "10",
+      "acl": null
+    },
+    {
+      "name": "column:categoria.nombre",
+      "owner": "10",
+      "acl": null
+    },
+    {
+      "name": "column:categoria_id_seq.is_called",
+      "owner": "10",
+      "acl": null
+    },
+    {
+      "name": "column:categoria_id_seq.last_value",
+      "owner": "10",
+      "acl": null
+    },
+    {
+      "name": "column:categoria_id_seq.log_cnt",
+      "owner": "10",
+      "acl": null
+    },
+    {
+      "name": "column:categoria_nombre_key.nombre",
+      "owner": "10",
+      "acl": null
+    },
+    {
+      "name": "column:categoria_pkey.id",
+      "owner": "10",
+      "acl": null
+    },
+    {
+      "name": "column:cliente.created_at",
+      "owner": "10",
+      "acl": null
+    },
+    {
+      "name": "column:cliente.direccion",
+      "owner": "10",
+      "acl": null
+    },
+    {
+      "name": "column:cliente.email",
+      "owner": "10",
+      "acl": null
+    },
+    {
+      "name": "column:cliente.id",
+      "owner": "10",
+      "acl": null
+    },
+    {
+      "name": "column:cliente.nombre_completo",
+      "owner": "10",
+      "acl": null
+    },
+    {
+      "name": "column:cliente.telefono",
+      "owner": "10",
+      "acl": null
+    },
+    {
+      "name": "column:cliente_email_key.email",
+      "owner": "10",
+      "acl": null
+    },
+    {
+      "name": "column:cliente_id_seq.is_called",
+      "owner": "10",
+      "acl": null
+    },
+    {
+      "name": "column:cliente_id_seq.last_value",
+      "owner": "10",
+      "acl": null
+    },
+    {
+      "name": "column:cliente_id_seq.log_cnt",
+      "owner": "10",
+      "acl": null
+    },
+    {
+      "name": "column:cliente_pkey.id",
+      "owner": "10",
+      "acl": null
+    },
+    {
+      "name": "column:detalle_pedido.cantidad",
+      "owner": "10",
+      "acl": null
+    },
+    {
+      "name": "column:detalle_pedido.id_pedido",
+      "owner": "10",
+      "acl": null
+    },
+    {
+      "name": "column:detalle_pedido.id_producto",
+      "owner": "10",
+      "acl": null
+    },
+    {
+      "name": "column:detalle_pedido.precio_unitario",
+      "owner": "10",
+      "acl": null
+    },
+    {
+      "name": "column:detalle_pedido.subtotal",
+      "owner": "10",
+      "acl": null
+    },
+    {
+      "name": "column:idx_detalle_pedido_producto_id.id_producto",
+      "owner": "10",
+      "acl": null
+    },
+    {
+      "name": "column:idx_mv_resumen_ventas_categoria_mes.id_categoria",
+      "owner": "10",
+      "acl": null
+    },
+    {
+      "name": "column:idx_mv_resumen_ventas_categoria_mes.mes",
+      "owner": "10",
+      "acl": null
+    },
+    {
+      "name": "column:idx_pedidos_cliente_id.id_cliente",
+      "owner": "10",
+      "acl": null
+    },
+    {
+      "name": "column:idx_productos_categoria_activo.activo",
+      "owner": "10",
+      "acl": null
+    },
+    {
+      "name": "column:idx_productos_categoria_activo.id_categoria",
+      "owner": "10",
+      "acl": null
+    },
+    {
+      "name": "column:mv_resumen_ventas_categoria_mes.cantidad_pedidos",
+      "owner": "10",
+      "acl": null
+    },
+    {
+      "name": "column:mv_resumen_ventas_categoria_mes.categoria",
+      "owner": "10",
+      "acl": null
+    },
+    {
+      "name": "column:mv_resumen_ventas_categoria_mes.facturacion_total",
+      "owner": "10",
+      "acl": null
+    },
+    {
+      "name": "column:mv_resumen_ventas_categoria_mes.id_categoria",
+      "owner": "10",
+      "acl": null
+    },
+    {
+      "name": "column:mv_resumen_ventas_categoria_mes.mes",
+      "owner": "10",
+      "acl": null
+    },
+    {
+      "name": "column:mv_resumen_ventas_categoria_mes.unidades_vendidas",
+      "owner": "10",
+      "acl": null
+    },
+    {
+      "name": "column:pedido.estado",
+      "owner": "10",
+      "acl": null
+    },
+    {
+      "name": "column:pedido.fecha_hora",
+      "owner": "10",
+      "acl": null
+    },
+    {
+      "name": "column:pedido.forma_pago",
+      "owner": "10",
+      "acl": null
+    },
+    {
+      "name": "column:pedido.id",
+      "owner": "10",
+      "acl": null
+    },
+    {
+      "name": "column:pedido.id_cliente",
+      "owner": "10",
+      "acl": null
+    },
+    {
+      "name": "column:pedido.observaciones",
+      "owner": "10",
+      "acl": null
+    },
+    {
+      "name": "column:pedido_id_seq.is_called",
+      "owner": "10",
+      "acl": null
+    },
+    {
+      "name": "column:pedido_id_seq.last_value",
+      "owner": "10",
+      "acl": null
+    },
+    {
+      "name": "column:pedido_id_seq.log_cnt",
+      "owner": "10",
+      "acl": null
+    },
+    {
+      "name": "column:pedido_pkey.id",
+      "owner": "10",
+      "acl": null
+    },
+    {
+      "name": "column:pk_detalle_pedido.id_pedido",
+      "owner": "10",
+      "acl": null
+    },
+    {
+      "name": "column:pk_detalle_pedido.id_producto",
+      "owner": "10",
+      "acl": null
+    },
+    {
+      "name": "column:producto.activo",
+      "owner": "10",
+      "acl": null
+    },
+    {
+      "name": "column:producto.created_at",
+      "owner": "10",
+      "acl": null
+    },
+    {
+      "name": "column:producto.descripcion",
+      "owner": "10",
+      "acl": null
+    },
+    {
+      "name": "column:producto.id",
+      "owner": "10",
+      "acl": null
+    },
+    {
+      "name": "column:producto.id_categoria",
+      "owner": "10",
+      "acl": null
+    },
+    {
+      "name": "column:producto.nombre",
+      "owner": "10",
+      "acl": null
+    },
+    {
+      "name": "column:producto.precio_lista",
+      "owner": "10",
+      "acl": null
+    },
+    {
+      "name": "column:producto.stock",
+      "owner": "10",
+      "acl": null
+    },
+    {
+      "name": "column:producto_id_seq.is_called",
+      "owner": "10",
+      "acl": null
+    },
+    {
+      "name": "column:producto_id_seq.last_value",
+      "owner": "10",
+      "acl": null
+    },
+    {
+      "name": "column:producto_id_seq.log_cnt",
+      "owner": "10",
+      "acl": null
+    },
+    {
+      "name": "column:producto_pkey.id",
+      "owner": "10",
+      "acl": null
+    },
+    {
+      "name": "column:usuario.apellido",
+      "owner": "10",
+      "acl": "{rol_soporte=r/postgres}"
+    },
+    {
+      "name": "column:usuario.celular",
+      "owner": "10",
+      "acl": "{rol_soporte=r/postgres}"
+    },
+    {
+      "name": "column:usuario.contrasena",
+      "owner": "10",
+      "acl": null
+    },
+    {
+      "name": "column:usuario.created_at",
+      "owner": "10",
+      "acl": "{rol_soporte=r/postgres}"
+    },
+    {
+      "name": "column:usuario.eliminado",
+      "owner": "10",
+      "acl": "{rol_soporte=rw/postgres}"
+    },
+    {
+      "name": "column:usuario.id",
+      "owner": "10",
+      "acl": "{rol_soporte=r/postgres}"
+    },
+    {
+      "name": "column:usuario.mail",
+      "owner": "10",
+      "acl": "{rol_soporte=r/postgres}"
+    },
+    {
+      "name": "column:usuario.nombre",
+      "owner": "10",
+      "acl": "{rol_soporte=r/postgres}"
+    },
+    {
+      "name": "column:usuario.rol",
+      "owner": "10",
+      "acl": "{rol_soporte=r/postgres}"
+    },
+    {
+      "name": "column:usuario_id_seq.is_called",
+      "owner": "10",
+      "acl": null
+    },
+    {
+      "name": "column:usuario_id_seq.last_value",
+      "owner": "10",
+      "acl": null
+    },
+    {
+      "name": "column:usuario_id_seq.log_cnt",
+      "owner": "10",
+      "acl": null
+    },
+    {
+      "name": "column:usuario_mail_key.mail",
+      "owner": "10",
+      "acl": null
+    },
+    {
+      "name": "column:usuario_pkey.id",
+      "owner": "10",
+      "acl": null
+    },
+    {
+      "name": "column:v_catalogo_productos.categoria",
+      "owner": "10",
+      "acl": null
+    },
+    {
+      "name": "column:v_catalogo_productos.precio_lista",
+      "owner": "10",
+      "acl": null
+    },
+    {
+      "name": "column:v_catalogo_productos.producto",
+      "owner": "10",
+      "acl": null
+    },
+    {
+      "name": "column:v_catalogo_productos.producto_id",
+      "owner": "10",
+      "acl": null
+    },
+    {
+      "name": "column:v_catalogo_productos.stock",
+      "owner": "10",
+      "acl": null
+    },
+    {
+      "name": "column:v_detalle_pedido_producto.cantidad",
+      "owner": "10",
+      "acl": null
+    },
+    {
+      "name": "column:v_detalle_pedido_producto.id_pedido",
+      "owner": "10",
+      "acl": null
+    },
+    {
+      "name": "column:v_detalle_pedido_producto.id_producto",
+      "owner": "10",
+      "acl": null
+    },
+    {
+      "name": "column:v_detalle_pedido_producto.precio_unitario",
+      "owner": "10",
+      "acl": null
+    },
+    {
+      "name": "column:v_detalle_pedido_producto.producto",
+      "owner": "10",
+      "acl": null
+    },
+    {
+      "name": "column:v_detalle_pedido_producto.subtotal",
+      "owner": "10",
+      "acl": null
+    },
+    {
+      "name": "column:v_pedido_cliente.cliente_id",
+      "owner": "10",
+      "acl": null
+    },
+    {
+      "name": "column:v_pedido_cliente.email",
+      "owner": "10",
+      "acl": null
+    },
+    {
+      "name": "column:v_pedido_cliente.estado",
+      "owner": "10",
+      "acl": null
+    },
+    {
+      "name": "column:v_pedido_cliente.fecha_hora",
+      "owner": "10",
+      "acl": null
+    },
+    {
+      "name": "column:v_pedido_cliente.forma_pago",
+      "owner": "10",
+      "acl": null
+    },
+    {
+      "name": "column:v_pedido_cliente.nombre_completo",
+      "owner": "10",
+      "acl": null
+    },
+    {
+      "name": "column:v_pedido_cliente.pedido_id",
+      "owner": "10",
+      "acl": null
+    },
+    {
+      "name": "column:v_reporte_ventas_cliente.cliente_id",
+      "owner": "10",
+      "acl": null
+    },
+    {
+      "name": "column:v_reporte_ventas_cliente.nombre_completo",
+      "owner": "10",
+      "acl": null
+    },
+    {
+      "name": "column:v_reporte_ventas_cliente.pedidos",
+      "owner": "10",
+      "acl": null
+    },
+    {
+      "name": "column:v_reporte_ventas_cliente.total_facturado",
+      "owner": "10",
+      "acl": null
+    },
+    {
+      "name": "column:v_usuario_publico.apellido",
+      "owner": "10",
+      "acl": null
+    },
+    {
+      "name": "column:v_usuario_publico.celular",
+      "owner": "10",
+      "acl": null
+    },
+    {
+      "name": "column:v_usuario_publico.created_at",
+      "owner": "10",
+      "acl": null
+    },
+    {
+      "name": "column:v_usuario_publico.id",
+      "owner": "10",
+      "acl": null
+    },
+    {
+      "name": "column:v_usuario_publico.mail",
+      "owner": "10",
+      "acl": null
+    },
+    {
+      "name": "column:v_usuario_publico.nombre",
+      "owner": "10",
+      "acl": null
+    },
+    {
+      "name": "column:v_usuario_publico.rol",
+      "owner": "10",
+      "acl": null
+    },
+    {
+      "name": "default:74862",
+      "owner": "10",
+      "acl": "{rol_app_lectura=r/postgres,rol_app_escritura=aw/postgres}"
+    },
+    {
+      "name": "default:74863",
+      "owner": "10",
+      "acl": "{rol_app_escritura=rU/postgres}"
+    },
+    {
+      "name": "default:74864",
+      "owner": "74860",
+      "acl": "{rol_app_lectura=r/admin_datos,rol_app_escritura=aw/admin_datos}"
+    },
+    {
+      "name": "default:74865",
+      "owner": "74860",
+      "acl": "{rol_app_escritura=rU/admin_datos}"
+    },
+    {
+      "name": "function:armor(bytea)",
+      "owner": "10",
+      "acl": "{postgres=X/postgres}"
+    },
+    {
+      "name": "function:armor(bytea,text[],text[])",
+      "owner": "10",
+      "acl": "{postgres=X/postgres}"
+    },
+    {
+      "name": "function:crypt(text,text)",
+      "owner": "10",
+      "acl": "{postgres=X/postgres}"
+    },
+    {
+      "name": "function:dearmor(text)",
+      "owner": "10",
+      "acl": "{postgres=X/postgres}"
+    },
+    {
+      "name": "function:decrypt(bytea,bytea,text)",
+      "owner": "10",
+      "acl": "{postgres=X/postgres}"
+    },
+    {
+      "name": "function:decrypt_iv(bytea,bytea,bytea,text)",
+      "owner": "10",
+      "acl": "{postgres=X/postgres}"
+    },
+    {
+      "name": "function:digest(bytea,text)",
+      "owner": "10",
+      "acl": "{postgres=X/postgres}"
+    },
+    {
+      "name": "function:digest(text,text)",
+      "owner": "10",
+      "acl": "{postgres=X/postgres}"
+    },
+    {
+      "name": "function:encrypt(bytea,bytea,text)",
+      "owner": "10",
+      "acl": "{postgres=X/postgres}"
+    },
+    {
+      "name": "function:encrypt_iv(bytea,bytea,bytea,text)",
+      "owner": "10",
+      "acl": "{postgres=X/postgres}"
+    },
+    {
+      "name": "function:fn_autenticar(character varying,character varying)",
+      "owner": "10",
+      "acl": "{postgres=X/postgres,rol_app_escritura=X/postgres,admin_datos=X/postgres}"
+    },
+    {
+      "name": "function:fn_resetear_password(bigint,character varying)",
+      "owner": "10",
+      "acl": "{postgres=X/postgres,rol_soporte=X/postgres,admin_datos=X/postgres}"
+    },
+    {
+      "name": "function:gen_random_bytes(integer)",
+      "owner": "10",
+      "acl": "{postgres=X/postgres}"
+    },
+    {
+      "name": "function:gen_salt(text)",
+      "owner": "10",
+      "acl": "{postgres=X/postgres}"
+    },
+    {
+      "name": "function:gen_salt(text,integer)",
+      "owner": "10",
+      "acl": "{postgres=X/postgres}"
+    },
+    {
+      "name": "function:hmac(bytea,bytea,text)",
+      "owner": "10",
+      "acl": "{postgres=X/postgres}"
+    },
+    {
+      "name": "function:hmac(text,text,text)",
+      "owner": "10",
+      "acl": "{postgres=X/postgres}"
+    },
+    {
+      "name": "function:pgp_armor_headers(text)",
+      "owner": "10",
+      "acl": "{postgres=X/postgres}"
+    },
+    {
+      "name": "function:pgp_key_id(bytea)",
+      "owner": "10",
+      "acl": "{postgres=X/postgres}"
+    },
+    {
+      "name": "function:pgp_pub_decrypt(bytea,bytea)",
+      "owner": "10",
+      "acl": "{postgres=X/postgres}"
+    },
+    {
+      "name": "function:pgp_pub_decrypt(bytea,bytea,text)",
+      "owner": "10",
+      "acl": "{postgres=X/postgres}"
+    },
+    {
+      "name": "function:pgp_pub_decrypt(bytea,bytea,text,text)",
+      "owner": "10",
+      "acl": "{postgres=X/postgres}"
+    },
+    {
+      "name": "function:pgp_pub_decrypt_bytea(bytea,bytea)",
+      "owner": "10",
+      "acl": "{postgres=X/postgres}"
+    },
+    {
+      "name": "function:pgp_pub_decrypt_bytea(bytea,bytea,text)",
+      "owner": "10",
+      "acl": "{postgres=X/postgres}"
+    },
+    {
+      "name": "function:pgp_pub_decrypt_bytea(bytea,bytea,text,text)",
+      "owner": "10",
+      "acl": "{postgres=X/postgres}"
+    },
+    {
+      "name": "function:pgp_pub_encrypt(text,bytea)",
+      "owner": "10",
+      "acl": "{postgres=X/postgres}"
+    },
+    {
+      "name": "function:pgp_pub_encrypt(text,bytea,text)",
+      "owner": "10",
+      "acl": "{postgres=X/postgres}"
+    },
+    {
+      "name": "function:pgp_pub_encrypt_bytea(bytea,bytea)",
+      "owner": "10",
+      "acl": "{postgres=X/postgres}"
+    },
+    {
+      "name": "function:pgp_pub_encrypt_bytea(bytea,bytea,text)",
+      "owner": "10",
+      "acl": "{postgres=X/postgres}"
+    },
+    {
+      "name": "function:pgp_sym_decrypt(bytea,text)",
+      "owner": "10",
+      "acl": "{postgres=X/postgres}"
+    },
+    {
+      "name": "function:pgp_sym_decrypt(bytea,text,text)",
+      "owner": "10",
+      "acl": "{postgres=X/postgres}"
+    },
+    {
+      "name": "function:pgp_sym_decrypt_bytea(bytea,text)",
+      "owner": "10",
+      "acl": "{postgres=X/postgres}"
+    },
+    {
+      "name": "function:pgp_sym_decrypt_bytea(bytea,text,text)",
+      "owner": "10",
+      "acl": "{postgres=X/postgres}"
+    },
+    {
+      "name": "function:pgp_sym_encrypt(text,text)",
+      "owner": "10",
+      "acl": "{postgres=X/postgres}"
+    },
+    {
+      "name": "function:pgp_sym_encrypt(text,text,text)",
+      "owner": "10",
+      "acl": "{postgres=X/postgres}"
+    },
+    {
+      "name": "function:pgp_sym_encrypt_bytea(bytea,text)",
+      "owner": "10",
+      "acl": "{postgres=X/postgres}"
+    },
+    {
+      "name": "function:pgp_sym_encrypt_bytea(bytea,text,text)",
+      "owner": "10",
+      "acl": "{postgres=X/postgres}"
+    },
+    {
+      "name": "function:public.gen_random_uuid()",
+      "owner": "10",
+      "acl": "{postgres=X/postgres}"
+    },
+    {
+      "name": "relation:categoria",
+      "owner": "10",
+      "acl": "{postgres=arwdDxtm/postgres,rol_app_lectura=r/postgres,rol_app_escritura=aw/postgres,admin_datos=arwdDxtm/postgres}"
+    },
+    {
+      "name": "relation:categoria_id_seq",
+      "owner": "10",
+      "acl": "{postgres=rwU/postgres,rol_app_escritura=rU/postgres,admin_datos=rwU/postgres}"
+    },
+    {
+      "name": "relation:categoria_nombre_key",
+      "owner": "10",
+      "acl": null
+    },
+    {
+      "name": "relation:categoria_pkey",
+      "owner": "10",
+      "acl": null
+    },
+    {
+      "name": "relation:cliente",
+      "owner": "10",
+      "acl": "{postgres=arwdDxtm/postgres,rol_app_lectura=r/postgres,rol_app_escritura=aw/postgres,admin_datos=arwdDxtm/postgres}"
+    },
+    {
+      "name": "relation:cliente_email_key",
+      "owner": "10",
+      "acl": null
+    },
+    {
+      "name": "relation:cliente_id_seq",
+      "owner": "10",
+      "acl": "{postgres=rwU/postgres,rol_app_escritura=rU/postgres,admin_datos=rwU/postgres}"
+    },
+    {
+      "name": "relation:cliente_pkey",
+      "owner": "10",
+      "acl": null
+    },
+    {
+      "name": "relation:detalle_pedido",
+      "owner": "10",
+      "acl": "{postgres=arwdDxtm/postgres,rol_app_lectura=r/postgres,rol_app_escritura=aw/postgres,admin_datos=arwdDxtm/postgres}"
+    },
+    {
+      "name": "relation:idx_detalle_pedido_producto_id",
+      "owner": "10",
+      "acl": null
+    },
+    {
+      "name": "relation:idx_mv_resumen_ventas_categoria_mes",
+      "owner": "10",
+      "acl": null
+    },
+    {
+      "name": "relation:idx_pedidos_cliente_id",
+      "owner": "10",
+      "acl": null
+    },
+    {
+      "name": "relation:idx_productos_categoria_activo",
+      "owner": "10",
+      "acl": null
+    },
+    {
+      "name": "relation:mv_resumen_ventas_categoria_mes",
+      "owner": "10",
+      "acl": "{postgres=arwdDxtm/postgres,rol_reportes=r/postgres,admin_datos=arwdDxtm/postgres}"
+    },
+    {
+      "name": "relation:pedido",
+      "owner": "10",
+      "acl": "{postgres=arwdDxtm/postgres,rol_app_lectura=r/postgres,rol_app_escritura=aw/postgres,admin_datos=arwdDxtm/postgres}"
+    },
+    {
+      "name": "relation:pedido_id_seq",
+      "owner": "10",
+      "acl": "{postgres=rwU/postgres,rol_app_escritura=rU/postgres,admin_datos=rwU/postgres}"
+    },
+    {
+      "name": "relation:pedido_pkey",
+      "owner": "10",
+      "acl": null
+    },
+    {
+      "name": "relation:pk_detalle_pedido",
+      "owner": "10",
+      "acl": null
+    },
+    {
+      "name": "relation:producto",
+      "owner": "10",
+      "acl": "{postgres=arwdDxtm/postgres,rol_app_lectura=r/postgres,rol_app_escritura=aw/postgres,admin_datos=arwdDxtm/postgres}"
+    },
+    {
+      "name": "relation:producto_id_seq",
+      "owner": "10",
+      "acl": "{postgres=rwU/postgres,rol_app_escritura=rU/postgres,admin_datos=rwU/postgres}"
+    },
+    {
+      "name": "relation:producto_pkey",
+      "owner": "10",
+      "acl": null
+    },
+    {
+      "name": "relation:usuario",
+      "owner": "10",
+      "acl": "{postgres=arwdDxtm/postgres,admin_datos=arwdDxtm/postgres}"
+    },
+    {
+      "name": "relation:usuario_id_seq",
+      "owner": "10",
+      "acl": "{postgres=rwU/postgres,admin_datos=rwU/postgres}"
+    },
+    {
+      "name": "relation:usuario_mail_key",
+      "owner": "10",
+      "acl": null
+    },
+    {
+      "name": "relation:usuario_pkey",
+      "owner": "10",
+      "acl": null
+    },
+    {
+      "name": "relation:v_catalogo_productos",
+      "owner": "10",
+      "acl": "{postgres=arwdDxtm/postgres,rol_app_lectura=r/postgres,admin_datos=arwdDxtm/postgres}"
+    },
+    {
+      "name": "relation:v_detalle_pedido_producto",
+      "owner": "10",
+      "acl": "{postgres=arwdDxtm/postgres,rol_app_lectura=r/postgres,admin_datos=arwdDxtm/postgres}"
+    },
+    {
+      "name": "relation:v_pedido_cliente",
+      "owner": "10",
+      "acl": "{postgres=arwdDxtm/postgres,rol_app_lectura=r/postgres,admin_datos=arwdDxtm/postgres}"
+    },
+    {
+      "name": "relation:v_reporte_ventas_cliente",
+      "owner": "10",
+      "acl": "{postgres=arwdDxtm/postgres,rol_reportes=r/postgres,admin_datos=arwdDxtm/postgres}"
+    },
+    {
+      "name": "relation:v_usuario_publico",
+      "owner": "10",
+      "acl": "{postgres=arwdDxtm/postgres,rol_reportes=r/postgres,admin_datos=arwdDxtm/postgres}"
+    },
+    {
+      "name": "schema:public",
+      "owner": "6171",
+      "acl": "{pg_database_owner=UC/pg_database_owner,rol_app_lectura=U/pg_database_owner,rol_app_escritura=U/pg_database_owner,rol_soporte=U/pg_database_owner,rol_reportes=U/pg_database_owner,rol_auditoria=U/pg_database_owner,app_web=U/pg_database_owner,admin_datos=UC/pg_database_owner}"
+    }
+  ],
+  "columns": [
+    {
+      "attnum": 1,
+      "attname": "id",
+      "type": "bigint",
+      "attnotnull": true,
+      "attidentity": "a",
+      "default_expr": null
+    },
+    {
+      "attnum": 2,
+      "attname": "nombre",
+      "type": "character varying(80)",
+      "attnotnull": true,
+      "attidentity": "",
+      "default_expr": null
+    },
+    {
+      "attnum": 3,
+      "attname": "apellido",
+      "type": "character varying(80)",
+      "attnotnull": true,
+      "attidentity": "",
+      "default_expr": null
+    },
+    {
+      "attnum": 4,
+      "attname": "mail",
+      "type": "character varying(120)",
+      "attnotnull": true,
+      "attidentity": "",
+      "default_expr": null
+    },
+    {
+      "attnum": 5,
+      "attname": "celular",
+      "type": "character varying(30)",
+      "attnotnull": false,
+      "attidentity": "",
+      "default_expr": null
+    },
+    {
+      "attnum": 6,
+      "attname": "contrasena",
+      "type": "character varying(255)",
+      "attnotnull": true,
+      "attidentity": "",
+      "default_expr": null
+    },
+    {
+      "attnum": 7,
+      "attname": "rol",
+      "type": "rol_usuario",
+      "attnotnull": true,
+      "attidentity": "",
+      "default_expr": "'USUARIO'::rol_usuario"
+    },
+    {
+      "attnum": 8,
+      "attname": "eliminado",
+      "type": "boolean",
+      "attnotnull": true,
+      "attidentity": "",
+      "default_expr": "false"
+    },
+    {
+      "attnum": 9,
+      "attname": "created_at",
+      "type": "timestamp with time zone",
+      "attnotnull": true,
+      "attidentity": "",
+      "default_expr": "now()"
+    }
+  ],
+  "constraints": [
+    {
+      "conname": "chk_usuario_apellido_no_vacio",
+      "contype": "c",
+      "convalidated": true,
+      "definition": "CHECK ((TRIM(BOTH FROM apellido) <> ''::text))"
+    },
+    {
+      "conname": "chk_usuario_contrasena_no_vacia",
+      "contype": "c",
+      "convalidated": true,
+      "definition": "CHECK ((TRIM(BOTH FROM contrasena) <> ''::text))"
+    },
+    {
+      "conname": "chk_usuario_mail_no_vacio",
+      "contype": "c",
+      "convalidated": true,
+      "definition": "CHECK ((TRIM(BOTH FROM mail) <> ''::text))"
+    },
+    {
+      "conname": "chk_usuario_nombre_no_vacio",
+      "contype": "c",
+      "convalidated": true,
+      "definition": "CHECK ((TRIM(BOTH FROM nombre) <> ''::text))"
+    },
+    {
+      "conname": "usuario_mail_key",
+      "contype": "u",
+      "convalidated": true,
+      "definition": "UNIQUE (mail)"
+    },
+    {
+      "conname": "usuario_pkey",
+      "contype": "p",
+      "convalidated": true,
+      "definition": "PRIMARY KEY (id)"
+    }
+  ],
+  "guards": {
+    "event_triggers": 0,
+    "triggers": 0,
+    "rules": 0,
+    "inheritance": 0,
+    "rls": false
+  },
+  "roles": [
+    "ADMIN",
+    "VENDEDOR",
+    "USUARIO"
+  ]
+}
+ENSAYO STDOUT+STDERR, psql -X -w, ON_ERROR_STOP=on, sin echo
+BEGIN
+SET
+SET
+DO
+LOCK TABLE
+DO
+CREATE TABLE
+DO
+INSERT 0 6
+INSERT 0 6
+CREATE TABLE AS
+DO
+INSERT 0 8
+DO
+   rol    |  mes_alta  | cantidad 
+----------+------------+----------
+ ADMIN    | 2026-01-01 |        2
+ VENDEDOR | 2026-02-01 |        2
+ VENDEDOR | 2026-10-01 |        1
+ USUARIO  | 2026-03-01 |        2
+ USUARIO  | 2026-10-01 |        1
+(5 rows)
+
+   rol    |  mes_alta  | cantidad 
+----------+------------+----------
+ ADMIN    | 2026-01-01 |        2
+ VENDEDOR | 2026-02-01 |        2
+ VENDEDOR | 2026-10-01 |        1
+ USUARIO  | 2026-03-01 |        2
+ USUARIO  | 2026-10-01 |        1
+(5 rows)
+
+   rol    |  mes_alta  | cantidad_anon | cantidad_real 
+----------+------------+---------------+---------------
+ ADMIN    | 2026-01-01 |             2 |             2
+ VENDEDOR | 2026-02-01 |             2 |             2
+ VENDEDOR | 2026-10-01 |             1 |             1
+ USUARIO  | 2026-03-01 |             2 |             2
+ USUARIO  | 2026-10-01 |             1 |             1
+(5 rows)
+
+psql:C:/Users/hp/Practicos/TP7_Administracion_y_Seguridad/sql/usuario_anon_cobertura.sql:173: NOTICE:  Comparacion adicional: diferencias 0/0, totales 8/8
+DO
+ROLLBACK
+
+PSQL_EXIT=0
+POSTERIOR (conexion nueva de solo lectura, BEGIN READ ONLY / ROLLBACK)
+{
+  "identity": {
+    "database": "foodstore_dev",
+    "user": "postgres",
+    "session": "postgres",
+    "version": "17.11",
+    "server": "::1",
+    "port": 5432,
+    "read_only": "on"
+  },
+  "activity": 0,
+  "prepared": 0,
+  "counts": {
+    "categoria": 2,
+    "cliente": 3,
+    "pedido": 5,
+    "producto": 3,
+    "detalle_pedido": 7,
+    "usuario": 2
+  },
+  "conflicts": {
+    "ids": 0,
+    "mails": 0,
+    "table": false,
+    "type": false
+  },
+  "sequences": {
+    "categoria": {
+      "last_value": 2,
+      "is_called": true
+    },
+    "cliente": {
+      "last_value": 3,
+      "is_called": true
+    },
+    "pedido": {
+      "last_value": 5,
+      "is_called": true
+    },
+    "producto": {
+      "last_value": 3,
+      "is_called": true
+    },
+    "usuario": {
+      "last_value": 2,
+      "is_called": true
+    }
+  },
+  "acls": [
+    {
+      "name": "column:categoria.activo",
+      "owner": "10",
+      "acl": null
+    },
+    {
+      "name": "column:categoria.created_at",
+      "owner": "10",
+      "acl": null
+    },
+    {
+      "name": "column:categoria.descripcion",
+      "owner": "10",
+      "acl": null
+    },
+    {
+      "name": "column:categoria.id",
+      "owner": "10",
+      "acl": null
+    },
+    {
+      "name": "column:categoria.nombre",
+      "owner": "10",
+      "acl": null
+    },
+    {
+      "name": "column:categoria_id_seq.is_called",
+      "owner": "10",
+      "acl": null
+    },
+    {
+      "name": "column:categoria_id_seq.last_value",
+      "owner": "10",
+      "acl": null
+    },
+    {
+      "name": "column:categoria_id_seq.log_cnt",
+      "owner": "10",
+      "acl": null
+    },
+    {
+      "name": "column:categoria_nombre_key.nombre",
+      "owner": "10",
+      "acl": null
+    },
+    {
+      "name": "column:categoria_pkey.id",
+      "owner": "10",
+      "acl": null
+    },
+    {
+      "name": "column:cliente.created_at",
+      "owner": "10",
+      "acl": null
+    },
+    {
+      "name": "column:cliente.direccion",
+      "owner": "10",
+      "acl": null
+    },
+    {
+      "name": "column:cliente.email",
+      "owner": "10",
+      "acl": null
+    },
+    {
+      "name": "column:cliente.id",
+      "owner": "10",
+      "acl": null
+    },
+    {
+      "name": "column:cliente.nombre_completo",
+      "owner": "10",
+      "acl": null
+    },
+    {
+      "name": "column:cliente.telefono",
+      "owner": "10",
+      "acl": null
+    },
+    {
+      "name": "column:cliente_email_key.email",
+      "owner": "10",
+      "acl": null
+    },
+    {
+      "name": "column:cliente_id_seq.is_called",
+      "owner": "10",
+      "acl": null
+    },
+    {
+      "name": "column:cliente_id_seq.last_value",
+      "owner": "10",
+      "acl": null
+    },
+    {
+      "name": "column:cliente_id_seq.log_cnt",
+      "owner": "10",
+      "acl": null
+    },
+    {
+      "name": "column:cliente_pkey.id",
+      "owner": "10",
+      "acl": null
+    },
+    {
+      "name": "column:detalle_pedido.cantidad",
+      "owner": "10",
+      "acl": null
+    },
+    {
+      "name": "column:detalle_pedido.id_pedido",
+      "owner": "10",
+      "acl": null
+    },
+    {
+      "name": "column:detalle_pedido.id_producto",
+      "owner": "10",
+      "acl": null
+    },
+    {
+      "name": "column:detalle_pedido.precio_unitario",
+      "owner": "10",
+      "acl": null
+    },
+    {
+      "name": "column:detalle_pedido.subtotal",
+      "owner": "10",
+      "acl": null
+    },
+    {
+      "name": "column:idx_detalle_pedido_producto_id.id_producto",
+      "owner": "10",
+      "acl": null
+    },
+    {
+      "name": "column:idx_mv_resumen_ventas_categoria_mes.id_categoria",
+      "owner": "10",
+      "acl": null
+    },
+    {
+      "name": "column:idx_mv_resumen_ventas_categoria_mes.mes",
+      "owner": "10",
+      "acl": null
+    },
+    {
+      "name": "column:idx_pedidos_cliente_id.id_cliente",
+      "owner": "10",
+      "acl": null
+    },
+    {
+      "name": "column:idx_productos_categoria_activo.activo",
+      "owner": "10",
+      "acl": null
+    },
+    {
+      "name": "column:idx_productos_categoria_activo.id_categoria",
+      "owner": "10",
+      "acl": null
+    },
+    {
+      "name": "column:mv_resumen_ventas_categoria_mes.cantidad_pedidos",
+      "owner": "10",
+      "acl": null
+    },
+    {
+      "name": "column:mv_resumen_ventas_categoria_mes.categoria",
+      "owner": "10",
+      "acl": null
+    },
+    {
+      "name": "column:mv_resumen_ventas_categoria_mes.facturacion_total",
+      "owner": "10",
+      "acl": null
+    },
+    {
+      "name": "column:mv_resumen_ventas_categoria_mes.id_categoria",
+      "owner": "10",
+      "acl": null
+    },
+    {
+      "name": "column:mv_resumen_ventas_categoria_mes.mes",
+      "owner": "10",
+      "acl": null
+    },
+    {
+      "name": "column:mv_resumen_ventas_categoria_mes.unidades_vendidas",
+      "owner": "10",
+      "acl": null
+    },
+    {
+      "name": "column:pedido.estado",
+      "owner": "10",
+      "acl": null
+    },
+    {
+      "name": "column:pedido.fecha_hora",
+      "owner": "10",
+      "acl": null
+    },
+    {
+      "name": "column:pedido.forma_pago",
+      "owner": "10",
+      "acl": null
+    },
+    {
+      "name": "column:pedido.id",
+      "owner": "10",
+      "acl": null
+    },
+    {
+      "name": "column:pedido.id_cliente",
+      "owner": "10",
+      "acl": null
+    },
+    {
+      "name": "column:pedido.observaciones",
+      "owner": "10",
+      "acl": null
+    },
+    {
+      "name": "column:pedido_id_seq.is_called",
+      "owner": "10",
+      "acl": null
+    },
+    {
+      "name": "column:pedido_id_seq.last_value",
+      "owner": "10",
+      "acl": null
+    },
+    {
+      "name": "column:pedido_id_seq.log_cnt",
+      "owner": "10",
+      "acl": null
+    },
+    {
+      "name": "column:pedido_pkey.id",
+      "owner": "10",
+      "acl": null
+    },
+    {
+      "name": "column:pk_detalle_pedido.id_pedido",
+      "owner": "10",
+      "acl": null
+    },
+    {
+      "name": "column:pk_detalle_pedido.id_producto",
+      "owner": "10",
+      "acl": null
+    },
+    {
+      "name": "column:producto.activo",
+      "owner": "10",
+      "acl": null
+    },
+    {
+      "name": "column:producto.created_at",
+      "owner": "10",
+      "acl": null
+    },
+    {
+      "name": "column:producto.descripcion",
+      "owner": "10",
+      "acl": null
+    },
+    {
+      "name": "column:producto.id",
+      "owner": "10",
+      "acl": null
+    },
+    {
+      "name": "column:producto.id_categoria",
+      "owner": "10",
+      "acl": null
+    },
+    {
+      "name": "column:producto.nombre",
+      "owner": "10",
+      "acl": null
+    },
+    {
+      "name": "column:producto.precio_lista",
+      "owner": "10",
+      "acl": null
+    },
+    {
+      "name": "column:producto.stock",
+      "owner": "10",
+      "acl": null
+    },
+    {
+      "name": "column:producto_id_seq.is_called",
+      "owner": "10",
+      "acl": null
+    },
+    {
+      "name": "column:producto_id_seq.last_value",
+      "owner": "10",
+      "acl": null
+    },
+    {
+      "name": "column:producto_id_seq.log_cnt",
+      "owner": "10",
+      "acl": null
+    },
+    {
+      "name": "column:producto_pkey.id",
+      "owner": "10",
+      "acl": null
+    },
+    {
+      "name": "column:usuario.apellido",
+      "owner": "10",
+      "acl": "{rol_soporte=r/postgres}"
+    },
+    {
+      "name": "column:usuario.celular",
+      "owner": "10",
+      "acl": "{rol_soporte=r/postgres}"
+    },
+    {
+      "name": "column:usuario.contrasena",
+      "owner": "10",
+      "acl": null
+    },
+    {
+      "name": "column:usuario.created_at",
+      "owner": "10",
+      "acl": "{rol_soporte=r/postgres}"
+    },
+    {
+      "name": "column:usuario.eliminado",
+      "owner": "10",
+      "acl": "{rol_soporte=rw/postgres}"
+    },
+    {
+      "name": "column:usuario.id",
+      "owner": "10",
+      "acl": "{rol_soporte=r/postgres}"
+    },
+    {
+      "name": "column:usuario.mail",
+      "owner": "10",
+      "acl": "{rol_soporte=r/postgres}"
+    },
+    {
+      "name": "column:usuario.nombre",
+      "owner": "10",
+      "acl": "{rol_soporte=r/postgres}"
+    },
+    {
+      "name": "column:usuario.rol",
+      "owner": "10",
+      "acl": "{rol_soporte=r/postgres}"
+    },
+    {
+      "name": "column:usuario_id_seq.is_called",
+      "owner": "10",
+      "acl": null
+    },
+    {
+      "name": "column:usuario_id_seq.last_value",
+      "owner": "10",
+      "acl": null
+    },
+    {
+      "name": "column:usuario_id_seq.log_cnt",
+      "owner": "10",
+      "acl": null
+    },
+    {
+      "name": "column:usuario_mail_key.mail",
+      "owner": "10",
+      "acl": null
+    },
+    {
+      "name": "column:usuario_pkey.id",
+      "owner": "10",
+      "acl": null
+    },
+    {
+      "name": "column:v_catalogo_productos.categoria",
+      "owner": "10",
+      "acl": null
+    },
+    {
+      "name": "column:v_catalogo_productos.precio_lista",
+      "owner": "10",
+      "acl": null
+    },
+    {
+      "name": "column:v_catalogo_productos.producto",
+      "owner": "10",
+      "acl": null
+    },
+    {
+      "name": "column:v_catalogo_productos.producto_id",
+      "owner": "10",
+      "acl": null
+    },
+    {
+      "name": "column:v_catalogo_productos.stock",
+      "owner": "10",
+      "acl": null
+    },
+    {
+      "name": "column:v_detalle_pedido_producto.cantidad",
+      "owner": "10",
+      "acl": null
+    },
+    {
+      "name": "column:v_detalle_pedido_producto.id_pedido",
+      "owner": "10",
+      "acl": null
+    },
+    {
+      "name": "column:v_detalle_pedido_producto.id_producto",
+      "owner": "10",
+      "acl": null
+    },
+    {
+      "name": "column:v_detalle_pedido_producto.precio_unitario",
+      "owner": "10",
+      "acl": null
+    },
+    {
+      "name": "column:v_detalle_pedido_producto.producto",
+      "owner": "10",
+      "acl": null
+    },
+    {
+      "name": "column:v_detalle_pedido_producto.subtotal",
+      "owner": "10",
+      "acl": null
+    },
+    {
+      "name": "column:v_pedido_cliente.cliente_id",
+      "owner": "10",
+      "acl": null
+    },
+    {
+      "name": "column:v_pedido_cliente.email",
+      "owner": "10",
+      "acl": null
+    },
+    {
+      "name": "column:v_pedido_cliente.estado",
+      "owner": "10",
+      "acl": null
+    },
+    {
+      "name": "column:v_pedido_cliente.fecha_hora",
+      "owner": "10",
+      "acl": null
+    },
+    {
+      "name": "column:v_pedido_cliente.forma_pago",
+      "owner": "10",
+      "acl": null
+    },
+    {
+      "name": "column:v_pedido_cliente.nombre_completo",
+      "owner": "10",
+      "acl": null
+    },
+    {
+      "name": "column:v_pedido_cliente.pedido_id",
+      "owner": "10",
+      "acl": null
+    },
+    {
+      "name": "column:v_reporte_ventas_cliente.cliente_id",
+      "owner": "10",
+      "acl": null
+    },
+    {
+      "name": "column:v_reporte_ventas_cliente.nombre_completo",
+      "owner": "10",
+      "acl": null
+    },
+    {
+      "name": "column:v_reporte_ventas_cliente.pedidos",
+      "owner": "10",
+      "acl": null
+    },
+    {
+      "name": "column:v_reporte_ventas_cliente.total_facturado",
+      "owner": "10",
+      "acl": null
+    },
+    {
+      "name": "column:v_usuario_publico.apellido",
+      "owner": "10",
+      "acl": null
+    },
+    {
+      "name": "column:v_usuario_publico.celular",
+      "owner": "10",
+      "acl": null
+    },
+    {
+      "name": "column:v_usuario_publico.created_at",
+      "owner": "10",
+      "acl": null
+    },
+    {
+      "name": "column:v_usuario_publico.id",
+      "owner": "10",
+      "acl": null
+    },
+    {
+      "name": "column:v_usuario_publico.mail",
+      "owner": "10",
+      "acl": null
+    },
+    {
+      "name": "column:v_usuario_publico.nombre",
+      "owner": "10",
+      "acl": null
+    },
+    {
+      "name": "column:v_usuario_publico.rol",
+      "owner": "10",
+      "acl": null
+    },
+    {
+      "name": "default:74862",
+      "owner": "10",
+      "acl": "{rol_app_lectura=r/postgres,rol_app_escritura=aw/postgres}"
+    },
+    {
+      "name": "default:74863",
+      "owner": "10",
+      "acl": "{rol_app_escritura=rU/postgres}"
+    },
+    {
+      "name": "default:74864",
+      "owner": "74860",
+      "acl": "{rol_app_lectura=r/admin_datos,rol_app_escritura=aw/admin_datos}"
+    },
+    {
+      "name": "default:74865",
+      "owner": "74860",
+      "acl": "{rol_app_escritura=rU/admin_datos}"
+    },
+    {
+      "name": "function:armor(bytea)",
+      "owner": "10",
+      "acl": "{postgres=X/postgres}"
+    },
+    {
+      "name": "function:armor(bytea,text[],text[])",
+      "owner": "10",
+      "acl": "{postgres=X/postgres}"
+    },
+    {
+      "name": "function:crypt(text,text)",
+      "owner": "10",
+      "acl": "{postgres=X/postgres}"
+    },
+    {
+      "name": "function:dearmor(text)",
+      "owner": "10",
+      "acl": "{postgres=X/postgres}"
+    },
+    {
+      "name": "function:decrypt(bytea,bytea,text)",
+      "owner": "10",
+      "acl": "{postgres=X/postgres}"
+    },
+    {
+      "name": "function:decrypt_iv(bytea,bytea,bytea,text)",
+      "owner": "10",
+      "acl": "{postgres=X/postgres}"
+    },
+    {
+      "name": "function:digest(bytea,text)",
+      "owner": "10",
+      "acl": "{postgres=X/postgres}"
+    },
+    {
+      "name": "function:digest(text,text)",
+      "owner": "10",
+      "acl": "{postgres=X/postgres}"
+    },
+    {
+      "name": "function:encrypt(bytea,bytea,text)",
+      "owner": "10",
+      "acl": "{postgres=X/postgres}"
+    },
+    {
+      "name": "function:encrypt_iv(bytea,bytea,bytea,text)",
+      "owner": "10",
+      "acl": "{postgres=X/postgres}"
+    },
+    {
+      "name": "function:fn_autenticar(character varying,character varying)",
+      "owner": "10",
+      "acl": "{postgres=X/postgres,rol_app_escritura=X/postgres,admin_datos=X/postgres}"
+    },
+    {
+      "name": "function:fn_resetear_password(bigint,character varying)",
+      "owner": "10",
+      "acl": "{postgres=X/postgres,rol_soporte=X/postgres,admin_datos=X/postgres}"
+    },
+    {
+      "name": "function:gen_random_bytes(integer)",
+      "owner": "10",
+      "acl": "{postgres=X/postgres}"
+    },
+    {
+      "name": "function:gen_salt(text)",
+      "owner": "10",
+      "acl": "{postgres=X/postgres}"
+    },
+    {
+      "name": "function:gen_salt(text,integer)",
+      "owner": "10",
+      "acl": "{postgres=X/postgres}"
+    },
+    {
+      "name": "function:hmac(bytea,bytea,text)",
+      "owner": "10",
+      "acl": "{postgres=X/postgres}"
+    },
+    {
+      "name": "function:hmac(text,text,text)",
+      "owner": "10",
+      "acl": "{postgres=X/postgres}"
+    },
+    {
+      "name": "function:pgp_armor_headers(text)",
+      "owner": "10",
+      "acl": "{postgres=X/postgres}"
+    },
+    {
+      "name": "function:pgp_key_id(bytea)",
+      "owner": "10",
+      "acl": "{postgres=X/postgres}"
+    },
+    {
+      "name": "function:pgp_pub_decrypt(bytea,bytea)",
+      "owner": "10",
+      "acl": "{postgres=X/postgres}"
+    },
+    {
+      "name": "function:pgp_pub_decrypt(bytea,bytea,text)",
+      "owner": "10",
+      "acl": "{postgres=X/postgres}"
+    },
+    {
+      "name": "function:pgp_pub_decrypt(bytea,bytea,text,text)",
+      "owner": "10",
+      "acl": "{postgres=X/postgres}"
+    },
+    {
+      "name": "function:pgp_pub_decrypt_bytea(bytea,bytea)",
+      "owner": "10",
+      "acl": "{postgres=X/postgres}"
+    },
+    {
+      "name": "function:pgp_pub_decrypt_bytea(bytea,bytea,text)",
+      "owner": "10",
+      "acl": "{postgres=X/postgres}"
+    },
+    {
+      "name": "function:pgp_pub_decrypt_bytea(bytea,bytea,text,text)",
+      "owner": "10",
+      "acl": "{postgres=X/postgres}"
+    },
+    {
+      "name": "function:pgp_pub_encrypt(text,bytea)",
+      "owner": "10",
+      "acl": "{postgres=X/postgres}"
+    },
+    {
+      "name": "function:pgp_pub_encrypt(text,bytea,text)",
+      "owner": "10",
+      "acl": "{postgres=X/postgres}"
+    },
+    {
+      "name": "function:pgp_pub_encrypt_bytea(bytea,bytea)",
+      "owner": "10",
+      "acl": "{postgres=X/postgres}"
+    },
+    {
+      "name": "function:pgp_pub_encrypt_bytea(bytea,bytea,text)",
+      "owner": "10",
+      "acl": "{postgres=X/postgres}"
+    },
+    {
+      "name": "function:pgp_sym_decrypt(bytea,text)",
+      "owner": "10",
+      "acl": "{postgres=X/postgres}"
+    },
+    {
+      "name": "function:pgp_sym_decrypt(bytea,text,text)",
+      "owner": "10",
+      "acl": "{postgres=X/postgres}"
+    },
+    {
+      "name": "function:pgp_sym_decrypt_bytea(bytea,text)",
+      "owner": "10",
+      "acl": "{postgres=X/postgres}"
+    },
+    {
+      "name": "function:pgp_sym_decrypt_bytea(bytea,text,text)",
+      "owner": "10",
+      "acl": "{postgres=X/postgres}"
+    },
+    {
+      "name": "function:pgp_sym_encrypt(text,text)",
+      "owner": "10",
+      "acl": "{postgres=X/postgres}"
+    },
+    {
+      "name": "function:pgp_sym_encrypt(text,text,text)",
+      "owner": "10",
+      "acl": "{postgres=X/postgres}"
+    },
+    {
+      "name": "function:pgp_sym_encrypt_bytea(bytea,text)",
+      "owner": "10",
+      "acl": "{postgres=X/postgres}"
+    },
+    {
+      "name": "function:pgp_sym_encrypt_bytea(bytea,text,text)",
+      "owner": "10",
+      "acl": "{postgres=X/postgres}"
+    },
+    {
+      "name": "function:public.gen_random_uuid()",
+      "owner": "10",
+      "acl": "{postgres=X/postgres}"
+    },
+    {
+      "name": "relation:categoria",
+      "owner": "10",
+      "acl": "{postgres=arwdDxtm/postgres,rol_app_lectura=r/postgres,rol_app_escritura=aw/postgres,admin_datos=arwdDxtm/postgres}"
+    },
+    {
+      "name": "relation:categoria_id_seq",
+      "owner": "10",
+      "acl": "{postgres=rwU/postgres,rol_app_escritura=rU/postgres,admin_datos=rwU/postgres}"
+    },
+    {
+      "name": "relation:categoria_nombre_key",
+      "owner": "10",
+      "acl": null
+    },
+    {
+      "name": "relation:categoria_pkey",
+      "owner": "10",
+      "acl": null
+    },
+    {
+      "name": "relation:cliente",
+      "owner": "10",
+      "acl": "{postgres=arwdDxtm/postgres,rol_app_lectura=r/postgres,rol_app_escritura=aw/postgres,admin_datos=arwdDxtm/postgres}"
+    },
+    {
+      "name": "relation:cliente_email_key",
+      "owner": "10",
+      "acl": null
+    },
+    {
+      "name": "relation:cliente_id_seq",
+      "owner": "10",
+      "acl": "{postgres=rwU/postgres,rol_app_escritura=rU/postgres,admin_datos=rwU/postgres}"
+    },
+    {
+      "name": "relation:cliente_pkey",
+      "owner": "10",
+      "acl": null
+    },
+    {
+      "name": "relation:detalle_pedido",
+      "owner": "10",
+      "acl": "{postgres=arwdDxtm/postgres,rol_app_lectura=r/postgres,rol_app_escritura=aw/postgres,admin_datos=arwdDxtm/postgres}"
+    },
+    {
+      "name": "relation:idx_detalle_pedido_producto_id",
+      "owner": "10",
+      "acl": null
+    },
+    {
+      "name": "relation:idx_mv_resumen_ventas_categoria_mes",
+      "owner": "10",
+      "acl": null
+    },
+    {
+      "name": "relation:idx_pedidos_cliente_id",
+      "owner": "10",
+      "acl": null
+    },
+    {
+      "name": "relation:idx_productos_categoria_activo",
+      "owner": "10",
+      "acl": null
+    },
+    {
+      "name": "relation:mv_resumen_ventas_categoria_mes",
+      "owner": "10",
+      "acl": "{postgres=arwdDxtm/postgres,rol_reportes=r/postgres,admin_datos=arwdDxtm/postgres}"
+    },
+    {
+      "name": "relation:pedido",
+      "owner": "10",
+      "acl": "{postgres=arwdDxtm/postgres,rol_app_lectura=r/postgres,rol_app_escritura=aw/postgres,admin_datos=arwdDxtm/postgres}"
+    },
+    {
+      "name": "relation:pedido_id_seq",
+      "owner": "10",
+      "acl": "{postgres=rwU/postgres,rol_app_escritura=rU/postgres,admin_datos=rwU/postgres}"
+    },
+    {
+      "name": "relation:pedido_pkey",
+      "owner": "10",
+      "acl": null
+    },
+    {
+      "name": "relation:pk_detalle_pedido",
+      "owner": "10",
+      "acl": null
+    },
+    {
+      "name": "relation:producto",
+      "owner": "10",
+      "acl": "{postgres=arwdDxtm/postgres,rol_app_lectura=r/postgres,rol_app_escritura=aw/postgres,admin_datos=arwdDxtm/postgres}"
+    },
+    {
+      "name": "relation:producto_id_seq",
+      "owner": "10",
+      "acl": "{postgres=rwU/postgres,rol_app_escritura=rU/postgres,admin_datos=rwU/postgres}"
+    },
+    {
+      "name": "relation:producto_pkey",
+      "owner": "10",
+      "acl": null
+    },
+    {
+      "name": "relation:usuario",
+      "owner": "10",
+      "acl": "{postgres=arwdDxtm/postgres,admin_datos=arwdDxtm/postgres}"
+    },
+    {
+      "name": "relation:usuario_id_seq",
+      "owner": "10",
+      "acl": "{postgres=rwU/postgres,admin_datos=rwU/postgres}"
+    },
+    {
+      "name": "relation:usuario_mail_key",
+      "owner": "10",
+      "acl": null
+    },
+    {
+      "name": "relation:usuario_pkey",
+      "owner": "10",
+      "acl": null
+    },
+    {
+      "name": "relation:v_catalogo_productos",
+      "owner": "10",
+      "acl": "{postgres=arwdDxtm/postgres,rol_app_lectura=r/postgres,admin_datos=arwdDxtm/postgres}"
+    },
+    {
+      "name": "relation:v_detalle_pedido_producto",
+      "owner": "10",
+      "acl": "{postgres=arwdDxtm/postgres,rol_app_lectura=r/postgres,admin_datos=arwdDxtm/postgres}"
+    },
+    {
+      "name": "relation:v_pedido_cliente",
+      "owner": "10",
+      "acl": "{postgres=arwdDxtm/postgres,rol_app_lectura=r/postgres,admin_datos=arwdDxtm/postgres}"
+    },
+    {
+      "name": "relation:v_reporte_ventas_cliente",
+      "owner": "10",
+      "acl": "{postgres=arwdDxtm/postgres,rol_reportes=r/postgres,admin_datos=arwdDxtm/postgres}"
+    },
+    {
+      "name": "relation:v_usuario_publico",
+      "owner": "10",
+      "acl": "{postgres=arwdDxtm/postgres,rol_reportes=r/postgres,admin_datos=arwdDxtm/postgres}"
+    },
+    {
+      "name": "schema:public",
+      "owner": "6171",
+      "acl": "{pg_database_owner=UC/pg_database_owner,rol_app_lectura=U/pg_database_owner,rol_app_escritura=U/pg_database_owner,rol_soporte=U/pg_database_owner,rol_reportes=U/pg_database_owner,rol_auditoria=U/pg_database_owner,app_web=U/pg_database_owner,admin_datos=UC/pg_database_owner}"
+    }
+  ],
+  "columns": [
+    {
+      "attnum": 1,
+      "attname": "id",
+      "type": "bigint",
+      "attnotnull": true,
+      "attidentity": "a",
+      "default_expr": null
+    },
+    {
+      "attnum": 2,
+      "attname": "nombre",
+      "type": "character varying(80)",
+      "attnotnull": true,
+      "attidentity": "",
+      "default_expr": null
+    },
+    {
+      "attnum": 3,
+      "attname": "apellido",
+      "type": "character varying(80)",
+      "attnotnull": true,
+      "attidentity": "",
+      "default_expr": null
+    },
+    {
+      "attnum": 4,
+      "attname": "mail",
+      "type": "character varying(120)",
+      "attnotnull": true,
+      "attidentity": "",
+      "default_expr": null
+    },
+    {
+      "attnum": 5,
+      "attname": "celular",
+      "type": "character varying(30)",
+      "attnotnull": false,
+      "attidentity": "",
+      "default_expr": null
+    },
+    {
+      "attnum": 6,
+      "attname": "contrasena",
+      "type": "character varying(255)",
+      "attnotnull": true,
+      "attidentity": "",
+      "default_expr": null
+    },
+    {
+      "attnum": 7,
+      "attname": "rol",
+      "type": "rol_usuario",
+      "attnotnull": true,
+      "attidentity": "",
+      "default_expr": "'USUARIO'::rol_usuario"
+    },
+    {
+      "attnum": 8,
+      "attname": "eliminado",
+      "type": "boolean",
+      "attnotnull": true,
+      "attidentity": "",
+      "default_expr": "false"
+    },
+    {
+      "attnum": 9,
+      "attname": "created_at",
+      "type": "timestamp with time zone",
+      "attnotnull": true,
+      "attidentity": "",
+      "default_expr": "now()"
+    }
+  ],
+  "constraints": [
+    {
+      "conname": "chk_usuario_apellido_no_vacio",
+      "contype": "c",
+      "convalidated": true,
+      "definition": "CHECK ((TRIM(BOTH FROM apellido) <> ''::text))"
+    },
+    {
+      "conname": "chk_usuario_contrasena_no_vacia",
+      "contype": "c",
+      "convalidated": true,
+      "definition": "CHECK ((TRIM(BOTH FROM contrasena) <> ''::text))"
+    },
+    {
+      "conname": "chk_usuario_mail_no_vacio",
+      "contype": "c",
+      "convalidated": true,
+      "definition": "CHECK ((TRIM(BOTH FROM mail) <> ''::text))"
+    },
+    {
+      "conname": "chk_usuario_nombre_no_vacio",
+      "contype": "c",
+      "convalidated": true,
+      "definition": "CHECK ((TRIM(BOTH FROM nombre) <> ''::text))"
+    },
+    {
+      "conname": "usuario_mail_key",
+      "contype": "u",
+      "convalidated": true,
+      "definition": "UNIQUE (mail)"
+    },
+    {
+      "conname": "usuario_pkey",
+      "contype": "p",
+      "convalidated": true,
+      "definition": "PRIMARY KEY (id)"
+    }
+  ],
+  "guards": {
+    "event_triggers": 0,
+    "triggers": 0,
+    "rules": 0,
+    "inheritance": 0,
+    "rls": false
+  },
+  "roles": [
+    "ADMIN",
+    "VENDEDOR",
+    "USUARIO"
+  ]
+}
+RESULTADO
+{
+  "start": "2026-10-17T23:37:49.242213-03:00",
+  "finish": "2026-10-17T23:37:49.670480-03:00",
+  "invocations": 1,
+  "psql_exit": 0,
+  "post_exit": 0,
+  "checks": {
+    "post_read_only": true,
+    "fixtures_and_objects_absent": true,
+    "counts_unchanged": true,
+    "sequences_unchanged": true,
+    "acls_unchanged": true,
+    "metadata_unchanged": true,
+    "rollback_in_output": true,
+    "files_unchanged": true
+  }
+}

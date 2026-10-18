@@ -261,6 +261,10 @@ desde los sintéticos (seudonimización de laboratorio, no anonimización irreve
 legible (284 entradas TOC) no equivale a restauración probada. Salida íntegra en
 `TP7_Administracion_y_Seguridad/docs/evidencias/salida_psql_usuario_anon_20261015_091628.txt`; informe en
 `TP7_Administracion_y_Seguridad/docs/verificacion_equivalencia.md`.
+Un ensayo adicional del 2026-10-17 (`TP7_Administracion_y_Seguridad/sql/usuario_anon_cobertura.sql`)
+cubrió los casos que esa muestra no probaba: 8 usuarios, tres roles, tres meses y dos eliminados
+contados dentro de su grupo; diferencias 0/0, totales 8/8 y `ROLLBACK` (informe D, §6; evidencia en
+`TP7_Administracion_y_Seguridad/docs/evidencias/usuario_anon_cobertura_20261017_233704.md`).
 
 **Límites y pendientes.** Restauración de respaldos no probada; concurrencia y costos no medidos.
 D y E están publicadas (`fdd6116`); la [BITACORA.md](BITACORA.md) raíz es la versión consolidada y la copia

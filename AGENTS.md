@@ -10,6 +10,7 @@ Proyecto académico PostgreSQL: FoodStore.
 - [TP4](TP4_Reportes_Analiticos/DUIA_TP4.md): reportes analíticos y lectura crítica.
 - [TP5](TP5_Indices_Vistas/README.md): índices, vistas y vista materializada.
 - [TP6](TP6_FNBC_Desnormalizacion/README.md): FNBC y desnormalización controlada.
+- [TP7](TP7_Administracion_y_Seguridad/README.md): administración y seguridad.
 
 Consultar el [README general](README.md), el [informe integrador](Informe_General.md) y el [protocolo de seguridad](protocolo_seguridad.md).
 
@@ -21,7 +22,7 @@ Cada modificación requiere autorización explícita del grupo y debe limitarse 
 
 No ejecutar SQL, conectarse a PostgreSQL, crear, restaurar, borrar o recrear bases, realizar git add, commit o push sin autorización específica para esas operaciones. Aprobar el contenido de un script o su guardado no autoriza ejecutarlo.
 
-No ejecutar pruebas sobre foodstore_dev. No borrar ni recrear automáticamente una copia de trabajo ante un error.
+No ejecutar pruebas sobre foodstore_dev, salvo la excepción específica de TP7 descrita en el [protocolo de seguridad](protocolo_seguridad.md#alcance-particular-del-tp7-administración-y-seguridad), con autorización separada por operación y sus requisitos de respaldo y evidencias. Esta remisión no autoriza ejecuciones. No borrar ni recrear automáticamente una copia de trabajo ante un error.
 
 Antes de una operación autorizada, revisar su origen, destino, requisitos y respaldo. Ante conflictos de nombres u objetos, detenerse e informar; no sobrescribir ni reutilizar silenciosamente.
 

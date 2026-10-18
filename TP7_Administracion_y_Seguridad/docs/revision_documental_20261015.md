@@ -29,8 +29,9 @@ Líneas modificadas (desde 1): 24.
 |---|---|---|
 | U+00C3 U+00B3 | ó (`U+00F3`) | 3 |
 
-Original [log_auditoria_prueba.txt](log_auditoria_prueba.txt), SHA-256 antes y después (idénticos):
+Original [log_auditoria_prueba.txt](log_auditoria_prueba.txt), SHA-256 de la representación local CRLF antes y después (idénticos):
 `c750282475e230db9758f35fbd6ba95a2b29d9d176800d026d467ca70aab4693`.
+SHA-256 del blob Git LF: `cf683562c873b5469e3ccd1a8929f67c17bc6836086d28ea1707d60d6002ec6a`.
 
 ### `log_simulacro_anonimizado`
 
@@ -45,8 +46,9 @@ Líneas modificadas (desde 1): 13, 28, 31, 43, 60, 68, 85, 93, 110, 118, 142, 14
 | U+00C3 U+00B3 | ó (`U+00F3`) | 14 |
 | U+00C3 U+00BA | ú (`U+00FA`) | 2 |
 
-Original [log_simulacro_anonimizado.txt](log_simulacro_anonimizado.txt), SHA-256 antes y después (idénticos):
+Original [log_simulacro_anonimizado.txt](log_simulacro_anonimizado.txt), SHA-256 de la representación local CRLF antes y después (idénticos):
 `4c6025e0ffc06aaef82f3a7f8d5971d6c6bfec479543e2a2c7206fae10ff9541`.
+SHA-256 del blob Git LF: `96de603c6cb5d89a822dffd576756a8e2c081267da06a82c7aff1061b742dee4`.
 
 No se detectaron secuencias ambiguas entre las sustituciones enumeradas: todas admiten
 inversión UTF-8 estricta y corresponden a los fragmentos visibles afectados. No se reconstruyó
@@ -54,6 +56,14 @@ texto faltante. Se conservaron las líneas correctas y todo contenido fuera de e
 incluidos fechas, usuarios, direcciones, sentencias, orden y resultados. Las sentencias citadas
 en el log solo reciben corrección de representación; ningún script ejecutable se editó.
 Los archivos siguen teniendo 24 y 209 líneas, respectivamente.
+
+### Aclaración de huellas y saltos de línea (2026-10-17)
+
+Se recalcularon ambas huellas de cada original a partir de los blobs LF de Git en
+`6bb6c09` y su representación CRLF, construida en memoria sustituyendo LF por CRLF.
+Las diferencias de SHA-256 corresponden exclusivamente a los saltos de línea; no
+implican cambios del contenido restante. Las huellas CRLF son las publicadas en la
+revisión histórica. No se modificaron los originales ni las copias legibles.
 
 ## Procedencia de prompts y limitaciones
 

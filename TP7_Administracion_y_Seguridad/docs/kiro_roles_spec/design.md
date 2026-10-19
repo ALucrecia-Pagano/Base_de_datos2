@@ -158,7 +158,7 @@ GRANT UPDATE (eliminado)
     ON TABLE usuario TO rol_soporte;
 ```
 
-`contrasena` (= `password_hash` del enunciado) queda excluida. Intento de `SELECT contrasena FROM usuario` bajo `rol_soporte` → `ERROR: permission denied for column contrasena`.
+`contrasena` (= `password_hash` del enunciado) queda excluida. Intento de `SELECT contrasena FROM usuario` bajo `rol_soporte` → denegación por privilegios insuficientes (`SQLSTATE 42501`); el texto puede variar según la operación y el idioma.
 
 ### § 6 — Secuencias (RF-04)
 
@@ -450,7 +450,7 @@ ORDER BY column_name;
 
 -- 7.3 Confirmar que rol_soporte no puede leer contrasena (debe retornar ERROR)
 SET ROLE rol_soporte;
-SELECT contrasena FROM usuario LIMIT 1;  -- esperado: ERROR permission denied for column contrasena
+SELECT contrasena FROM usuario LIMIT 1;  -- esperado: privilegios insuficientes (SQLSTATE 42501); texto segun operacion e idioma
 RESET ROLE;
 
 -- 7.4 Membresías de app_web

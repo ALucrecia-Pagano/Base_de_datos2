@@ -135,7 +135,7 @@ GRANT UPDATE (eliminado)
     ON TABLE usuario TO rol_soporte;
 ```
 
-La columna `contrasena` (= `password_hash` del enunciado) queda **excluida de todos los permisos de `rol_soporte`**. Un `SELECT contrasena FROM usuario` bajo ese rol debe retornar `ERROR: permission denied for column contrasena`.
+La columna `contrasena` (= `password_hash` del enunciado) queda **excluida de todos los permisos de `rol_soporte`**. Un `SELECT contrasena FROM usuario` bajo ese rol debe denegarse por privilegios insuficientes (`SQLSTATE 42501`); el texto del error puede variar según la operación y el idioma.
 
 Ningún otro rol de grupo recibe acceso directo a `usuario.contrasena`. El único rol que puede leerla o modificarla es `admin_datos`.
 

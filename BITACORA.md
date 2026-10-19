@@ -2,7 +2,7 @@
 
 Proyecto: FoodStore — Base de Datos II (UTN FRM). Alcance: `TP7_Administracion_y_Seguridad/`.
 
-> **Estado de entrega:** las Partes A–E, sus correcciones verificadas y los 22 prompts de trabajo están publicados en `39e4c6e`. La usuaria responsable revisó los resultados y realizó la publicación. La actualización de la sección TP7 del README está asignada al compañero.
+> **Estado de entrega:** las Partes A–E, sus correcciones verificadas y los 22 prompts de trabajo están publicados en `39e4c6e`. La usuaria responsable revisó los resultados y realizó la publicación. El aporte del README quedó integrado en `6bb6c09`; el cierre documental en `de9a87d`, la ampliación D en `4b920f2` y la precisión de meses en `82f1baa`.
 
 **Versión consolidada exigida por el PDF (Parte E).** La bitácora de trabajo vive como antecedente en
 `TP7_Administracion_y_Seguridad/BITACORA.md` (registros intactos, sin borrar); **esta copia en la raíz
@@ -102,9 +102,9 @@ Avance por etapas (verificado con `git log --oneline -- TP7_Administracion_y_Seg
 - `0060cfd` TP7 Parte C: simulacro validado, análisis crítico y documentación.
 - `fdd6116` TP7 Partes D y E: equivalencia verificada y bitácora consolidada (D/E publicadas).
 
-La corrección de seguridad se publicó en `88675cc`, el cierre de auditoría en `2b80fcf` y la recuperación de los prompts de trabajo y el cierre documental en `39e4c6e`.
+La corrección de seguridad se publicó en `88675cc`, el cierre de auditoría en `2b80fcf` y la recuperación de los prompts de trabajo y el cierre documental en `39e4c6e`. El cierre documental posterior (`97bf663`) se integró mediante `de9a87d`; la ampliación D (`413db6a`), mediante `4b920f2`; la precisión de los cuatro meses totales se publicó en `82f1baa`.
 
-**Tarea documental asignada:** el compañero actualiza únicamente la sección TP7 del README. El equipo revisará su diff antes de integrarlo.
+**Asignación documental histórica:** el compañero debía actualizar únicamente la sección TP7 del README para revisión del equipo; su integración posterior se registra en la nota del 2026-10-17.
 
 ## Aclaración posterior de publicación y procedencia (2026-10-15)
 

@@ -255,7 +255,7 @@ Antecedentes históricos sin filtros lógicos:
 
 [Guía de lectura y matriz de la consigna](TP7_Administracion_y_Seguridad/README.md)
 
-Trabajo sobre la instancia propia `foodstore_dev` (PostgreSQL 17.11). Estado real y entregables:
+Las evidencias de A/B corresponden al equipo de Mateo (PostgreSQL 17.10); la preparación local de C/D y las correcciones locales, a PostgreSQL 17.11, en instancias llamadas `foodstore_dev` ([procedencia](TP7_Administracion_y_Seguridad/docs/plan_preparacion_local.md#0-procedencia-no-son-evidencias-contradictorias)). Esta distinción histórica no verifica el estado actual del servidor. Estado documentado y entregables:
 
 - **Parte A** (roles y mínimo privilegio): `sql/roles.sql` con especificación Kiro y verificación de permisos. Terminada.
 - **Parte B** (auditoría nativa): parámetros activados, secuencia de prueba con `ROLLBACK`, fragmento de log e [informe de auditoría](TP7_Administracion_y_Seguridad/docs/informe_auditoria.md). Terminada.

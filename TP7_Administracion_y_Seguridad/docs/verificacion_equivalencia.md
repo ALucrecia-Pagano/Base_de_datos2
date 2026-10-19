@@ -133,6 +133,10 @@ grupos con más de un usuario. La muestra original y su evidencia se conservan s
   [salida psql íntegra](evidencias/salida_psql_usuario_anon_cobertura_20261017_233704.txt),
   con respaldo previo, controles previos y posteriores.
 
+**Versiones de las huellas:** las SHA-256 de la [salida del ensayo](evidencias/salida_psql_usuario_anon_cobertura_20261017_233704.txt) identifican el script ejecutado y el plan revisado en ese momento, no sus versiones publicadas posteriores.
+El SQL solo recibió después un cambio de comentario de cabecera; reponer en memoria su primera línea original (`-- TP7-D: propuesta adicional, NO ejecutada. Requiere autorizacion y respaldo previo.`) reproduce la huella LF registrada, sin cambiar sentencias.
+El plan recibió también actualizaciones documentales de resultados. Las huellas y evidencias históricas se conservan intactas.
+
 ### Fixtures agregados dentro de la transacción
 
 Seis usuarios sintéticos (`lab_d_cobertura_N@example.invalid`, IDs explícitos -770701 a

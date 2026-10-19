@@ -187,7 +187,7 @@ GRANT UPDATE (eliminado)
 
 -- Verificacion esperada: bajo rol_soporte,
 --   SELECT contrasena FROM usuario LIMIT 1;
--- debe fallar con ERROR: permission denied for column contrasena.
+-- debe fallar por privilegios insuficientes (SQLSTATE 42501); texto segun operacion e idioma.
 
 -- ============================================================================
 -- SECCIÓN 6 — Permisos de secuencia (requirements.md RF-04 + matriz 4.4)

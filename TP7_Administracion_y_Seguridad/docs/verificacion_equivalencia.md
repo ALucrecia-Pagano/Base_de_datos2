@@ -6,7 +6,7 @@
 > - **Muestra original** (2026-10-15, ~09:16 UTC-3): 2 usuarios, §§1–4. Salida íntegra en
 >   `docs/evidencias/salida_psql_usuario_anon_20261015_091628.txt`.
 > - **Ensayo adicional de cobertura** (2026-10-17, 23:37 UTC-3): 8 usuarios, con tres roles,
->   tres meses y eliminados, §6.
+>   cuatro meses en total (tres aportados por los fixtures) y dos eliminados, §6.
 
 ## 1. Transformación
 
@@ -176,6 +176,6 @@ ACL originales sin cambios.
 
 ### Alcance
 
-La equivalencia queda demostrada para estas 8 filas, 5 grupos, tres roles, tres meses y
+La equivalencia queda demostrada para estas 8 filas, 5 grupos, tres roles, cuatro meses en total (tres aportados por los fixtures) y
 dos eliminados que se cuentan dentro de su grupo. Los fixtures son sintéticos y la
 transformación sigue siendo seudonimización de laboratorio (§1).

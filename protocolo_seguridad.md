@@ -164,7 +164,7 @@ Lo anterior se mantiene íntegro; este apartado solo precisa su aplicación al T
   instalada**; equivalencia verificada sobre 2 usuarios, 2 roles y un mes (sin eliminados en la muestra ni
   múltiples meses); salida íntegra en `TP7_Administracion_y_Seguridad/docs/evidencias/` e informe en
   `TP7_Administracion_y_Seguridad/docs/verificacion_equivalencia.md`. Un ensayo adicional del
-  2026-10-17 amplió la cobertura a 8 usuarios, tres roles, tres meses y dos eliminados, con respaldo
+  2026-10-17 amplió la cobertura a 8 usuarios, tres roles, cuatro meses en total (tres aportados por los fixtures) y dos eliminados, con respaldo
   previo, una única pasada con `ROLLBACK` y verificación posterior en conexión nueva (informe D, §6).
 - **E consolidada y publicada:** [BITACORA.md](BITACORA.md) en la raíz (versión consolidada exigida por
   el PDF, commit `fdd6116` con D/E); la copia de trabajo `TP7_Administracion_y_Seguridad/BITACORA.md` se

@@ -23,14 +23,14 @@ constituyen una verificación actual de PostgreSQL ni autorizan nuevas ejecucion
 | C.6 | Decidir medidas mediante revisión humana | [Informe C](docs/informe_incidente.md) | Decisión humana y distinción entre laboratorio y escenario real |
 | D.1 | Transformar datos para el ensayo | [usuario_anon.sql](sql/usuario_anon.sql) y [usuario_anon_cobertura.sql](sql/usuario_anon_cobertura.sql) | [Informe D](docs/verificacion_equivalencia.md): transformación y límites de seudonimización |
 | D.2 | Formular consultas equivalentes | [usuario_anon.sql](sql/usuario_anon.sql) y [usuario_anon_cobertura.sql](sql/usuario_anon_cobertura.sql) | Agregaciones por rol y mes de alta, con igual población |
-| D.3 | Comparar resultados | [Informe D](docs/verificacion_equivalencia.md) §4 y §6 | [Salida del 15/10](docs/evidencias/salida_psql_usuario_anon_20261015_091628.txt) (2 usuarios) y [ensayo adicional del 17/10](docs/evidencias/usuario_anon_cobertura_20261017_233704.md) (8 usuarios, 3 roles, 3 meses, eliminados): `EXCEPT ALL` bidireccional |
+| D.3 | Comparar resultados | [Informe D](docs/verificacion_equivalencia.md) §4 y §6 | [Salida del 15/10](docs/evidencias/salida_psql_usuario_anon_20261015_091628.txt) (2 usuarios) y [ensayo adicional del 17/10](docs/evidencias/usuario_anon_cobertura_20261017_233704.md) (8 usuarios, 3 roles, 4 meses en total (3 aportados por los fixtures), 2 eliminados): `EXCEPT ALL` bidireccional |
 | D.4 | Identificar datos que no deben enviarse a IA | [Informe D](docs/verificacion_equivalencia.md) | Criterios para datos de usuario y cliente |
 | E.1 | Consolidar interacciones en tres columnas | [Bitácora raíz](../BITACORA.md) | Prompts, respuestas y validación humana; [fuentes literales propias](docs/registro_prompts_opencode_codex_20261015.md) |
 | E.2 | Documentar un error significativo y su corrección | [Bitácora raíz](../BITACORA.md) | Error `FULL JOIN` y corrección a `LEFT JOIN` |
 | E.3 | Conservar el avance en Git | [Bitácora raíz](../BITACORA.md) | Historial por etapas y commits identificados; D/E comparten commit |
 
 La muestra original de D (dos usuarios, dos roles y un mes de alta, sin eliminados) se
-complementa con un ensayo adicional de cobertura: ocho usuarios, tres roles, tres meses
+complementa con un ensayo adicional de cobertura: ocho usuarios, tres roles, cuatro meses en total (tres aportados por los fixtures)
 y dos eliminados contados dentro de su grupo. Diseño en el [plan de ampliación](docs/plan_ampliacion_d.md).
 
 La [bitácora de trabajo](BITACORA.md), el [plan de preparación](docs/plan_preparacion_local.md),

@@ -11,6 +11,8 @@ aquí con el prefijo `TP7_Administracion_y_Seguridad/`.
 
 **Registro de prompts de trabajo para OpenCode y Codex:** se incorporaron [22 textos literales](TP7_Administracion_y_Seguridad/docs/registro_prompts_opencode_codex_20261015.md), recuperados de la conversación «Revisar avances del TP7», con identificadores de mensaje y relación con los resultados aportados por la usuaria. Cubren las Partes C, D, E y sus correcciones; no incorporan sesiones de otros integrantes. Las filas enlazadas conservan sus resúmenes y remiten a la fuente literal de cada pedido.
 
+**Confirmación posterior de procedencia:** la usuaria responsable confirmó que las Partes A/B se realizaron con OpenCode y que la especificación de roles se elaboró con Kiro. Esta atribución se registra a partir de su confirmación; no constituye una transcripción recuperada ni una exportación de aquellas sesiones.
+
 Convención de procedencia: las filas marcadas **[transcripción adaptada del registro histórico]**
 reproducen el prompt a partir del registro de TP7 con adaptaciones (p. ej. prefijos de rutas corregidos),
 no como cita literal del prompt original; las marcadas **[resumen reconstruido]** resumen la interacción

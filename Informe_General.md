@@ -236,7 +236,7 @@ Antecedentes históricos sin filtros lógicos:
 
 
 
-Las evidencias de A/B corresponden al equipo de Mateo (PostgreSQL 17.10); la preparación local de C/D y las correcciones locales, a PostgreSQL 17.11, en instancias llamadas `foodstore_dev` ([procedencia](TP7_Administracion_y_Seguridad/docs/plan_preparacion_local.md#0-procedencia-no-son-evidencias-contradictorias)). Se documentan autorización por paso, respaldo custom previo y restauración de auditoría; no es una verificación actual del servidor.
+Las evidencias de A/B corresponden al entorno de Mateo (PostgreSQL 17.10); la preparación local de C/D y las correcciones locales, a PostgreSQL 17.11, en instancias llamadas `foodstore_dev` ([procedencia](TP7_Administracion_y_Seguridad/docs/plan_preparacion_local.md#0-procedencia-no-son-evidencias-contradictorias)). Se documentan autorización por paso, respaldo custom previo y restauración de auditoría; no es una verificación actual del servidor.
 
 **Parte A — Roles y mínimo privilegio (terminada).** Especificación Kiro (requirements + design, RF-01 a RF-07) y `TP7_Administracion_y_Seguridad/sql/roles.sql`: 5 roles de grupo NOLOGIN + 2 login (`app_web` hereda lectura/escritura; `admin_datos` con permisos directos, sin `SUPERUSER`), columna `usuario.contrasena` excluida de `rol_soporte`, `ALTER DEFAULT PRIVILEGES` para tablas/secuencias futuras. Verificación "ni más, ni menos" archivada; propuestas amplias solicitadas deliberadamente a la IA (`GRANT ALL`) rechazadas por mínimo privilegio y registradas, sin presentarlas como errores espontáneos. Estado vigente de roles y permisos capturado el 2026-10-15 ([`\du` y `role_table_grants`](TP7_Administracion_y_Seguridad/docs/evidencias/roles_vigentes_20261015.md), posterior a la corrección).
 

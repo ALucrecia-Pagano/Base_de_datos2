@@ -1,0 +1,3 @@
+﻿"source","destination","rto_seconds","rpo_proxy_seconds","dump_bytes","validation"
+"foodstore_dev","foodstore_restore_test","2,9817063999999998","0,7817533","46877","PASS"
+"foodstore_tp3_carga","foodstore_restore_test","8,1943358","272,6074609","7321779","PASS"

@@ -1,0 +1,20 @@
+[
+  {
+    "database": "foodstore_dev",
+    "started": "2026-10-24T00:43:22.6627102-03:00",
+    "ended": "2026-10-24T00:43:24.2372595-03:00",
+    "exit_code": 0
+  },
+  {
+    "database": "foodstore_tp3_carga",
+    "started": "2026-10-24T00:43:24.2441207-03:00",
+    "ended": "2026-10-24T00:43:25.6249080-03:00",
+    "exit_code": 0
+  },
+  {
+    "database": "foodstore_restore_test",
+    "started": "2026-10-24T00:43:25.6252767-03:00",
+    "ended": "2026-10-24T00:43:26.9545611-03:00",
+    "exit_code": 0
+  }
+]

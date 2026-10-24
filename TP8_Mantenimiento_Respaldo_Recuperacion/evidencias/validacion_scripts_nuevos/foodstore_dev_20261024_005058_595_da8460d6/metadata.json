@@ -1,0 +1,28 @@
+{
+  "status": "PASS",
+  "source": "foodstore_dev",
+  "host": "localhost",
+  "port": 5432,
+  "started_at": "2026-10-24T00:50:58.6441409-03:00",
+  "baseline": {
+    "counts": {
+      "categoria": 2,
+      "cliente": 3,
+      "producto": 3,
+      "pedido": 5,
+      "detalle_pedido": 7
+    },
+    "invalid": {
+      "producto_precio_negativo": 0,
+      "producto_stock_negativo": 0,
+      "detalle_cantidad_no_positiva": 0,
+      "detalle_precio_negativo": 0
+    }
+  },
+  "dump_path": "work\\validacion_real_scripts\\foodstore_dev_20261024_005058_595_da8460d6\\foodstore_dev.dump",
+  "dump_sha256": "A94DA81F03DBC85115BB656F4957DB7C85BD8846B5826275BE3BCF3DDF4A2A6B",
+  "dump_bytes": 46877,
+  "error": null,
+  "backup_start": "2026-10-24T00:50:58.9202195-03:00",
+  "finished_at": "2026-10-24T00:50:59.5814522-03:00"
+}

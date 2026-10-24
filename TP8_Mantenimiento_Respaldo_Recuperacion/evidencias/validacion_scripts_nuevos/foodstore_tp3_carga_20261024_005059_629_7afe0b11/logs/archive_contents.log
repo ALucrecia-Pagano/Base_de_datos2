@@ -1,0 +1,98 @@
+;
+; Archive created at 2026-10-24 00:51:00
+;     dbname: foodstore_tp3_carga
+;     TOC Entries: 87
+;     Compression: gzip
+;     Dump Version: 1.16-0
+;     Format: CUSTOM
+;     Integer: 4 bytes
+;     Offset: 8 bytes
+;     Dumped from database version: 17.11
+;     Dumped by pg_dump version: 17.11
+;
+;
+; Selected TOC Entries:
+;
+5039; 0 0 ACL - SCHEMA public pg_database_owner
+883; 1247 24586 TYPE public estado_pedido_enum postgres
+880; 1247 24578 TYPE public forma_pago_enum postgres
+901; 1247 49285 TYPE public rol_usuario postgres
+236; 1259 24596 TABLE public categoria postgres
+5040; 0 0 COMMENT public TABLE categoria postgres
+5041; 0 0 COMMENT public COLUMN categoria.id postgres
+5042; 0 0 COMMENT public COLUMN categoria.nombre postgres
+5043; 0 0 COMMENT public COLUMN categoria.activo postgres
+235; 1259 24595 SEQUENCE public categoria_id_seq postgres
+238; 1259 24609 TABLE public cliente postgres
+5044; 0 0 COMMENT public TABLE cliente postgres
+5045; 0 0 COMMENT public COLUMN cliente.email postgres
+237; 1259 24608 SEQUENCE public cliente_id_seq postgres
+243; 1259 24653 TABLE public detalle_pedido postgres
+5046; 0 0 COMMENT public TABLE detalle_pedido postgres
+5047; 0 0 COMMENT public COLUMN detalle_pedido.cantidad postgres
+5048; 0 0 COMMENT public COLUMN detalle_pedido.precio_unitario postgres
+5049; 0 0 COMMENT public COLUMN detalle_pedido.subtotal postgres
+242; 1259 24639 TABLE public pedido postgres
+5050; 0 0 COMMENT public TABLE pedido postgres
+5051; 0 0 COMMENT public COLUMN pedido.id_cliente postgres
+5052; 0 0 COMMENT public COLUMN pedido.forma_pago postgres
+240; 1259 24620 TABLE public producto postgres
+5053; 0 0 COMMENT public TABLE producto postgres
+5054; 0 0 COMMENT public COLUMN producto.precio_lista postgres
+5055; 0 0 COMMENT public COLUMN producto.stock postgres
+5056; 0 0 COMMENT public COLUMN producto.activo postgres
+250; 1259 49325 MATERIALIZED VIEW public mv_resumen_ventas_categoria_mes postgres
+5057; 0 0 ACL public TABLE mv_resumen_ventas_categoria_mes postgres
+241; 1259 24638 SEQUENCE public pedido_id_seq postgres
+239; 1259 24619 SEQUENCE public producto_id_seq postgres
+245; 1259 49292 TABLE public usuario postgres
+5058; 0 0 COMMENT public TABLE usuario postgres
+5059; 0 0 COMMENT public COLUMN usuario.contrasena postgres
+244; 1259 49291 SEQUENCE public usuario_id_seq postgres
+248; 1259 49317 VIEW public v_catalogo_productos postgres
+5060; 0 0 COMMENT public VIEW v_catalogo_productos postgres
+5061; 0 0 ACL public TABLE v_catalogo_productos postgres
+249; 1259 49321 VIEW public v_detalle_pedido_producto postgres
+5062; 0 0 COMMENT public VIEW v_detalle_pedido_producto postgres
+5063; 0 0 ACL public TABLE v_detalle_pedido_producto postgres
+251; 1259 49352 VIEW public v_pedido_cliente postgres
+5064; 0 0 COMMENT public VIEW v_pedido_cliente postgres
+5065; 0 0 ACL public TABLE v_pedido_cliente postgres
+247; 1259 49312 VIEW public v_reporte_ventas_cliente postgres
+5066; 0 0 COMMENT public VIEW v_reporte_ventas_cliente postgres
+5067; 0 0 ACL public TABLE v_reporte_ventas_cliente postgres
+246; 1259 49308 VIEW public v_usuario_publico postgres
+5068; 0 0 COMMENT public VIEW v_usuario_publico postgres
+5069; 0 0 ACL public TABLE v_usuario_publico postgres
+5022; 0 24596 TABLE DATA public categoria postgres
+5024; 0 24609 TABLE DATA public cliente postgres
+5029; 0 24653 TABLE DATA public detalle_pedido postgres
+5028; 0 24639 TABLE DATA public pedido postgres
+5026; 0 24620 TABLE DATA public producto postgres
+5031; 0 49292 TABLE DATA public usuario postgres
+5070; 0 0 SEQUENCE SET public categoria_id_seq postgres
+5071; 0 0 SEQUENCE SET public cliente_id_seq postgres
+5072; 0 0 SEQUENCE SET public pedido_id_seq postgres
+5073; 0 0 SEQUENCE SET public producto_id_seq postgres
+5074; 0 0 SEQUENCE SET public usuario_id_seq postgres
+4842; 2606 24607 CONSTRAINT public categoria categoria_nombre_key postgres
+4844; 2606 24605 CONSTRAINT public categoria categoria_pkey postgres
+4846; 2606 24618 CONSTRAINT public cliente cliente_email_key postgres
+4848; 2606 24616 CONSTRAINT public cliente cliente_pkey postgres
+4857; 2606 24647 CONSTRAINT public pedido pedido_pkey postgres
+4860; 2606 24660 CONSTRAINT public detalle_pedido pk_detalle_pedido postgres
+4853; 2606 24632 CONSTRAINT public producto producto_pkey postgres
+4862; 2606 49307 CONSTRAINT public usuario usuario_mail_key postgres
+4864; 2606 49305 CONSTRAINT public usuario usuario_pkey postgres
+4858; 1259 24673 INDEX public idx_detalle_pedido_producto_id postgres
+4865; 1259 49337 INDEX public idx_mv_resumen_ventas_categoria_mes postgres
+4854; 1259 32891 INDEX public idx_pedido_estado_fecha postgres
+4855; 1259 24671 INDEX public idx_pedidos_cliente_id postgres
+4849; 1259 57701 INDEX public idx_producto_categoria_precio postgres
+4850; 1259 57700 INDEX public idx_producto_categoria_precio_activo postgres
+4851; 1259 24672 INDEX public idx_productos_categoria_activo postgres
+4868; 2606 24661 FK CONSTRAINT public detalle_pedido fk_detalle_pedido_pedido postgres
+4869; 2606 24666 FK CONSTRAINT public detalle_pedido fk_detalle_pedido_producto postgres
+4867; 2606 24648 FK CONSTRAINT public pedido fk_pedido_cliente postgres
+4866; 2606 24633 FK CONSTRAINT public producto fk_producto_categoria postgres
+5032; 0 49325 MATERIALIZED VIEW DATA public mv_resumen_ventas_categoria_mes postgres

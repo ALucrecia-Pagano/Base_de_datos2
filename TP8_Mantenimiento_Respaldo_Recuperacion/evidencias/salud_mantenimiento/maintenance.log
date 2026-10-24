@@ -1,0 +1,31 @@
+Pager usage is off.
+DO
+SET
+SET
+          base          |            inicio            
+------------------------+------------------------------
+ foodstore_restore_test | 2026-10-24 00:44:37.76655-03
+(1 row)
+
+             relname             | reltuples | columnas_con_estadisticas 
+---------------------------------+-----------+---------------------------
+ categoria                       |         2 |                         0
+ mv_resumen_ventas_categoria_mes |        26 |                         0
+ usuario                         |         3 |                         0
+(3 rows)
+
+Conteos previos: categoria=2 usuario=3 vista_materializada=26
+ANALYZE
+VALIDACION: conteos exactos preservados.
+             relname             | reltuples | columnas_con_estadisticas 
+---------------------------------+-----------+---------------------------
+ categoria                       |         2 |                         5
+ mv_resumen_ventas_categoria_mes |        26 |                         6
+ usuario                         |         3 |                         9
+(3 rows)
+
+          base          |              fin              
+------------------------+-------------------------------
+ foodstore_restore_test | 2026-10-24 00:44:37.804874-03
+(1 row)
+

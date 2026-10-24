@@ -1,0 +1,44 @@
+﻿{
+    "source":  "foodstore_dev",
+    "destination":  "foodstore_restore_test",
+    "backup_start":  "2026-10-24T00:32:38.0943813-03:00",
+    "backup_end":  "2026-10-24T00:32:38.7103130-03:00",
+    "drill_start":  "2026-10-24T00:32:38.8761346-03:00",
+    "validation_end":  "2026-10-24T00:32:41.8626890-03:00",
+    "backup_seconds":  0.6159317,
+    "rto_seconds":  2.9817063999999998,
+    "rpo_proxy_seconds":  0.7817533,
+    "rpo_note":  "Age since backup start at drill start; conservative freshness proxy, not a measured data loss or guaranteed production RPO",
+    "dump_bytes":  46877,
+    "validation":  "PASS",
+    "metrics":  {
+                    "counts":  {
+                                   "categoria":  2,
+                                   "cliente":  3,
+                                   "producto":  3,
+                                   "pedido":  5,
+                                   "detalle_pedido":  7,
+                                   "usuario":  2
+                               },
+                    "invalid":  {
+                                    "producto_precio_no_positivo":  0,
+                                    "producto_stock_negativo":  0,
+                                    "detalle_cantidad_no_positiva":  0,
+                                    "detalle_precio_no_positivo":  0,
+                                    "detalle_subtotal_incorrecto":  0,
+                                    "producto_categoria_huerfana":  0,
+                                    "pedido_cliente_huerfano":  0,
+                                    "detalle_pedido_huerfano":  0,
+                                    "detalle_producto_huerfano":  0
+                                },
+                    "precio_columns":  [
+                                           "precio_lista"
+                                       ],
+                    "objects":  {
+                                    "tables":  6,
+                                    "views":  5,
+                                    "constraints":  57,
+                                    "indexes":  13
+                                }
+                }
+}

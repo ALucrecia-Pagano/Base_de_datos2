@@ -1,0 +1,72 @@
+Pager usage is off.
+Null display is "(NULL)".
+BEGIN
+     base      |             fecha             |                                  motor                                   
+---------------+-------------------------------+--------------------------------------------------------------------------
+ foodstore_dev | 2026-10-24 00:43:22.835102-03 | PostgreSQL 17.11 on x86_64-windows, compiled by msvc-19.44.35228, 64-bit
+(1 row)
+
+     base      |  bytes  | tamano  
+---------------+---------+---------
+ foodstore_dev | 8959667 | 8750 kB
+(1 row)
+
+    datname    | numbackends | xact_commit | xact_rollback | blks_read | blks_hit | tup_returned | tup_fetched | tup_inserted | tup_updated | tup_deleted | deadlocks | stats_reset 
+---------------+-------------+-------------+---------------+-----------+----------+--------------+-------------+--------------+-------------+-------------+-----------+-------------
+ foodstore_dev |           1 |          71 |             1 |       693 |    20361 |        70761 |       12008 |            0 |           0 |           0 |         0 | (NULL)
+(1 row)
+
+ state  | conexiones 
+--------+------------
+ active |          1
+(1 row)
+
+ schemaname |             relname             | n_live_tup | n_dead_tup | n_mod_since_analyze | last_vacuum | last_autovacuum | last_analyze | last_autoanalyze | vacuum_count | autovacuum_count | analyze_count | autoanalyze_count 
+------------+---------------------------------+------------+------------+---------------------+-------------+-----------------+--------------+------------------+--------------+------------------+---------------+-------------------
+ public     | categoria                       |          0 |          0 |                   0 | (NULL)      | (NULL)          | (NULL)       | (NULL)           |            0 |                0 |             0 |                 0
+ public     | cliente                         |          0 |          0 |                   0 | (NULL)      | (NULL)          | (NULL)       | (NULL)           |            0 |                0 |             0 |                 0
+ public     | detalle_pedido                  |          0 |          0 |                   0 | (NULL)      | (NULL)          | (NULL)       | (NULL)           |            0 |                0 |             0 |                 0
+ public     | mv_resumen_ventas_categoria_mes |          0 |          0 |                   0 | (NULL)      | (NULL)          | (NULL)       | (NULL)           |            0 |                0 |             0 |                 0
+ public     | pedido                          |          0 |          0 |                   0 | (NULL)      | (NULL)          | (NULL)       | (NULL)           |            0 |                0 |             0 |                 0
+ public     | producto                        |          0 |          0 |                   0 | (NULL)      | (NULL)          | (NULL)       | (NULL)           |            0 |                0 |             0 |                 0
+ public     | usuario                         |          0 |          0 |                   0 | (NULL)      | (NULL)          | (NULL)       | (NULL)           |            0 |                0 |             0 |                 0
+(7 rows)
+
+ schemaname |             relname             | tamano_total | bytes 
+------------+---------------------------------+--------------+-------
+ public     | pedido                          | 48 kB        | 49152
+ public     | categoria                       | 48 kB        | 49152
+ public     | usuario                         | 48 kB        | 49152
+ public     | producto                        | 48 kB        | 49152
+ public     | cliente                         | 40 kB        | 40960
+ public     | mv_resumen_ventas_categoria_mes | 40 kB        | 40960
+ public     | detalle_pedido                  | 40 kB        | 40960
+(7 rows)
+
+ pid | usename | application_name | state | duracion | wait_event_type | wait_event 
+-----+---------+------------------+-------+----------+-----------------+------------
+(0 rows)
+
+              name               | setting |  unit  | source  
+---------------------------------+---------+--------+---------
+ autovacuum                      | on      | (NULL) | default
+ autovacuum_analyze_scale_factor | 0.1     | (NULL) | default
+ autovacuum_analyze_threshold    | 50      | (NULL) | default
+ autovacuum_max_workers          | 3       | (NULL) | default
+ autovacuum_naptime              | 60      | s      | default
+ autovacuum_vacuum_scale_factor  | 0.2     | (NULL) | default
+ autovacuum_vacuum_threshold     | 50      | (NULL) | default
+ track_counts                    | on      | (NULL) | default
+(8 rows)
+
+ esquema |     tabla      | opciones_particulares 
+---------+----------------+-----------------------
+ public  | categoria      | (NULL)
+ public  | cliente        | (NULL)
+ public  | detalle_pedido | (NULL)
+ public  | pedido         | (NULL)
+ public  | producto       | (NULL)
+ public  | usuario        | (NULL)
+(6 rows)
+
+COMMIT

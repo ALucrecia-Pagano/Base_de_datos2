@@ -1,0 +1,12 @@
+{
+  "status": "FAIL",
+  "target": "foodstore_restore_test",
+  "metadata_path": "C:\\Users\\hp\\Documents\\Codex\\2026-10-24\\referenced-chatgpt-conversation-this-is-an\\work\\validacion_real_scripts\\foodstore_dev_20261024_005058_595_da8460d6\\metadata.json",
+  "started_at": "2026-10-24T00:51:11.2861730-03:00",
+  "rto_seconds": null,
+  "rpo_proxy_seconds": null,
+  "rpo_note": "Age of backup start at recovery start; freshness proxy, not measured data loss or guaranteed RPO.",
+  "metrics": null,
+  "error": "Destination already exists. Aborted without deletion; preserve existing database.",
+  "finished_at": "2026-10-24T00:51:11.5465544-03:00"
+}

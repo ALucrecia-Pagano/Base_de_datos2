@@ -1,0 +1,155 @@
+;
+; Archive created at 2026-10-24 00:50:58
+;     dbname: foodstore_dev
+;     TOC Entries: 144
+;     Compression: gzip
+;     Dump Version: 1.16-0
+;     Format: CUSTOM
+;     Integer: 4 bytes
+;     Offset: 8 bytes
+;     Dumped from database version: 17.11
+;     Dumped by pg_dump version: 17.11
+;
+;
+; Selected TOC Entries:
+;
+5061; 0 0 ACL - SCHEMA public pg_database_owner
+2; 3079 74756 EXTENSION - pgcrypto 
+5062; 0 0 COMMENT - EXTENSION pgcrypto 
+904; 1247 24586 TYPE public estado_pedido_enum postgres
+901; 1247 24578 TYPE public forma_pago_enum postgres
+922; 1247 74794 TYPE public rol_usuario postgres
+5063; 0 0 ACL public FUNCTION armor(bytea) postgres
+5064; 0 0 ACL public FUNCTION armor(bytea, text[], text[]) postgres
+5065; 0 0 ACL public FUNCTION crypt(text, text) postgres
+5066; 0 0 ACL public FUNCTION dearmor(text) postgres
+5067; 0 0 ACL public FUNCTION decrypt(bytea, bytea, text) postgres
+5068; 0 0 ACL public FUNCTION decrypt_iv(bytea, bytea, bytea, text) postgres
+5069; 0 0 ACL public FUNCTION digest(bytea, text) postgres
+5070; 0 0 ACL public FUNCTION digest(text, text) postgres
+5071; 0 0 ACL public FUNCTION encrypt(bytea, bytea, text) postgres
+5072; 0 0 ACL public FUNCTION encrypt_iv(bytea, bytea, bytea, text) postgres
+282; 1255 74852 FUNCTION public fn_autenticar(character varying, character varying) postgres
+5073; 0 0 COMMENT public FUNCTION fn_autenticar(p_email character varying, p_password character varying) postgres
+5074; 0 0 ACL public FUNCTION fn_autenticar(p_email character varying, p_password character varying) postgres
+283; 1255 74853 FUNCTION public fn_resetear_password(bigint, character varying) postgres
+5075; 0 0 COMMENT public FUNCTION fn_resetear_password(p_id_usuario bigint, p_nueva_password character varying) postgres
+5076; 0 0 ACL public FUNCTION fn_resetear_password(p_id_usuario bigint, p_nueva_password character varying) postgres
+5077; 0 0 ACL public FUNCTION gen_random_bytes(integer) postgres
+5078; 0 0 ACL public FUNCTION gen_random_uuid() postgres
+5079; 0 0 ACL public FUNCTION gen_salt(text) postgres
+5080; 0 0 ACL public FUNCTION gen_salt(text, integer) postgres
+5081; 0 0 ACL public FUNCTION hmac(bytea, bytea, text) postgres
+5082; 0 0 ACL public FUNCTION hmac(text, text, text) postgres
+5083; 0 0 ACL public FUNCTION pgp_armor_headers(text, OUT key text, OUT value text) postgres
+5084; 0 0 ACL public FUNCTION pgp_key_id(bytea) postgres
+5085; 0 0 ACL public FUNCTION pgp_pub_decrypt(bytea, bytea) postgres
+5086; 0 0 ACL public FUNCTION pgp_pub_decrypt(bytea, bytea, text) postgres
+5087; 0 0 ACL public FUNCTION pgp_pub_decrypt(bytea, bytea, text, text) postgres
+5088; 0 0 ACL public FUNCTION pgp_pub_decrypt_bytea(bytea, bytea) postgres
+5089; 0 0 ACL public FUNCTION pgp_pub_decrypt_bytea(bytea, bytea, text) postgres
+5090; 0 0 ACL public FUNCTION pgp_pub_decrypt_bytea(bytea, bytea, text, text) postgres
+5091; 0 0 ACL public FUNCTION pgp_pub_encrypt(text, bytea) postgres
+5092; 0 0 ACL public FUNCTION pgp_pub_encrypt(text, bytea, text) postgres
+5093; 0 0 ACL public FUNCTION pgp_pub_encrypt_bytea(bytea, bytea) postgres
+5094; 0 0 ACL public FUNCTION pgp_pub_encrypt_bytea(bytea, bytea, text) postgres
+5095; 0 0 ACL public FUNCTION pgp_sym_decrypt(bytea, text) postgres
+5096; 0 0 ACL public FUNCTION pgp_sym_decrypt(bytea, text, text) postgres
+5097; 0 0 ACL public FUNCTION pgp_sym_decrypt_bytea(bytea, text) postgres
+5098; 0 0 ACL public FUNCTION pgp_sym_decrypt_bytea(bytea, text, text) postgres
+5099; 0 0 ACL public FUNCTION pgp_sym_encrypt(text, text) postgres
+5100; 0 0 ACL public FUNCTION pgp_sym_encrypt(text, text, text) postgres
+5101; 0 0 ACL public FUNCTION pgp_sym_encrypt_bytea(bytea, text) postgres
+5102; 0 0 ACL public FUNCTION pgp_sym_encrypt_bytea(bytea, text, text) postgres
+219; 1259 24596 TABLE public categoria postgres
+5103; 0 0 COMMENT public TABLE categoria postgres
+5104; 0 0 COMMENT public COLUMN categoria.id postgres
+5105; 0 0 COMMENT public COLUMN categoria.nombre postgres
+5106; 0 0 COMMENT public COLUMN categoria.activo postgres
+5107; 0 0 ACL public TABLE categoria postgres
+218; 1259 24595 SEQUENCE public categoria_id_seq postgres
+5108; 0 0 ACL public SEQUENCE categoria_id_seq postgres
+221; 1259 24609 TABLE public cliente postgres
+5109; 0 0 COMMENT public TABLE cliente postgres
+5110; 0 0 COMMENT public COLUMN cliente.email postgres
+5111; 0 0 ACL public TABLE cliente postgres
+220; 1259 24608 SEQUENCE public cliente_id_seq postgres
+5112; 0 0 ACL public SEQUENCE cliente_id_seq postgres
+226; 1259 24653 TABLE public detalle_pedido postgres
+5113; 0 0 COMMENT public TABLE detalle_pedido postgres
+5114; 0 0 COMMENT public COLUMN detalle_pedido.cantidad postgres
+5115; 0 0 COMMENT public COLUMN detalle_pedido.precio_unitario postgres
+5116; 0 0 COMMENT public COLUMN detalle_pedido.subtotal postgres
+5117; 0 0 ACL public TABLE detalle_pedido postgres
+225; 1259 24639 TABLE public pedido postgres
+5118; 0 0 COMMENT public TABLE pedido postgres
+5119; 0 0 COMMENT public COLUMN pedido.id_cliente postgres
+5120; 0 0 COMMENT public COLUMN pedido.forma_pago postgres
+5121; 0 0 ACL public TABLE pedido postgres
+223; 1259 24620 TABLE public producto postgres
+5122; 0 0 COMMENT public TABLE producto postgres
+5123; 0 0 COMMENT public COLUMN producto.precio_lista postgres
+5124; 0 0 COMMENT public COLUMN producto.stock postgres
+5125; 0 0 COMMENT public COLUMN producto.activo postgres
+5126; 0 0 ACL public TABLE producto postgres
+234; 1259 74839 MATERIALIZED VIEW public mv_resumen_ventas_categoria_mes postgres
+5127; 0 0 ACL public TABLE mv_resumen_ventas_categoria_mes postgres
+224; 1259 24638 SEQUENCE public pedido_id_seq postgres
+5128; 0 0 ACL public SEQUENCE pedido_id_seq postgres
+222; 1259 24619 SEQUENCE public producto_id_seq postgres
+5129; 0 0 ACL public SEQUENCE producto_id_seq postgres
+228; 1259 74802 TABLE public usuario postgres
+5130; 0 0 ACL public TABLE usuario postgres
+5131; 0 0 ACL public COLUMN usuario.id postgres
+5132; 0 0 ACL public COLUMN usuario.nombre postgres
+5133; 0 0 ACL public COLUMN usuario.apellido postgres
+5134; 0 0 ACL public COLUMN usuario.mail postgres
+5135; 0 0 ACL public COLUMN usuario.celular postgres
+5136; 0 0 ACL public COLUMN usuario.rol postgres
+5137; 0 0 ACL public COLUMN usuario.eliminado postgres
+5138; 0 0 ACL public COLUMN usuario.created_at postgres
+227; 1259 74801 SEQUENCE public usuario_id_seq postgres
+5139; 0 0 ACL public SEQUENCE usuario_id_seq postgres
+231; 1259 74827 VIEW public v_catalogo_productos postgres
+5140; 0 0 ACL public TABLE v_catalogo_productos postgres
+232; 1259 74831 VIEW public v_detalle_pedido_producto postgres
+5141; 0 0 ACL public TABLE v_detalle_pedido_producto postgres
+233; 1259 74835 VIEW public v_pedido_cliente postgres
+5142; 0 0 ACL public TABLE v_pedido_cliente postgres
+230; 1259 74822 VIEW public v_reporte_ventas_cliente postgres
+5143; 0 0 ACL public TABLE v_reporte_ventas_cliente postgres
+229; 1259 74818 VIEW public v_usuario_publico postgres
+5144; 0 0 ACL public TABLE v_usuario_publico postgres
+5044; 0 24596 TABLE DATA public categoria postgres
+5046; 0 24609 TABLE DATA public cliente postgres
+5051; 0 24653 TABLE DATA public detalle_pedido postgres
+5050; 0 24639 TABLE DATA public pedido postgres
+5048; 0 24620 TABLE DATA public producto postgres
+5053; 0 74802 TABLE DATA public usuario postgres
+5145; 0 0 SEQUENCE SET public categoria_id_seq postgres
+5146; 0 0 SEQUENCE SET public cliente_id_seq postgres
+5147; 0 0 SEQUENCE SET public pedido_id_seq postgres
+5148; 0 0 SEQUENCE SET public producto_id_seq postgres
+5149; 0 0 SEQUENCE SET public usuario_id_seq postgres
+4867; 2606 24607 CONSTRAINT public categoria categoria_nombre_key postgres
+4869; 2606 24605 CONSTRAINT public categoria categoria_pkey postgres
+4871; 2606 24618 CONSTRAINT public cliente cliente_email_key postgres
+4873; 2606 24616 CONSTRAINT public cliente cliente_pkey postgres
+4879; 2606 24647 CONSTRAINT public pedido pedido_pkey postgres
+4882; 2606 24660 CONSTRAINT public detalle_pedido pk_detalle_pedido postgres
+4876; 2606 24632 CONSTRAINT public producto producto_pkey postgres
+4884; 2606 74817 CONSTRAINT public usuario usuario_mail_key postgres
+4886; 2606 74815 CONSTRAINT public usuario usuario_pkey postgres
+4880; 1259 24673 INDEX public idx_detalle_pedido_producto_id postgres
+4887; 1259 74851 INDEX public idx_mv_resumen_ventas_categoria_mes postgres
+4877; 1259 24671 INDEX public idx_pedidos_cliente_id postgres
+4874; 1259 24672 INDEX public idx_productos_categoria_activo postgres
+4890; 2606 24661 FK CONSTRAINT public detalle_pedido fk_detalle_pedido_pedido postgres
+4891; 2606 24666 FK CONSTRAINT public detalle_pedido fk_detalle_pedido_producto postgres
+4889; 2606 24648 FK CONSTRAINT public pedido fk_pedido_cliente postgres
+4888; 2606 24633 FK CONSTRAINT public producto fk_producto_categoria postgres
+2143; 826 74865 DEFAULT ACL public DEFAULT PRIVILEGES FOR SEQUENCES admin_datos
+2141; 826 74863 DEFAULT ACL public DEFAULT PRIVILEGES FOR SEQUENCES postgres
+2142; 826 74864 DEFAULT ACL public DEFAULT PRIVILEGES FOR TABLES admin_datos
+2140; 826 74862 DEFAULT ACL public DEFAULT PRIVILEGES FOR TABLES postgres
+5054; 0 74839 MATERIALIZED VIEW DATA public mv_resumen_ventas_categoria_mes postgres

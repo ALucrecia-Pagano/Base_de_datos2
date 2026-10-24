@@ -1,0 +1,136 @@
+%PDF-1.4
+%âãÏÓ
+1 0 obj
+<< /Type /Catalog /Pages 2 0 R >>
+endobj
+2 0 obj
+<< /Type /Pages /Kids [3 0 R] /Count 1 >>
+endobj
+3 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595.276 841.89] /Resources << /Font << /F1 4 0 R /F2 5 0 R >> >> /Contents 6 0 R >>
+endobj
+4 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica /Encoding /WinAnsiEncoding >>
+endobj
+5 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica-Bold /Encoding /WinAnsiEncoding >>
+endobj
+6 0 obj
+<< /Length 9651 >>
+stream
+BT /F2 18 Tf 0.10 0.24 0.32 rg 1 0 0 1 34.000 791.890 Tm (TP8 | Mantenimiento, respaldo y recuperación) Tj ET
+BT /F1 9 Tf 0.12 0.15 0.19 rg 1 0 0 1 34.000 771.890 Tm (UTN FRM - Base de Datos II - FoodStore - Ensayos: 24/10/2026 \(UTC-03:00\)) Tj ET
+0.73 0.80 0.84 RG 0.45 w 34 766.890 m 561.276 766.890 l S
+BT /F2 11 Tf 0.10 0.24 0.32 rg 1 0 0 1 34.000 746.890 Tm (Objetivo y entorno) Tj ET
+BT /F1 10 Tf 0.12 0.15 0.19 rg 1 0 0 1 34.000 728.790 Tm (Evaluar la recuperación de FoodStore en un laboratorio Windows con PostgreSQL 17.11. Se utilizó foodstore_dev) Tj ET
+BT /F1 10 Tf 0.12 0.15 0.19 rg 1 0 0 1 34.000 716.690 Tm (como adaptación local de foodstore de la consigna y foodstore_tp3_carga para contrastar volumen. El destino) Tj ET
+BT /F1 10 Tf 0.12 0.15 0.19 rg 1 0 0 1 34.000 704.590 Tm (descartable fue foodstore_restore_test; no se sustituyeron las fuentes.) Tj ET
+BT /F2 11 Tf 0.10 0.24 0.32 rg 1 0 0 1 34.000 683.590 Tm (Procedimiento y validaciones históricas) Tj ET
+BT /F1 10 Tf 0.12 0.15 0.19 rg 1 0 0 1 34.000 665.490 Tm (Se generaron respaldos custom con pg_dump -Fc; se creó el destino desde template0 y se restauró con pg_restore) Tj ET
+BT /F1 10 Tf 0.12 0.15 0.19 rg 1 0 0 1 34.000 653.390 Tm (--exit-on-error --no-owner --no-privileges. Cada origen se ensayó sucesivamente, con recreaciones del destino) Tj ET
+BT /F1 10 Tf 0.12 0.15 0.19 rg 1 0 0 1 34.000 641.290 Tm (autorizadas por separado. Antes y después se registraron estos conteos exactos:) Tj ET
+0.12 0.26 0.34 rg 34.000 617.190 527.276 19.100 re f
+BT /F2 9.2 Tf 1 1 1 rg 1 0 0 1 39.000 624.290 Tm (Tabla) Tj ET
+BT /F2 9.2 Tf 1 1 1 rg 1 0 0 1 172.000 624.290 Tm (Dev antes) Tj ET
+BT /F2 9.2 Tf 1 1 1 rg 1 0 0 1 250.000 624.290 Tm (Dev restaurado) Tj ET
+BT /F2 9.2 Tf 1 1 1 rg 1 0 0 1 348.000 624.290 Tm (Carga antes) Tj ET
+BT /F2 9.2 Tf 1 1 1 rg 1 0 0 1 449.000 624.290 Tm (Carga restaurada) Tj ET
+0.95 0.97 0.98 rg 34.000 598.090 527.276 19.100 re f
+BT /F1 9.5 Tf 0.12 0.15 0.19 rg 1 0 0 1 39.000 605.190 Tm (categoria) Tj ET
+BT /F1 9.5 Tf 0.12 0.15 0.19 rg 1 0 0 1 172.000 605.190 Tm (2) Tj ET
+BT /F1 9.5 Tf 0.12 0.15 0.19 rg 1 0 0 1 250.000 605.190 Tm (2) Tj ET
+BT /F1 9.5 Tf 0.12 0.15 0.19 rg 1 0 0 1 348.000 605.190 Tm (2) Tj ET
+BT /F1 9.5 Tf 0.12 0.15 0.19 rg 1 0 0 1 449.000 605.190 Tm (2) Tj ET
+1 1 1 rg 34.000 578.990 527.276 19.100 re f
+BT /F1 9.5 Tf 0.12 0.15 0.19 rg 1 0 0 1 39.000 586.090 Tm (cliente) Tj ET
+BT /F1 9.5 Tf 0.12 0.15 0.19 rg 1 0 0 1 172.000 586.090 Tm (3) Tj ET
+BT /F1 9.5 Tf 0.12 0.15 0.19 rg 1 0 0 1 250.000 586.090 Tm (3) Tj ET
+BT /F1 9.5 Tf 0.12 0.15 0.19 rg 1 0 0 1 348.000 586.090 Tm (20.003) Tj ET
+BT /F1 9.5 Tf 0.12 0.15 0.19 rg 1 0 0 1 449.000 586.090 Tm (20.003) Tj ET
+0.95 0.97 0.98 rg 34.000 559.890 527.276 19.100 re f
+BT /F1 9.5 Tf 0.12 0.15 0.19 rg 1 0 0 1 39.000 566.990 Tm (producto) Tj ET
+BT /F1 9.5 Tf 0.12 0.15 0.19 rg 1 0 0 1 172.000 566.990 Tm (3) Tj ET
+BT /F1 9.5 Tf 0.12 0.15 0.19 rg 1 0 0 1 250.000 566.990 Tm (3) Tj ET
+BT /F1 9.5 Tf 0.12 0.15 0.19 rg 1 0 0 1 348.000 566.990 Tm (50.003) Tj ET
+BT /F1 9.5 Tf 0.12 0.15 0.19 rg 1 0 0 1 449.000 566.990 Tm (50.003) Tj ET
+1 1 1 rg 34.000 540.790 527.276 19.100 re f
+BT /F1 9.5 Tf 0.12 0.15 0.19 rg 1 0 0 1 39.000 547.890 Tm (pedido) Tj ET
+BT /F1 9.5 Tf 0.12 0.15 0.19 rg 1 0 0 1 172.000 547.890 Tm (5) Tj ET
+BT /F1 9.5 Tf 0.12 0.15 0.19 rg 1 0 0 1 250.000 547.890 Tm (5) Tj ET
+BT /F1 9.5 Tf 0.12 0.15 0.19 rg 1 0 0 1 348.000 547.890 Tm (200.005) Tj ET
+BT /F1 9.5 Tf 0.12 0.15 0.19 rg 1 0 0 1 449.000 547.890 Tm (200.005) Tj ET
+0.95 0.97 0.98 rg 34.000 521.690 527.276 19.100 re f
+BT /F1 9.5 Tf 0.12 0.15 0.19 rg 1 0 0 1 39.000 528.790 Tm (detalle_pedido) Tj ET
+BT /F1 9.5 Tf 0.12 0.15 0.19 rg 1 0 0 1 172.000 528.790 Tm (7) Tj ET
+BT /F1 9.5 Tf 0.12 0.15 0.19 rg 1 0 0 1 250.000 528.790 Tm (7) Tj ET
+BT /F1 9.5 Tf 0.12 0.15 0.19 rg 1 0 0 1 348.000 528.790 Tm (499.571) Tj ET
+BT /F1 9.5 Tf 0.12 0.15 0.19 rg 1 0 0 1 449.000 528.790 Tm (499.571) Tj ET
+BT /F1 10 Tf 0.12 0.15 0.19 rg 1 0 0 1 34.000 503.590 Tm (Los JSON históricos coinciden también en nueve indicadores en cero: precios no positivos, stock negativo, cantidades) Tj ET
+BT /F1 10 Tf 0.12 0.15 0.19 rg 1 0 0 1 34.000 491.490 Tm (no positivas, subtotales incorrectos y cuatro referencias huérfanas. No es una comparación de todas las filas ni una) Tj ET
+BT /F1 10 Tf 0.12 0.15 0.19 rg 1 0 0 1 34.000 479.390 Tm (recuperación de roles y permisos.) Tj ET
+BT /F2 11 Tf 0.10 0.24 0.32 rg 1 0 0 1 34.000 458.390 Tm (Objetivos y resultados) Tj ET
+BT /F1 10 Tf 0.12 0.15 0.19 rg 1 0 0 1 34.000 440.290 Tm (Respaldos usados el 24/10: dev iniciado a las 00:32:38,094 \(46.877 bytes\); carga con referencia previa a pg_dump a) Tj ET
+BT /F1 10 Tf 0.12 0.15 0.19 rg 1 0 0 1 34.000 428.190 Tm (las 00:32:43,629 \(7.321.779 bytes\), reutilizado en la repetición.) Tj ET
+0.12 0.26 0.34 rg 34.000 404.090 527.276 19.100 re f
+BT /F2 9.2 Tf 1 1 1 rg 1 0 0 1 39.000 411.190 Tm (Indicador) Tj ET
+BT /F2 9.2 Tf 1 1 1 rg 1 0 0 1 233.000 411.190 Tm (Objetivo inicial) Tj ET
+BT /F2 9.2 Tf 1 1 1 rg 1 0 0 1 345.000 411.190 Tm (Dev) Tj ET
+BT /F2 9.2 Tf 1 1 1 rg 1 0 0 1 431.000 411.190 Tm (Carga, repetición) Tj ET
+0.95 0.97 0.98 rg 34.000 384.990 527.276 19.100 re f
+BT /F1 9.5 Tf 0.12 0.15 0.19 rg 1 0 0 1 39.000 392.090 Tm (RTO: cronómetro registrado) Tj ET
+BT /F1 9.5 Tf 0.12 0.15 0.19 rg 1 0 0 1 233.000 392.090 Tm (<=15 minutos) Tj ET
+BT /F1 9.5 Tf 0.12 0.15 0.19 rg 1 0 0 1 345.000 392.090 Tm (2,9817064 s) Tj ET
+BT /F1 9.5 Tf 0.12 0.15 0.19 rg 1 0 0 1 431.000 392.090 Tm (8,1943358 s) Tj ET
+1 1 1 rg 34.000 365.890 527.276 19.100 re f
+BT /F1 9.5 Tf 0.12 0.15 0.19 rg 1 0 0 1 39.000 372.990 Tm (Intervalo entre marcas de inicio y fin) Tj ET
+BT /F1 9.5 Tf 0.12 0.15 0.19 rg 1 0 0 1 233.000 372.990 Tm (Contraste del registro) Tj ET
+BT /F1 9.5 Tf 0.12 0.15 0.19 rg 1 0 0 1 345.000 372.990 Tm (2,9865544 s) Tj ET
+BT /F1 9.5 Tf 0.12 0.15 0.19 rg 1 0 0 1 431.000 372.990 Tm (8,2566120 s) Tj ET
+0.95 0.97 0.98 rg 34.000 346.790 527.276 19.100 re f
+BT /F1 9.5 Tf 0.12 0.15 0.19 rg 1 0 0 1 39.000 353.890 Tm (Antigüedad al iniciar, proxy de RPO) Tj ET
+BT /F1 9.5 Tf 0.12 0.15 0.19 rg 1 0 0 1 233.000 353.890 Tm (RPO <=24 horas) Tj ET
+BT /F1 9.5 Tf 0.12 0.15 0.19 rg 1 0 0 1 345.000 353.890 Tm (0,7817533 s) Tj ET
+BT /F1 9.5 Tf 0.12 0.15 0.19 rg 1 0 0 1 431.000 353.890 Tm (Aprox. 272,6074609 s) Tj ET
+BT /F1 10 Tf 0.12 0.15 0.19 rg 1 0 0 1 34.000 328.690 Tm (El RTO abarca creación, restauración y validación. Las pequeñas diferencias entre cronómetro y marcas no tienen) Tj ET
+BT /F1 10 Tf 0.12 0.15 0.19 rg 1 0 0 1 34.000 316.590 Tm (causa exacta acreditada. La antigüedad aproxima frescura, no pérdida real medida; en carga falta el inicio exacto del) Tj ET
+BT /F1 10 Tf 0.12 0.15 0.19 rg 1 0 0 1 34.000 304.490 Tm (respaldo. Los valores están dentro de las metas locales, sin demostrar cumplimiento periódico: no se instaló) Tj ET
+BT /F1 10 Tf 0.12 0.15 0.19 rg 1 0 0 1 34.000 292.390 Tm (programación.) Tj ET
+BT /F2 11 Tf 0.10 0.24 0.32 rg 1 0 0 1 34.000 271.390 Tm (Mantenimiento justificado) Tj ET
+BT /F1 10 Tf 0.12 0.15 0.19 rg 1 0 0 1 34.000 253.290 Tm (El diagnóstico registró cero consultas ajenas activas y cero deadlocks acumulados en ese instante. Tras observar) Tj ET
+BT /F1 10 Tf 0.12 0.15 0.19 rg 1 0 0 1 34.000 241.190 Tm (autovacuum/autoanalyze en las tablas grandes, se aplicó ANALYZE solo a categoria, usuario y) Tj ET
+BT /F1 10 Tf 0.12 0.15 0.19 rg 1 0 0 1 34.000 229.090 Tm (mv_resumen_ventas_categoria_mes del destino: conservaron 2/3/26 filas; sus columnas con estadísticas pasaron de) Tj ET
+BT /F1 10 Tf 0.12 0.15 0.19 rg 1 0 0 1 34.000 216.990 Tm (0 a 5/9/6. No se aplicó VACUUM FULL ni mantenimiento a las fuentes.) Tj ET
+BT /F2 11 Tf 0.10 0.24 0.32 rg 1 0 0 1 34.000 195.990 Tm (Incidente, asistencia y conclusión) Tj ET
+BT /F1 10 Tf 0.12 0.15 0.19 rg 1 0 0 1 34.000 177.890 Tm (El incidente documentado fue una falsa diferencia por orden de claves JSON. Se corrigió la comparación semántica y) Tj ET
+BT /F1 10 Tf 0.12 0.15 0.19 rg 1 0 0 1 34.000 165.790 Tm (se repitió carga; el RTO corresponde a esa repetición y excluye el diagnóstico anterior. Mejora: persistir tiempos aun) Tj ET
+BT /F1 10 Tf 0.12 0.15 0.19 rg 1 0 0 1 34.000 153.690 Tm (ante fallos y probar claves reordenadas antes de repetir.) Tj ET
+BT /F1 10 Tf 0.12 0.15 0.19 rg 1 0 0 1 34.000 136.590 Tm (Codex asistió el procedimiento y la revisión documental; su aceptación docente fue informada por el usuario. Los) Tj ET
+BT /F1 10 Tf 0.12 0.15 0.19 rg 1 0 0 1 34.000 124.490 Tm (ensayos reales históricos no validan los scripts finales: su restauración completa solo tiene pruebas simuladas) Tj ET
+BT /F1 10 Tf 0.12 0.15 0.19 rg 1 0 0 1 34.000 112.390 Tm (históricas; el baseline actual quedó bloqueado por la política, sin Bypass. Las correcciones de código propuestas) Tj ET
+BT /F1 10 Tf 0.12 0.15 0.19 rg 1 0 0 1 34.000 100.290 Tm (siguen pendientes. Se documenta recuperación local con conteos coincidentes, sin garantías de producción; resta) Tj ET
+BT /F1 10 Tf 0.12 0.15 0.19 rg 1 0 0 1 34.000 88.190 Tm (revisión humana final.) Tj ET
+BT /F1 8.4 Tf 0.12 0.15 0.19 rg 1 0 0 1 34.000 73.090 Tm (Evidencia: evidencias/results.json, métricas antes/después, repeticion/timing.json y logs de salud_mantenimiento/. Dumps fuera del) Tj ET
+BT /F1 8.4 Tf 0.12 0.15 0.19 rg 1 0 0 1 34.000 62.990 Tm (repositorio. Límites y propuestas: script_validation.md y docs/cierre_revision_20261024.md.) Tj ET
+0.73 0.80 0.84 RG 0.45 w 34 27.000 m 561.276 27.000 l S
+BT /F1 8 Tf 0.12 0.15 0.19 rg 1 0 0 1 34.000 15.000 Tm (TP8 - Laboratorio académico | Revisión documental: 24/10/2026) Tj ET
+BT /F1 8 Tf 0.12 0.15 0.19 rg 1 0 0 1 540.276 15.000 Tm (1 / 1) Tj ET
+endstream
+endobj
+7 0 obj
+<< /Title (TP8 - Mantenimiento, respaldo y recuperacion) /Author (Equipo FoodStore - UTN FRM) /Subject (Ensayos historicos y limites de validacion) >>
+endobj
+xref
+0 8
+0000000000 65535 f 
+0000000015 00000 n 
+0000000064 00000 n 
+0000000121 00000 n 
+0000000264 00000 n 
+0000000361 00000 n 
+0000000463 00000 n 
+0000010165 00000 n 
+trailer
+<< /Size 8 /Root 1 0 R /Info 7 0 R >>
+startxref
+10331
+%%EOF

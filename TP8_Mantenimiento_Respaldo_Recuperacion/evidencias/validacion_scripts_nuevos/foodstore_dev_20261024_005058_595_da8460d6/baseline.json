@@ -1,0 +1,1 @@
+{"counts" : {"categoria" : 2, "cliente" : 3, "producto" : 3, "pedido" : 5, "detalle_pedido" : 7}, "invalid" : {"producto_precio_negativo" : 0, "producto_stock_negativo" : 0, "detalle_cantidad_no_positiva" : 0, "detalle_precio_negativo" : 0}}

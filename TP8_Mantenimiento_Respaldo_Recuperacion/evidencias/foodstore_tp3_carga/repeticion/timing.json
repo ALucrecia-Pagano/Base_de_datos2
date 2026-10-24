@@ -1,0 +1,12 @@
+﻿{
+    "status":  "PASS",
+    "authorization":  "User explicitly authorized deletion of only foodstore_restore_test and repetition: si autorizo",
+    "destination":  "foodstore_restore_test",
+    "backup_start_exact_available":  false,
+    "backup_reference":  "2026-10-24T00:32:43.6290287-03:00",
+    "backup_reference_note":  "Timestamp of original source_before.json, immediately before pg_dump invocation; conservative approximate age proxy, not exact backup start",
+    "drill_start":  "2026-10-24T00:37:16.2364896-03:00",
+    "rpo_proxy_seconds":  272.6074609,
+    "validation_end":  "2026-10-24T00:37:24.4931016-03:00",
+    "rto_seconds":  8.1943358
+}

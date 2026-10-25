@@ -45,7 +45,7 @@ Set-Content $env:TP8_CALLS ''
 Expect-Failure {& $restore -MetadataPath $manifest -PgBin $bin -OutputDirectory $testRoot} 'hash mismatch'
 if((Get-Content $env:TP8_CALLS -Raw) -match 'createdb|pg_restore'){throw 'Tampered archive reached restore'}
 $failures=@(Get-ChildItem $testRoot -Directory -Filter 'restore_*' | Where-Object {(Get-Content (Join-Path $_.FullName 'result.json') -Raw|ConvertFrom-Json).status -eq 'FAIL'})
-if($failures.Count -ne 5){throw "Failure results not persisted: $($failures.Count)"}; $passed++
+if($failures.Count -ne 6){throw "Failure results not persisted: $($failures.Count)"}; $passed++
 Write-Output "PASS $passed checks; isolated fake tools; root=$testRoot"
 
 

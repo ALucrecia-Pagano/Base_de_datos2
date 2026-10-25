@@ -61,7 +61,7 @@ El diagnóstico registró cero consultas ajenas activas y cero deadlocks acumula
 - conservaron 2, 3 y 26 filas;
 - sus columnas con estadísticas pasaron de 0 a 5, 9 y 6.
 
-No se aplicó VACUUM ni VACUUM FULL: las tablas grandes no tenían tuplas muertas y la consigna excluye VACUUM FULL como mantenimiento periódico. Tampoco se hizo mantenimiento sobre las bases originales.
+No se aplicó VACUUM ni VACUUM FULL: las tablas grandes no tenían tuplas muertas y la consigna excluye VACUUM FULL como mantenimiento periódico. Tampoco se hizo mantenimiento sobre las bases originales. `maintenance.sql` incluye ahora la revisión de `last_autovacuum` y `last_autoanalyze` antes y después del `ANALYZE`; en el ensayo realizado, esa revisión se tomó del diagnóstico de `health_check.sql`.
 
 ## Incidente
 

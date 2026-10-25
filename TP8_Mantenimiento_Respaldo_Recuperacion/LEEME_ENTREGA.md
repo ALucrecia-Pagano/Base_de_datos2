@@ -1,74 +1,72 @@
-# TP8 — Guía de entrega y reproducción
+# TP8 — Guía de entrega
 
-## Alcance y archivos
+## Contenido
 
-`foodstore_dev` es la base original local correspondiente a `foodstore` de la consigna. `foodstore_tp3_carga` se usa como comparación adicional. No se modificó el repositorio de Mateo. Los scripts y documentos de esta carpeta constituyen una preparación independiente para la entrega; no son los mismos scripts que produjeron los ensayos históricos. Los resultados históricos no prueban por sí solos una ejecución en vivo de estos scripts nuevos; consultar su validación separada.
+| Archivo | Contenido |
+|---|---|
+| `SPEC_U6.md` | Plan: frecuencias, metas de RPO y RTO, seguridad y validación. |
+| `backup_foodstore.ps1` | Respaldo custom con línea base (5 conteos y 9 controles), dump con fecha y hora, `metadata.json` y logs. |
+| `restore_test.ps1` | Restauración en `foodstore_restore_test`, validación y medición de RTO y antigüedad del respaldo. |
+| `pg_common.ps1` | Funciones compartidas; debe quedar junto a los dos scripts. |
+| `health_check.sql` | Diagnóstico de solo lectura; termina con ROLLBACK. |
+| `maintenance.sql` | Revisión de autovacuum/ANALYZE y ANALYZE puntual, solo en `foodstore_restore_test`. |
+| `pruebas/test_delivery.ps1` | 14 pruebas con herramientas simuladas, sin conexión a PostgreSQL. |
+| `informe_u6.pdf`, `informe_u6.md` | Informe post-incidente. |
+| `evidencias/` | Ensayo previo y validación final; sin dumps. |
 
-Archivos de la entrega:
+`foodstore_dev` representa la base `foodstore` de la consigna; `foodstore_tp3_carga` permite comparar con mayor volumen. El único destino de restauración es `foodstore_restore_test`.
 
-- `SPEC_U6.md`: alcance, cronograma propuesto, objetivos, seguridad y validación.
-- `backup_foodstore.ps1`: respaldo custom, línea base y registros.
-- `restore_test.ps1`: restauración y validación en destino aislado.
-- `pg_common.ps1`: funciones compartidas; debe permanecer junto a ambos scripts.
-- `health_check.sql`: diagnóstico de solo lectura, copia íntegra del usado en el ensayo.
-- `maintenance.sql`: ANALYZE acotado, copia íntegra del usado en el ensayo.
-- Informe final en PDF: síntesis de una página.
-- `evidencias/`: resultados, conteos antes/después, tiempos de carga, registros de salud/mantenimiento e historial de la SPEC inicial; sin dumps.
-
-Los respaldos históricos y sus registros completos se conservan aparte en la carpeta de trabajo original `ensayos_tp8_20261024_003237`, fuera de este paquete; esa ubicación no es una dependencia portable de la entrega. Sus dos dumps son evidencia de los ensayos; no se incluyen por defecto en el paquete de entrega, para evitar exponer datos e incrementar el tamaño sin necesidad. Si la cátedra exige los archivos de respaldo, seleccionar expresamente cuáles adjuntar.
-
-La consigna admite omitir el dump si el aula limita su tamaño. Confirmar esa condición o la aceptación de la cátedra antes de entregar sin respaldos; no se da por acreditada aquí. Los logs vacíos no prueban por sí solos código cero. La selección de evidencias no permite reconstruir todos los comandos históricos.
-
-Ubicación local completa de los ensayos y sus dos respaldos: `C:\Users\hp\Documents\Codex\2026-10-24\referenced-chatgpt-conversation-this-is-an\outputs\ensayos_tp8_20261024_003237`. Los nuevos respaldos generados con los scripts integrados se guardan por defecto en `C:\Users\hp\TP8_Backups`, en subcarpetas únicas; no reemplazan `foodstore_origen.dump`.
+Los `.dump` no se incluyen porque contienen los datos completos de las bases. Los de la validación final están en `C:\Users\hp\TP8_Backups`, y los del ensayo previo, en su carpeta de trabajo original (`ensayos_tp8_20261024_003237`). La consigna permite omitirlos si el aula limita el tamaño de los archivos; la evidencia de su creación, tamaño y restauración está en `evidencias/validacion_final_20261024/`.
 
 ## Requisitos
 
-Windows PowerShell y herramientas cliente de PostgreSQL disponibles. Revisar manualmente cada script y contar con autorización específica para ejecutarlo; al integrar la entrega en el repositorio, aplicar también sus AGENTS y el protocolo de seguridad correspondiente. Ajustar `-PgBin`, host, puerto y usuario a la instalación real. Autenticación configurada localmente, sin escribir contraseñas en scripts ni compartir archivos de credenciales. No ejecutar con políticas de seguridad deshabilitadas globalmente.
+- Herramientas cliente de PostgreSQL 17 en `C:\Program Files\PostgreSQL\17\bin`, o la ruta que se indique con `-PgBin`.
+- Autenticación configurada en `pgpass.conf`. Los scripts usan `-w`: nunca piden ni guardan contraseñas.
+- Windows PowerShell. La política de ejecución se habilita solo para cada ejecución con `-ExecutionPolicy RemoteSigned`, sin cambiar la configuración del equipo.
 
-## Ejecución manual
+## Ejecución
 
-Los comandos siguientes requieren autorización previa para cada operación.
+Desde la carpeta del TP8. Cada operación requiere autorización previa.
 
-El dump se nombra `<base>_<yyyyMMdd_HHmmss_fff>_<id>.dump`, igual que su carpeta. `OutputDirectory` admite cualquier ruta: elegir una fuera del repositorio. Los directorios se crean con `-Force`; el id aleatorio hace improbable reutilizar uno. `health_check.sql` es de solo lectura y termina con ROLLBACK; los logs históricos conservan el COMMIT con que se ejecutaron. El validador comprueba nueve controles: los cuatro de la consigna, subtotales y cuatro referencias huérfanas.
+1. Pruebas simuladas (no se conectan a PostgreSQL). Resultado esperado: `PASS 14 checks`.
 
-Desde esta carpeta, respaldar cada origen por separado:
+   ```powershell
+   powershell.exe -NoProfile -ExecutionPolicy RemoteSigned -File .\pruebas\test_delivery.ps1
+   ```
 
-```powershell
-.\backup_foodstore.ps1 -SourceDatabase foodstore_dev
-.\backup_foodstore.ps1 -SourceDatabase foodstore_tp3_carga
-```
+2. Respaldo de cada base. El script imprime la ruta del `metadata.json`, que queda en `C:\Users\hp\TP8_Backups\<base>_<fecha_hora>_<id>\`.
 
-Cada respaldo queda por defecto fuera del repositorio en `C:/Users/hp/TP8_Backups/<base>_<fecha_hora>_<id>/`, con el dump `<base>_<fecha_hora>_<id>.dump`, `metadata.json` y logs. Puede elegirse otra carpeta externa mediante `-OutputDirectory`. Conservar la ruta `metadata.json` devuelta por cada ejecución. Para restaurar un respaldo, reemplazar la ruta de ejemplo por la real:
+   ```powershell
+   powershell.exe -NoProfile -ExecutionPolicy RemoteSigned -File .\backup_foodstore.ps1 -SourceDatabase foodstore_dev
+   powershell.exe -NoProfile -ExecutionPolicy RemoteSigned -File .\backup_foodstore.ps1 -SourceDatabase foodstore_tp3_carga
+   ```
 
-```powershell
-.\restore_test.ps1 -MetadataPath 'C:\Users\hp\TP8_Backups\CARPETA_REAL\metadata.json'
-```
+3. Restauración. `foodstore_restore_test` no debe existir. Sin `-OutputDirectory`, los resultados quedan en `restore_results\` dentro de esta carpeta.
 
-Destino fijo: `foodstore_restore_test`. El script se detiene si ya existe. Actualmente conserva la restauración histórica de carga; no ejecutar esperando que se sobrescriba. El operador debe decidir y autorizar aparte cualquier eliminación/recreación de esa copia descartable antes de repetir el ensayo. Nunca usar una base original como destino.
+   ```powershell
+   powershell.exe -NoProfile -ExecutionPolicy RemoteSigned -File .\restore_test.ps1 -MetadataPath 'C:\Users\hp\TP8_Backups\<carpeta>\metadata.json' -OutputDirectory '<carpeta de resultados>'
+   ```
 
-Ambos scripts admiten `-PgBin 'RUTA_CLIENTES_POSTGRESQL' -DbHost localhost -Port 5432 -DbUser postgres` y `-OutputDirectory`. La restauración admite `-DumpPath` si se movió el dump. Sus registros quedan por defecto en `restore_results/<fecha_identificador>/`.
+4. Diagnóstico, sobre cualquiera de las bases:
 
-Diagnóstico (repetir cambiando la base si corresponde):
+   ```powershell
+   psql -X -w -h localhost -p 5432 -U postgres -d <base> -v ON_ERROR_STOP=1 -f .\health_check.sql
+   ```
 
-```powershell
-psql -X -w -h localhost -p 5432 -U postgres -d foodstore_dev -v ON_ERROR_STOP=1 -f .\health_check.sql
-```
+5. Mantenimiento, solo sobre la copia restaurada y después de revisar el diagnóstico:
 
-Revisar el diagnóstico antes de considerar mantenimiento. El siguiente comando modifica estadísticas exclusivamente de la copia de prueba y debe usarse solo con justificación:
+   ```powershell
+   psql -X -w -h localhost -p 5432 -U postgres -d foodstore_restore_test -v ON_ERROR_STOP=1 -f .\maintenance.sql
+   ```
 
-```powershell
-psql -X -w -h localhost -p 5432 -U postgres -d foodstore_restore_test -v ON_ERROR_STOP=1 -f .\maintenance.sql
-```
+Los scripts PowerShell admiten `-PgBin`, `-DbHost`, `-Port`, `-DbUser` y `-OutputDirectory`; `restore_test.ps1` admite además `-DumpPath` si el dump se movió.
 
-Guardar también salida estándar, errores y código de salida al reproducir esos comandos. No interpretar estimaciones del catálogo como conteos exactos.
+## Reglas de seguridad
 
-## Cronograma y revisión antes de entregar
-
-Diariamente: respaldo y diagnóstico. Semanalmente: revisión de mantenimiento y ensayo de restauración de cada origen. La SPEC inicial, creada el 23/10 antes de los ensayos, ya establecía RPO ≤24 h y RTO ≤15 min. Se conserva íntegra en `evidencias/historial/spec_inicial_20261023.md`. Los ensayos observados quedan dentro de esas metas del laboratorio; no hay un programador instalado ni evidencia de cumplimiento periódico. Los tiempos históricos son observaciones del laboratorio, no una garantía futura. La frescura del respaldo es un proxy, no pérdida de datos demostrada.
-
-Un PASS operativo no evalúa automáticamente estos objetivos. Las marcas históricas dan intervalos de 2,9865544 s y 8,2566120 s, distintos de los cronómetros 2,9817064 s y 8,1943358 s. No se acreditó la causa exacta de esas diferencias; no se corrigieron los registros para hacerlos coincidir.
-
-El estudiante debe revisar el contenido y completar sus datos personales donde corresponda. No se afirma una revisión humana exhaustiva ya realizada. Se utilizó Codex; según confirmación del usuario, la cátedra acepta esta alternativa a OpenCode. No se afirma haber ejecutado OpenCode.
-
-
-
+- `foodstore_dev` y `foodstore_tp3_carga` solo se leen para respaldarlas; nunca son destino.
+- `restore_test.ps1` aborta si el destino ya existe. Borrarlo es una decisión aparte, después de comprobar que no tiene conexiones.
+- `maintenance.sql` aborta si la base no es `foodstore_restore_test`. No se usa VACUUM FULL como mantenimiento periódico.
+- No hay contraseñas en scripts, logs ni evidencias.
+- Los respaldos se guardan fuera del repositorio, sin sobrescribir los anteriores.
+- No se usa Bypass ni se cambia la política de ejecución del equipo.
+- Se aplica el [protocolo de seguridad](../protocolo_seguridad.md) del repositorio.

@@ -12,9 +12,9 @@
 
 ## Introducción
 
-Este informe integra los trabajos prácticos de la cursada sobre **FoodStore**. El recorrido comprende modelado y normalización (TP1), integridad y concurrencia (TP2), carga masiva y optimización (TP3), reportes analíticos (TP4), índices y vistas (TP5), y FNBC y desnormalización controlada (TP6). El TP7 (Administración y seguridad, Unidad 5) tiene las Partes A–E terminadas y publicadas, más una corrección de seguridad posterior aplicada y publicada en `88675cc`; el cierre documental y los prompts de trabajo se publicaron en `39e4c6e`; tiene sección propia más abajo.
+Este informe integra los trabajos prácticos de la cursada sobre **FoodStore**. El recorrido comprende modelado y normalización (TP1), integridad y concurrencia (TP2), carga masiva y optimización (TP3), reportes analíticos (TP4), índices y vistas (TP5), y FNBC y desnormalización controlada (TP6). El TP7 (Administración y seguridad, Unidad 5) tiene las Partes A–E terminadas y publicadas, más una corrección de seguridad posterior aplicada y publicada en `88675cc`; el cierre documental y los prompts de trabajo se publicaron en `39e4c6e`; tiene sección propia más abajo. El TP8 (Mantenimiento, respaldo y recuperación, Unidad 6) es una entrega individual de Amanda Pagano; está terminado y tiene sección propia antes de la conclusión.
 
-En TP1 a TP5 se documentó el uso de Kiro, OpenCode o GitHub Copilot según la etapa y el integrante. En las correcciones de TP5 también se utilizaron Claude Code y Claude, registrados en su DUIA. En TP6 se utilizaron **ChatGPT y Codex CLI** para analizar, proponer scripts, revisar evidencias y preparar documentación. En TP7 (Unidad 5) se utilizan **Kiro** (especificación de roles), **OpenCode con Muse Spark 1.3 Free** (preparación, validación, instalación, simulacro, reconstrucción C.4 y anonimización/equivalencia D) y asistencia de **Codex** (inventario local), con revisión y autorización humana por paso. Las propuestas se revisaron y los cambios de archivos se realizaron con autorización humana; las ejecuciones en PostgreSQL fueron realizadas por el grupo y sus salidas se utilizaron como evidencia. No se atribuyen a TP6 las herramientas utilizadas en otras entregas.
+En TP1 a TP5 se documentó el uso de Kiro, OpenCode o GitHub Copilot según la etapa y el integrante. En las correcciones de TP5 también se utilizaron Claude Code y Claude, registrados en su DUIA. En TP6 se utilizaron **ChatGPT y Codex CLI** para analizar, proponer scripts, revisar evidencias y preparar documentación. En TP7 (Unidad 5) se utilizan **Kiro** (especificación de roles), **OpenCode con Muse Spark 1.3 Free** (preparación, validación, instalación, simulacro, reconstrucción C.4 y anonimización/equivalencia D) y asistencia de **Codex** (inventario local), con revisión y autorización humana por paso. Las propuestas se revisaron y los cambios de archivos se realizaron con autorización humana; las ejecuciones en PostgreSQL fueron realizadas por el grupo y sus salidas se utilizaron como evidencia. No se atribuyen a TP6 las herramientas utilizadas en otras entregas. En TP8 (Unidad 6) se utilizaron **Codex** (generación de scripts y ensayo previo) y **Claude Code** (revisión, correcciones y validación final con los scripts entregados). A diferencia de las etapas anteriores, en TP8 los ensayos en PostgreSQL los ejecutaron esos agentes, cada uno después de una autorización humana individual; los controles previos (conteos, inspección de estructura y un respaldo preparatorio) los ejecutó Amanda Pagano.
 
 Las fuentes principales son las declaraciones y documentos de cada trabajo: [TP1](TP1_FoodStore/README.md), [TP2](TP2_Concurrencia_IA/README.md), [DUIA de TP3](TP3_Optimizacion/DUIA_COMPLETA.md), [DUIA de TP4](TP4_Reportes_Analiticos/DUIA_TP4.md), [DUIA de TP5](TP5_Indices_Vistas/duia.md) y [documentación de TP6](TP6_FNBC_Desnormalizacion/README.md).
 
@@ -282,15 +282,36 @@ catálogos revocados, defaults RF-07, funciones endurecidas; sin contraseñas, s
 
 Fuentes: [informe de auditoría](TP7_Administracion_y_Seguridad/docs/informe_auditoria.md), [informe del incidente](TP7_Administracion_y_Seguridad/docs/informe_incidente.md), [respuesta IA](TP7_Administracion_y_Seguridad/docs/respuesta_ia_incidente.md), [log anonimizado](TP7_Administracion_y_Seguridad/docs/log_simulacro_anonimizado.txt), [evidencia de ejecución C](TP7_Administracion_y_Seguridad/docs/evidencias/ejecucion_20261015_0215.md), [informe de equivalencia D](TP7_Administracion_y_Seguridad/docs/verificacion_equivalencia.md), [salida íntegra D](TP7_Administracion_y_Seguridad/docs/evidencias/salida_psql_usuario_anon_20261015_091628.txt), [bitácora TP7](TP7_Administracion_y_Seguridad/BITACORA.md), [bitácora consolidada](BITACORA.md), [procedimiento de corrección](TP7_Administracion_y_Seguridad/docs/aplicacion_correccion_seguridad.md), [evidencia de ensayo](TP7_Administracion_y_Seguridad/docs/evidencias/ensayo_correccion_seguridad_20261015_1117.md), [evidencia de aplicación](TP7_Administracion_y_Seguridad/docs/evidencias/aplicacion_correccion_seguridad_20261015_1121.md).
 
+## TP8 — Mantenimiento, respaldo y recuperación (Unidad 6)
+
+Entrega individual: Amanda Pagano.
+
+Respaldo custom de `foodstore_dev` (adaptación local de `foodstore`) y `foodstore_tp3_carga`, restauración en el destino descartable `foodstore_restore_test`, diagnóstico de solo lectura y mantenimiento justificado, en PostgreSQL 17.11. Las metas, fijadas el 23/10 antes de los ensayos, fueron RPO ≤ 24 h y RTO ≤ 15 min.
+
+| Ejecución | RTO dev | RTO carga | Antigüedad dev | Antigüedad carga |
+|---|---:|---:|---:|---:|
+| Ensayo previo (24/10, 00:32 a 00:44) | 2,9817064 s | 8,1943358 s | 0,7817533 s | aprox. 272,6074609 s |
+| Validación final con los scripts entregados (24/10, 23:04 a 23:09) | 2,5788433 s | 9,1510594 s | 100,3614621 s | 49,9573628 s |
+
+Los conteos fueron idénticos antes y después en ambas ejecuciones (dev 2/3/3/5/7; carga 2/20.003/50.003/200.005/499.571) y los nueve controles de integridad dieron cero. La antigüedad del respaldo aproxima el RPO, pero no mide datos perdidos; en la validación final incluye el tiempo de autorización. `maintenance.sql` registró que autovacuum ya había analizado las tablas grandes y aplicó `ANALYZE` solo a `categoria`, `usuario` y `mv_resumen_ventas_categoria_mes` del destino (columnas con estadísticas de 0 a 5/9/6, conteos preservados); no se usó VACUUM FULL. El incidente documentado fue una falsa diferencia por el orden de las claves JSON, corregida comparando por valor.
+
+**Control humano.** Codex generó los scripts y ejecutó el ensayo previo; Claude Code revisó la entrega y ejecutó la validación final. Cada operación sobre PostgreSQL requirió autorización individual, y un borrado del destino que Codex intentó con la autorización de otro destino fue bloqueado hasta recibir una autorización específica. Las 14 pruebas simuladas aprobaron.
+
+**Límites.** Dos mediciones por base en un laboratorio local, sin programación periódica; la restauración no incluye roles ni permisos.
+
+Fuentes: [README del TP8](TP8_Mantenimiento_Respaldo_Recuperacion/README_TP8.md), [informe post-incidente](TP8_Mantenimiento_Respaldo_Recuperacion/informe_u6.md) y [validación de scripts](TP8_Mantenimiento_Respaldo_Recuperacion/script_validation.md).
+
 ## Conclusión
 
-Los seis trabajos muestran una progresión desde el diseño relacional hasta la optimización y la redundancia controlada. Las propuestas de IA se sometieron a revisión humana y las afirmaciones de equivalencia o rendimiento se contrastaron con evidencias, sin confundir costos estimados con tiempos ni decisiones de aceptación con instalaciones permanentes.
+Los trabajos muestran una progresión desde el diseño relacional hasta la optimización y la redundancia controlada. Las propuestas de IA se sometieron a revisión humana y las afirmaciones de equivalencia o rendimiento se contrastaron con evidencias, sin confundir costos estimados con tiempos ni decisiones de aceptación con instalaciones permanentes.
 
 Las revisiones permitieron identificar problemas concretos: aleatorización no correlacionada en TP3, diferencias entre COUNT(*) y COUNT(DISTINCT ...) en TP4, sesgo de caché en mediciones de índices y un caso límite de transición de estado en TP2. TP6 añadió la distinción entre reunión sin pérdida y preservación de dependencias, y una comparación medida de columnas redundantes más índice.
 
 El informe conserva los resultados históricos y sus condiciones. Los ensayos de índices de TP4 Parte 1 y las dos implementaciones de TP6 finalizaron con ROLLBACK. Las aplicaciones permanentes registradas en otras etapas no se extrapolan al estado actual de `foodstore_copia_trabajo`.
 
 La validación de TP6 demuestra equivalencia y sincronización secuencial para los casos ensayados, pero deja pendientes las pruebas concurrentes y la cuantificación del costo de escritura. Por ello, los resultados de lectura respaldan la adaptación evaluada sin presentarla como una instalación persistente ni como una garantía de rendimiento bajo cualquier carga.
+
+El TP8 cerró el recorrido con una recuperación probada: ambas bases se restauraron en un destino descartable con conteos idénticos, tiempos muy por debajo de las metas y cada operación autorizada de forma individual.
 
 ### TP7 — Aclaración documental del 2026-10-15
 

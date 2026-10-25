@@ -16,7 +16,7 @@ El repositorio conserva entregas, scripts de experimentación, respaldos y evide
 
 - [Instrucciones para agentes](AGENTS.md)
 - [Protocolo de seguridad](protocolo_seguridad.md)
-- [Informe integrador de TP1 a TP6 con avance de TP7](Informe_General.md)
+- [Informe integrador de TP1 a TP8](Informe_General.md)
 - [README de TP1](TP1_FoodStore/README.md)
 - [README de TP2](TP2_Concurrencia_IA/README.md)
 - [DUIA consolidada de TP3](TP3_Optimizacion/DUIA_COMPLETA.md)
@@ -32,6 +32,8 @@ El repositorio conserva entregas, scripts de experimentación, respaldos y evide
 - [TP7: verificación de equivalencia (Parte D)](TP7_Administracion_y_Seguridad/docs/verificacion_equivalencia.md)
 - [TP7: bitácora de IA](TP7_Administracion_y_Seguridad/BITACORA.md)
 - [Bitácora de IA consolidada (exigida por el PDF, Parte E)](BITACORA.md)
+- [README de TP8](TP8_Mantenimiento_Respaldo_Recuperacion/README_TP8.md)
+- [Informe post-incidente de TP8 en PDF](TP8_Mantenimiento_Respaldo_Recuperacion/informe_u6.pdf)
 
 ## Estructura del repositorio
 
@@ -41,7 +43,7 @@ El repositorio conserva entregas, scripts de experimentación, respaldos y evide
 Practicos/
 ├── AGENTS.md
 ├── protocolo_seguridad.md
-├── Informe_General.md                     # Informe integrador de TP1 a TP6 con avance de TP7
+├── Informe_General.md                     # Informe integrador de TP1 a TP8
 ├── TP1_FoodStore/                         # Modelado ER, normalización y DDL
 │   ├── schema.sql
 │   ├── dbdiagram_code.dbml
@@ -109,10 +111,17 @@ Practicos/
 │           ├── despues_ronda1.png
 │           └── auditoria.png
 ├── .kiro/steering/                        # Documentos de contexto generados con Kiro
-└── TP7_Administracion_y_Seguridad/        # Roles, auditoría, simulacro C, equivalencia D
-    ├── sql/                               # roles, funciones, auditoría, instalación, simulacro, anonimización
-    ├── docs/                              # plan, informes, log anonimizado, equivalencia, evidencias
-    └── BITACORA.md                        # Bitácora de trabajo de TP7 (antecedente; la consolidada vive en la raíz)
+├── TP7_Administracion_y_Seguridad/        # Roles, auditoría, simulacro C, equivalencia D
+│   ├── sql/                               # roles, funciones, auditoría, instalación, simulacro, anonimización
+│   ├── docs/                              # plan, informes, log anonimizado, equivalencia, evidencias
+│   └── BITACORA.md                        # Bitácora de trabajo de TP7 (antecedente; la consolidada vive en la raíz)
+└── TP8_Mantenimiento_Respaldo_Recuperacion/ # Respaldo, monitoreo, mantenimiento y restauración
+    ├── SPEC_U6.md, informe_u6.md, informe_u6.pdf
+    ├── backup_foodstore.ps1, restore_test.ps1, pg_common.ps1
+    ├── health_check.sql, maintenance.sql
+    ├── pruebas/                           # 14 pruebas con herramientas simuladas
+    ├── evidencias/                        # ensayo previo y validación final (sin dumps)
+    └── docs/                              # antecedentes del cierre anterior
 ```
 
 ## TP1 — FoodStore (modelado y DDL)
@@ -276,3 +285,19 @@ Se publicaron las correcciones de seguridad aplicadas junto con sus verificacion
 Los archivos de log originales se preservan intactos como evidencia histórica. Para facilitar la lectura y auditoría, se enlazan sus versiones convertidas a UTF-8:
 - [Log de auditoría de prueba (.utf8.txt)](TP7_Administracion_y_Seguridad/docs/log_auditoria_prueba.utf8.txt)
 - [Log de simulacro anonimizado (.utf8.txt)](TP7_Administracion_y_Seguridad/docs/log_simulacro_anonimizado.utf8.txt)
+
+## TP8 — Mantenimiento, respaldo y recuperación (Unidad 6)
+
+Entrega individual: Amanda Pagano.
+
+[Carpeta del TP8 — Mantenimiento, respaldo y recuperación](TP8_Mantenimiento_Respaldo_Recuperacion/)
+
+[Guía de lectura](TP8_Mantenimiento_Respaldo_Recuperacion/README_TP8.md)
+
+Respaldo custom de `foodstore_dev` (adaptación local de `foodstore`) y `foodstore_tp3_carga`, restauración en el destino descartable `foodstore_restore_test`, diagnóstico de solo lectura y mantenimiento justificado. Metas fijadas el 23/10, antes de los ensayos: RPO ≤ 24 h y RTO ≤ 15 min. **Terminado.**
+
+- **Validación final con los scripts entregados (24/10, 23:04 a 23:09):** RTO de 2,5788433 s (dev) y 9,1510594 s (carga); antigüedad del respaldo de 100,3614621 s y 49,9573628 s, que incluye el tiempo de autorización. 14 de 14 pruebas simuladas aprobadas.
+- **Ensayo previo (24/10, 00:32 a 00:44):** RTO de 2,9817064 s y 8,1943358 s; antigüedad de 0,7817533 s y aprox. 272,6074609 s.
+- Conteos idénticos antes y después en ambas bases (2/3/3/5/7 y 2/20.003/50.003/200.005/499.571) y nueve controles de integridad en cero.
+- `ANALYZE` solo sobre `categoria`, `usuario` y `mv_resumen_ventas_categoria_mes` del destino: columnas con estadísticas de 0 a 5/9/6, conteos preservados. Sin VACUUM FULL.
+- IA: Codex (scripts y ensayo previo) y Claude Code (revisión y validación final), con autorización humana por operación.

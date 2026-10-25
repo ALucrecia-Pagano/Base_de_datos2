@@ -1,7 +1,7 @@
 **TECNICATURA UNIVERSITARIA EN PROGRAMACIÓN**
 **UTN FRM — Base de Datos II**
 
-# Protocolo de seguridad — Origen en TP2 y aplicación a TP2–TP6
+# Protocolo de seguridad — Origen en TP2 y aplicación a TP2–TP8
 
 Alumnos: Liendo Mateo, Avila Lucas, Pagano Amanda.
 
@@ -41,6 +41,7 @@ No se ejecutan pruebas sobre foodstore_dev. Antes de una ejecución autorizada s
 | foodstore_tp3_carga | Base de carga masiva utilizada en las mediciones históricas de TP3, TP4 y TP5. |
 | foodstore_copia_trabajo — TP6 Parte 2 | Copia de trabajo con la carga masiva utilizada para medir la desnormalización. No debe confundirse con la copia pequeña inicial. |
 | foodstore_copia_tp6_parte1 | Copia pequeña conservada para TP6 Parte 1, según lo informado por el grupo. No se considera equivalente a la copia masiva. |
+| foodstore_restore_test | Destino descartable de restauración del TP8. Su contenido es siempre una copia restaurada de foodstore_dev o foodstore_tp3_carga; al cierre del TP8 (24/10/2026) contenía la restauración de foodstore_tp3_carga. No es una base de origen. |
 
 La carga utilizada en TP6 Parte 2 se documentó con 200005 pedidos, 499571 detalles, 50003 productos y 2 categorías. Sus consultas midieron el día histórico 25/06/2026 en America/Buenos_Aires.
 
@@ -182,3 +183,14 @@ Las correcciones de seguridad se publicaron en `88675cc`; el cierre documental c
 Un round-trip no demuestra legibilidad: se repararon únicamente secuencias comprobadas en las
 copias de lectura, conservando los originales. El detalle y la limitación de prompts históricos
 están en la [revisión documental TP7](TP7_Administracion_y_Seguridad/docs/revision_documental_20261015.md).
+
+## Alcance particular del TP8 (Mantenimiento, respaldo y recuperación)
+
+Lo anterior se mantiene íntegro; este apartado solo precisa su aplicación al TP8, sin modificar reglas ni antecedentes de otros TP.
+
+- **Bases de origen, solo lectura:** `foodstore_dev` (adaptación local de `foodstore` de la consigna de la Unidad 6) y `foodstore_tp3_carga` solo se leyeron: `pg_dump -Fc`, conteos y controles de integridad de la línea base, y `health_check.sql` dentro de una transacción `READ ONLY`. Esta lectura no es una prueba sobre `foodstore_dev`, no equivale a la excepción del TP7 y no habilita otras operaciones sobre esa base.
+- **Escritura solo en el destino:** `createdb`, `pg_restore` y `ANALYZE` se ejecutaron exclusivamente sobre `foodstore_restore_test`. `restore_test.ps1` tiene ese destino fijo y aborta, sin borrarlo, si ya existe; `maintenance.sql` aborta si la base conectada no es `foodstore_restore_test`.
+- **Borrado del destino:** cada `dropdb` de `foodstore_restore_test` se autorizó por separado. En la validación final se comprobó antes de cada borrado que no tuviera conexiones. En el ensayo previo, un borrado intentado con la autorización de otro destino fue bloqueado y se ejecutó solo después de una autorización específica (`TP8_Mantenimiento_Respaldo_Recuperacion/evidencias/LEEME.md`).
+- **Respaldos:** formato custom, nombrados con base, fecha, hora e identificador, guardados fuera del repositorio (`C:/Users/hp/TP8_Backups`) y sin sobrescribir los anteriores. Los `.dump` no se incluyen en la entrega.
+- **Ejecución de scripts:** `powershell.exe -ExecutionPolicy RemoteSigned -File`, aplicado solo a cada proceso; sin Bypass ni cambios de la política del equipo.
+- **Evidencias:** ensayo previo (24/10, 00:32 a 00:44) y validación final con los scripts entregados (24/10, 23:04 a 23:09) en `TP8_Mantenimiento_Respaldo_Recuperacion/evidencias/`. Los registros históricos se conservan intactos.

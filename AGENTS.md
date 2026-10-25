@@ -11,6 +11,7 @@ Proyecto académico PostgreSQL: FoodStore.
 - [TP5](TP5_Indices_Vistas/README.md): índices, vistas y vista materializada.
 - [TP6](TP6_FNBC_Desnormalizacion/README.md): FNBC y desnormalización controlada.
 - [TP7](TP7_Administracion_y_Seguridad/README.md): administración y seguridad.
+- [TP8](TP8_Mantenimiento_Respaldo_Recuperacion/README_TP8.md): mantenimiento, respaldo y recuperación.
 
 Consultar el [README general](README.md), el [informe integrador](Informe_General.md) y el [protocolo de seguridad](protocolo_seguridad.md).
 
@@ -39,6 +40,8 @@ Seguir el [protocolo de seguridad](protocolo_seguridad.md).
 Los scripts y las decisiones históricas no son un inventario de objetos instalados actualmente. No asumir que las distintas bases o copias tienen el mismo esquema, datos, índices o triggers.
 
 Los scripts actuales de TP6 comprueban foodstore_copia_trabajo como destino. No ejecutarlos sobre otra base ni cambiar esa comprobación sin autorización. Sus implementaciones se validaron con ROLLBACK y no quedaron persistidas.
+
+Los scripts de TP8 usan foodstore_restore_test como único destino: restore_test.ps1 aborta si ya existe y maintenance.sql aborta en cualquier otra base. foodstore_dev y foodstore_tp3_carga solo se leen para respaldarlas. No borrar ni recrear foodstore_restore_test sin autorización específica; ver el alcance particular del TP8 en el [protocolo de seguridad](protocolo_seguridad.md).
 
 ## Convenciones del esquema documentado
 

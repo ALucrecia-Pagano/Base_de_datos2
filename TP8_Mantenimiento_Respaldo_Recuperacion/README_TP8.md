@@ -16,7 +16,7 @@ Los respaldos completos permanecen fuera del repositorio. Toda ejecución sobre 
 
 No hace falta ejecutar scripts para revisar la entrega.
 
-El 24/10, entre las 23:04 y las 23:09, se ejecutó el ciclo completo con los scripts finales: 14/14 pruebas simuladas, respaldo y restauración de ambas bases con PASS, diagnóstico y mantenimiento. Evidencias en `evidencias/validacion_final_20261024/`. Los ensayos de las 00:32 a las 00:44 se conservan como antecedente.
+El 24/10, entre las 23:04 y las 23:09, se respaldaron y restauraron ambas bases con los scripts finales (PASS), y se ejecutaron el diagnóstico y el mantenimiento. Las 14 pruebas simuladas también pasaron. Evidencias en `evidencias/validacion_final_20261024/`. Los ensayos de las 00:32 a las 00:44 se conservan como antecedente.
 
 | Archivo o carpeta | Para qué sirve |
 |---|---|

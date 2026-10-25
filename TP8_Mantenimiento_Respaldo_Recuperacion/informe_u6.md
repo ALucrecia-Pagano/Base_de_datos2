@@ -17,7 +17,7 @@ El destino descartable fue `foodstore_restore_test`. Las bases originales no se 
 
 Se generaron respaldos en formato custom con `pg_dump -Fc`. Para restaurar, se creó el destino desde `template0` y se ejecutó `pg_restore --exit-on-error --no-owner --no-privileges`. Cada origen se ensayó por separado, uno después del otro. Autoricé por separado cada borrado de `foodstore_restore_test`.
 
-Antes del respaldo y después de la restauración se registraron estos conteos exactos:
+Antes del respaldo y después de la restauración se registraron estos conteos exactos. Fueron idénticos en el ensayo previo y en la validación final:
 
 | Tabla | Dev antes | Dev restaurado | Carga antes | Carga restaurada |
 |---|---:|---:|---:|---:|
@@ -27,14 +27,14 @@ Antes del respaldo y después de la restauración se registraron estos conteos e
 | pedido | 5 | 5 | 200.005 | 200.005 |
 | detalle_pedido | 7 | 7 | 499.571 | 499.571 |
 
-Los nueve indicadores de integridad dieron cero en ambos ensayos. Esos indicadores son:
-- precios no positivos;
+Los nueve indicadores de integridad dieron cero en el ensayo previo y en la validación final. Esos indicadores son:
+- precios negativos (el ensayo previo controló además precio cero);
 - stock negativo;
 - cantidades no positivas;
 - subtotales incorrectos;
 - cuatro tipos de referencias huérfanas.
 
-Las restauraciones conservaron también 6 tablas, 5 vistas y 57 restricciones. La validación compara conteos e indicadores, no fila por fila. La restauración no incluye roles ni permisos.
+En el ensayo previo, las restauraciones conservaron también 6 tablas, 5 vistas y 57 restricciones. La validación compara conteos e indicadores, no fila por fila. La restauración no incluye roles ni permisos.
 
 ## Objetivos y resultados
 
@@ -57,9 +57,9 @@ El RTO se mide desde inmediatamente antes de crear el destino hasta que terminan
 
 La antigüedad del respaldo indica qué tan fresco era, pero no mide datos perdidos: las bases originales no recibieron escrituras durante el ensayo. El RPO de diseño lo fija la frecuencia diaria del respaldo, es decir, hasta 24 horas.
 
-En carga, la antigüedad es mayor porque la restauración se repitió con el mismo respaldo. Como el inicio exacto de ese respaldo no quedó registrado, se usó la marca tomada justo antes.
+En el ensayo previo de carga, la antigüedad es mayor porque la restauración se repitió con el mismo respaldo. Como el inicio exacto de ese respaldo no quedó registrado, se usó la marca tomada justo antes.
 
-Las metas se fijaron el 23/10, antes de los ensayos, y los valores observados quedan dentro de ellas. Es una medición única en un laboratorio local, sin programación periódica instalada.
+Las metas se fijaron el 23/10, antes de los ensayos, y los valores observados quedan dentro de ellas. Son dos mediciones por base, en un laboratorio local, sin programación periódica instalada.
 
 ## Mantenimiento justificado
 
@@ -86,7 +86,7 @@ Se corrigió la comparación para que fuera por valor, y se verificaron nuevamen
 
 También generé un respaldo preparatorio de `foodstore_tp3_carga` con `pg_dump -Fc`: comprobé el código de salida 0 y lo verifiqué con `pg_restore --list`. Decidí que el respaldo se hiciera sobre la base original y no sobre una copia, por eso `foodstore_dev` es el origen principal.
 
-**Asistencia de IA.** La SPEC inicial se redactó con asistencia de IA. Codex generó los scripts y ejecutó los ensayos finales. La cátedra admite el uso de agentes, y se utilizó Codex en lugar de OpenCode.
+**Asistencia de IA.** La SPEC inicial se redactó con asistencia de IA. Codex generó los scripts y ejecutó el ensayo previo. La cátedra admite el uso de agentes, y se utilizó Codex en lugar de OpenCode.
 
 Cada operación sobre las bases requirió mi autorización: respaldos, borrado de cada destino, repetición y `ANALYZE`. Hay dos constancias en las evidencias:
 - mi autorización textual ("si autorizo") en `repeticion/timing.json`;
@@ -94,7 +94,7 @@ Cada operación sobre las bases requirió mi autorización: respaldos, borrado d
 
 **Pruebas de los scripts finales.**
 El 24/10, entre las 23:04 y las 23:09, se ejecutó el ciclo completo con los scripts entregados. Claude Code ejecutó cada operación después de mi autorización explícita:
-- `pruebas/test_delivery.ps1`: 14 de 14 pruebas aprobadas con herramientas simuladas.
+- `pruebas/test_delivery.ps1`: 14 de 14 pruebas aprobadas con herramientas simuladas (salida guardada a las 23:19).
 - `backup_foodstore.ps1`: PASS en ambas bases, con los nueve controles en cero y el dump nombrado con fecha y hora.
 - `restore_test.ps1`: PASS en ambas restauraciones, con conteos idénticos a la línea base y los nueve controles en cero.
 - Antes de cada borrado de `foodstore_restore_test` se comprobó que no tuviera conexiones.

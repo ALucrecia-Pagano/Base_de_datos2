@@ -7,11 +7,12 @@ param(
 )
 . (Join-Path $PSScriptRoot 'pg_common.ps1')
 $connection=@('-w','-h',$DbHost,'-p',"$Port",'-U',$DbUser)
-$run=Join-Path $OutputDirectory ($SourceDatabase+'_'+(Get-Date -Format 'yyyyMMdd_HHmmss_fff')+'_'+[guid]::NewGuid().ToString('N').Substring(0,8))
+$stamp=Get-Date -Format 'yyyyMMdd_HHmmss_fff'; $id=[guid]::NewGuid().ToString('N').Substring(0,8)
+$run=Join-Path $OutputDirectory ($SourceDatabase+'_'+$stamp+'_'+$id)
 New-Item -ItemType Directory -Path $run -Force | Out-Null
 $logs=Join-Path $run 'logs'; New-Item -ItemType Directory -Path $logs | Out-Null
 $manifest=Join-Path $run 'metadata.json'
-$data=[ordered]@{status='FAIL';source=$SourceDatabase;host=$DbHost;port=$Port;started_at=[DateTimeOffset]::Now.ToString('o');baseline=$null;dump_path=(Join-Path $run ($SourceDatabase+'.dump'));dump_sha256=$null;dump_bytes=0;error=$null}
+$data=[ordered]@{status='FAIL';source=$SourceDatabase;host=$DbHost;port=$Port;started_at=[DateTimeOffset]::Now.ToString('o');baseline=$null;dump_path=(Join-Path $run ($SourceDatabase+'_'+$stamp+'_'+$id+'.dump'));dump_sha256=$null;dump_bytes=0;error=$null}
 try {
  $data.baseline=Get-Metrics $SourceDatabase (Join-Path $run 'baseline.json')
  Assert-Valid $data.baseline

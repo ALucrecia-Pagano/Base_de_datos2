@@ -4,7 +4,7 @@
 
 El baseline del 24/10/2026 fue BLOQUEADO por la política de Windows PowerShell 5.1 antes de ejecutar la suite. No se cambió la política ni se usó Bypass. Por indicación posterior del usuario, los scripts y `pruebas/test_delivery.ps1` permanecen intactos; no hay RED/GREEN actual de las correcciones propuestas. Los resultados 12/12 y ejecuciones reales descriptos abajo son exclusivamente HISTÓRICOS. Las propuestas y el comando/error completo están en [la revisión de cierre](docs/cierre_revision_20261024.md).
 
-La inspección confirma cinco conteos y cuatro indicadores actuales. La SPEC sigue exigiendo subtotal y cuatro referencias adicionales; esa brecha no está corregida. También siguen pendientes el nombre fechado del dump, la imposición de ruta externa, el rechazo explícito de colisiones, el registro por etapa y ROLLBACK del diagnóstico. Ningún PASS histórico acredita esas mejoras.
+El validador comprueba cinco conteos y nueve indicadores. El dump lleva fecha, hora e id en el nombre, y el diagnóstico termina con ROLLBACK. Siguen sin implementarse la imposición de ruta externa, el rechazo explícito de colisiones y el registro por etapa. Estos cambios todavía no se probaron con la suite ni contra PostgreSQL.
 
 Fecha: 24/10/2026 (Argentina). Scripts nuevos, sin baseline previo. No se modificó el repositorio de Mateo ni las bases fuente.
 
@@ -43,7 +43,7 @@ La restauración completa con estos scripts nuevos fue comprobada mediante herra
 
 Se requieren herramientas PostgreSQL 17 y autenticación ya configurada por el usuario; los scripts usan -w (no solicitan contraseña), no guardan credenciales ni cambian configuración. No contienen borrado de bases. Destino fijo foodstore_restore_test; si existe, se conserva y el script aborta. Una falla posterior a createdb conserva el destino para diagnóstico.
 
-`pg_common.ps1` debe permanecer junto a los dos scripts. OutputDirectory puede cambiarse; si se mueve el dump, usar -DumpPath junto a MetadataPath. La comparación de cinco tablas y cuatro invariantes verifica esos controles, no equivalencia total de todos los objetos. Baseline y pg_dump se toman en instantes distintos: ejecutar sin escrituras concurrentes si se desea comparar los conteos exactamente. RTO va desde antes de createdb hasta terminar validaciones; RPO es únicamente antigüedad del inicio del respaldo al inicio de recuperación.
+`pg_common.ps1` debe permanecer junto a los dos scripts. OutputDirectory puede cambiarse; si se mueve el dump, usar -DumpPath junto a MetadataPath. La comparación de cinco tablas y nueve indicadores verifica esos controles, no equivalencia total de todos los objetos. Baseline y pg_dump se toman en instantes distintos: ejecutar sin escrituras concurrentes si se desea comparar los conteos exactamente. RTO va desde antes de createdb hasta terminar validaciones; RPO es únicamente antigüedad del inicio del respaldo al inicio de recuperación.
 
 El registro histórico declara que Windows PowerShell 5.1 requirió ExecutionPolicy Bypass solo para aquel proceso de pruebas. Se conserva como antecedente, no como instrucción de reproducción: en esta revisión está prohibido y no se utilizó. Los resultados históricos no resuelven el bloqueo actual.
 

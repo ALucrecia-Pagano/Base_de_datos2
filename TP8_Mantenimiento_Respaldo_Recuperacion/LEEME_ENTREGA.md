@@ -27,9 +27,9 @@ Windows PowerShell y herramientas cliente de PostgreSQL disponibles. Revisar man
 
 ## Ejecución manual
 
-**Estado de cierre:** los comandos siguientes son referencias para futuras operaciones autorizadas, no instrucciones para ejecutar durante esta revisión. El baseline actual quedó bloqueado por la política; por indicación del usuario se conservó el comportamiento de scripts y pruebas. Las correcciones están propuestas, sin aplicar, en [la revisión de cierre](docs/cierre_revision_20261024.md).
+Los comandos siguientes requieren autorización previa para cada operación.
 
-El código actual fecha el directorio, pero no el nombre del dump; permite `OutputDirectory` sin imponer que sea externo y crea directorios de ejecución con `-Force`. El operador debe revisar estos límites y no considerar implementadas las guardias propuestas. `health_check.sql` aún termina con COMMIT en READ ONLY: el cambio futuro a ROLLBACK está pendiente; los logs históricos se conservan intactos. El validador actual no verifica subtotales ni huérfanos pese a que la SPEC los exige.
+El dump se nombra `<base>_<yyyyMMdd_HHmmss_fff>_<id>.dump`, igual que su carpeta. `OutputDirectory` admite cualquier ruta: elegir una fuera del repositorio. Los directorios se crean con `-Force`; el id aleatorio hace improbable reutilizar uno. `health_check.sql` es de solo lectura y termina con ROLLBACK; los logs históricos conservan el COMMIT con que se ejecutaron. El validador comprueba nueve controles: los cuatro de la consigna, subtotales y cuatro referencias huérfanas.
 
 Desde esta carpeta, respaldar cada origen por separado:
 
@@ -38,7 +38,7 @@ Desde esta carpeta, respaldar cada origen por separado:
 .\backup_foodstore.ps1 -SourceDatabase foodstore_tp3_carga
 ```
 
-Cada respaldo queda por defecto fuera del repositorio en `C:/Users/hp/TP8_Backups/<base>_<fecha_identificador>/`, con dump, `metadata.json` y logs. Puede elegirse otra carpeta externa mediante `-OutputDirectory`. Conservar la ruta `metadata.json` devuelta por cada ejecución. Para restaurar un respaldo, reemplazar la ruta de ejemplo por la real:
+Cada respaldo queda por defecto fuera del repositorio en `C:/Users/hp/TP8_Backups/<base>_<fecha_hora>_<id>/`, con el dump `<base>_<fecha_hora>_<id>.dump`, `metadata.json` y logs. Puede elegirse otra carpeta externa mediante `-OutputDirectory`. Conservar la ruta `metadata.json` devuelta por cada ejecución. Para restaurar un respaldo, reemplazar la ruta de ejemplo por la real:
 
 ```powershell
 .\restore_test.ps1 -MetadataPath 'C:\Users\hp\TP8_Backups\CARPETA_REAL\metadata.json'

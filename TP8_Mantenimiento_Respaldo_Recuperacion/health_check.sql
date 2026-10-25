@@ -13,4 +13,4 @@ SELECT schemaname, relname, pg_size_pretty(pg_total_relation_size(relid)) AS tam
 SELECT pid, usename, application_name, state, clock_timestamp()-query_start AS duracion, wait_event_type, wait_event FROM pg_stat_activity WHERE datname=current_database() AND state='active' AND pid <> pg_backend_pid() ORDER BY query_start;
 SELECT name, setting, unit, source FROM pg_settings WHERE name IN ('autovacuum', 'track_counts', 'autovacuum_analyze_threshold', 'autovacuum_analyze_scale_factor', 'autovacuum_vacuum_threshold', 'autovacuum_vacuum_scale_factor', 'autovacuum_naptime', 'autovacuum_max_workers') ORDER BY name;
 SELECT n.nspname AS esquema, c.relname AS tabla, c.reloptions AS opciones_particulares FROM pg_class c JOIN pg_namespace n ON n.oid=c.relnamespace WHERE c.relkind IN ('r','p') AND n.nspname NOT IN ('pg_catalog','information_schema') ORDER BY 1,2;
-COMMIT;
+ROLLBACK;

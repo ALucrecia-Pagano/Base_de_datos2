@@ -26,6 +26,7 @@ $env:TP8_MODE='dumpfail'; Expect-Failure {& $backup -PgBin $bin -OutputDirectory
 $env:TP8_MODE='ok'; $manifest=& $backup -PgBin $bin -OutputDirectory $testRoot
 $m=Get-Content $manifest -Raw | ConvertFrom-Json
 if($m.status -ne 'PASS' -or $m.dump_bytes -le 0 -or $m.dump_sha256.Length -ne 64){throw 'Backup success metadata incorrect'}; $passed++
+if([IO.Path]::GetFileName($m.dump_path) -cnotmatch '^foodstore_dev_\d{8}_\d{6}_\d{3}_[0-9a-f]{8}\.dump$'){throw 'Dump name lacks date, time and id'}; $passed++
 $m2=& $backup -SourceDatabase foodstore_tp3_carga -PgBin $bin -OutputDirectory $testRoot
 if((Get-Content $m2 -Raw|ConvertFrom-Json).source -ne 'foodstore_tp3_carga'){throw 'Second source not preserved'}; $passed++
 foreach($mode in @('exists','restorefail','mismatch','invalid','orphan')){

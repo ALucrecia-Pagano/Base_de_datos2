@@ -10,10 +10,10 @@ if($name -eq 'pg_dump.ps1') { if($env:TP8_MODE -eq 'dumpfail'){$global:LASTEXITC
 if($name -eq 'pg_restore.ps1'){if($env:TP8_MODE -eq 'restorefail' -and $allArgs -notcontains '--list'){$global:LASTEXITCODE=9}; return}
 if($name -eq 'psql.ps1'){
  if(($allArgs -join ' ') -match 'pg_database'){if($env:TP8_MODE -eq 'exists'){'1'}else{'0'}; return}
- if($env:TP8_MODE -eq 'reordered' -and $allArgs -contains 'foodstore_restore_test'){'{"invalid":{"detalle_precio_negativo":0,"detalle_cantidad_no_positiva":0,"producto_stock_negativo":0,"producto_precio_negativo":0},"counts":{"detalle_pedido":1,"pedido":1,"producto":1,"cliente":1,"categoria":1}}'; return}
- $n=1; $bad=0
- if($allArgs -contains 'foodstore_restore_test') {if($env:TP8_MODE -eq 'mismatch'){$n=2}; if($env:TP8_MODE -eq 'invalid'){$bad=1}}
- '{"counts":{"categoria":1,"cliente":1,"producto":'+$n+',"pedido":1,"detalle_pedido":1},"invalid":{"producto_precio_negativo":'+$bad+',"producto_stock_negativo":0,"detalle_cantidad_no_positiva":0,"detalle_precio_negativo":0}}'
+ if($env:TP8_MODE -eq 'reordered' -and $allArgs -contains 'foodstore_restore_test'){'{"invalid":{"detalle_producto_huerfano":0,"detalle_pedido_huerfano":0,"pedido_cliente_huerfano":0,"producto_categoria_huerfana":0,"detalle_subtotal_incorrecto":0,"detalle_precio_negativo":0,"detalle_cantidad_no_positiva":0,"producto_stock_negativo":0,"producto_precio_negativo":0},"counts":{"detalle_pedido":1,"pedido":1,"producto":1,"cliente":1,"categoria":1}}'; return}
+ $n=1; $bad=0; $orphan=0
+ if($allArgs -contains 'foodstore_restore_test') {if($env:TP8_MODE -eq 'mismatch'){$n=2}; if($env:TP8_MODE -eq 'invalid'){$bad=1}; if($env:TP8_MODE -eq 'orphan'){$orphan=1}}
+ '{"counts":{"categoria":1,"cliente":1,"producto":'+$n+',"pedido":1,"detalle_pedido":1},"invalid":{"producto_precio_negativo":'+$bad+',"producto_stock_negativo":0,"detalle_cantidad_no_positiva":0,"detalle_precio_negativo":0,"detalle_subtotal_incorrecto":0,"producto_categoria_huerfana":0,"pedido_cliente_huerfano":0,"detalle_pedido_huerfano":0,"detalle_producto_huerfano":'+$orphan+'}}'
 }
 '@
 foreach($name in @('psql','pg_dump','pg_restore','createdb')){Set-Content (Join-Path $bin "$name.ps1") $fake}
@@ -28,7 +28,7 @@ $m=Get-Content $manifest -Raw | ConvertFrom-Json
 if($m.status -ne 'PASS' -or $m.dump_bytes -le 0 -or $m.dump_sha256.Length -ne 64){throw 'Backup success metadata incorrect'}; $passed++
 $m2=& $backup -SourceDatabase foodstore_tp3_carga -PgBin $bin -OutputDirectory $testRoot
 if((Get-Content $m2 -Raw|ConvertFrom-Json).source -ne 'foodstore_tp3_carga'){throw 'Second source not preserved'}; $passed++
-foreach($mode in @('exists','restorefail','mismatch','invalid')){
+foreach($mode in @('exists','restorefail','mismatch','invalid','orphan')){
  $env:TP8_MODE=$mode; Set-Content $env:TP8_CALLS ''
  Expect-Failure {& $restore -MetadataPath $manifest -PgBin $bin -OutputDirectory $testRoot} $mode
  $calls=Get-Content $env:TP8_CALLS -Raw

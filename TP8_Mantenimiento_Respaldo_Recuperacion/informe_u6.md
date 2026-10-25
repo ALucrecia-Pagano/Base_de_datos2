@@ -2,6 +2,7 @@
 
 UTN FRM · Base de Datos II · FoodStore
 Alumna: Pagano Amanda · Comisión 4 · Profesor: Neira Sergio
+Repositorio: https://github.com/ALucrecia-Pagano/Base_de_datos2
 Fecha de los ensayos: 24/10/2026 (UTC-03:00)
 
 ## Objetivo y entorno
@@ -93,7 +94,7 @@ Cada operación sobre las bases requirió mi autorización: respaldos, borrado d
 - el caso del segundo borrado, registrado en `evidencias/LEEME.md`: cuando Codex intentó borrar el segundo destino apoyándose en la autorización del primero, el sistema de revisión de la herramienta lo bloqueó, y el borrado se hizo solo después de mi autorización específica.
 
 **Pruebas de los scripts finales.**
-El 24/10, entre las 23:04 y las 23:09, se ejecutó el ciclo completo con los scripts entregados. Claude Code ejecutó cada operación después de mi autorización explícita:
+El 24/10, entre las 23:04 y las 23:09, se respaldaron y restauraron ambas bases con los scripts entregados. Claude Code ejecutó cada operación después de mi autorización explícita:
 - `pruebas/test_delivery.ps1`: 14 de 14 pruebas aprobadas con herramientas simuladas (salida guardada a las 23:19).
 - `backup_foodstore.ps1`: PASS en ambas bases, con los nueve controles en cero y el dump nombrado con fecha y hora.
 - `restore_test.ps1`: PASS en ambas restauraciones, con conteos idénticos a la línea base y los nueve controles en cero.
@@ -108,6 +109,7 @@ Mejora para la próxima ejecución: respaldar también roles y permisos con `pg_
 Conclusión: las dos bases se recuperaron con conteos idénticos e indicadores de integridad en cero, con tiempos muy por debajo de las metas, en un laboratorio local.
 
 Evidencias:
+- Carpeta del TP8 en el repositorio: https://github.com/ALucrecia-Pagano/Base_de_datos2/tree/main/TP8_Mantenimiento_Respaldo_Recuperacion
 - `evidencias/results.json`;
 - `evidencias/LEEME.md`;
 - `evidencias/foodstore_tp3_carga/repeticion/timing.json`;

@@ -1,0 +1,53 @@
+El paginador no se usará.
+DO
+SET
+SET
+          base          |            inicio             
+------------------------+-------------------------------
+ foodstore_restore_test | 2026-10-24 23:09:38.730731-03
+(1 fila)
+
+             relname             | n_live_tup | n_dead_tup | n_mod_since_analyze | last_vacuum |        last_autovacuum        | last_analyze |       last_autoanalyze        
+---------------------------------+------------+------------+---------------------+-------------+-------------------------------+--------------+-------------------------------
+ categoria                       |          2 |          0 |                   2 |             |                               |              | 
+ cliente                         |      20003 |          0 |                   0 |             | 2026-10-24 23:08:25.039895-03 |              | 2026-10-24 23:08:25.508164-03
+ detalle_pedido                  |     499571 |          0 |                   0 |             | 2026-10-24 23:09:27.398977-03 |              | 2026-10-24 23:09:27.736479-03
+ mv_resumen_ventas_categoria_mes |         26 |          0 |                  26 |             |                               |              | 
+ pedido                          |     200005 |          0 |                   0 |             | 2026-10-24 23:09:25.787095-03 |              | 2026-10-24 23:09:25.960054-03
+ producto                        |      50003 |          0 |                   0 |             | 2026-10-24 23:09:25.142481-03 |              | 2026-10-24 23:09:25.545537-03
+ usuario                         |          3 |          0 |                   3 |             |                               |              | 
+(7 filas)
+
+             relname             | reltuples | columnas_con_estadisticas 
+---------------------------------+-----------+---------------------------
+ categoria                       |         2 |                         0
+ mv_resumen_ventas_categoria_mes |        26 |                         0
+ usuario                         |         3 |                         0
+(3 filas)
+
+Conteos previos: categoria=2 usuario=3 vista_materializada=26
+ANALYZE
+             relname             | n_live_tup | n_dead_tup | n_mod_since_analyze | last_vacuum |        last_autovacuum        |         last_analyze          |       last_autoanalyze        
+---------------------------------+------------+------------+---------------------+-------------+-------------------------------+-------------------------------+-------------------------------
+ categoria                       |          2 |          0 |                   0 |             |                               | 2026-10-24 23:09:38.764086-03 | 
+ cliente                         |      20003 |          0 |                   0 |             | 2026-10-24 23:08:25.039895-03 |                               | 2026-10-24 23:08:25.508164-03
+ detalle_pedido                  |     499571 |          0 |                   0 |             | 2026-10-24 23:09:27.398977-03 |                               | 2026-10-24 23:09:27.736479-03
+ mv_resumen_ventas_categoria_mes |         26 |          0 |                   0 |             |                               | 2026-10-24 23:09:38.767093-03 | 
+ pedido                          |     200005 |          0 |                   0 |             | 2026-10-24 23:09:25.787095-03 |                               | 2026-10-24 23:09:25.960054-03
+ producto                        |      50003 |          0 |                   0 |             | 2026-10-24 23:09:25.142481-03 |                               | 2026-10-24 23:09:25.545537-03
+ usuario                         |          3 |          0 |                   0 |             |                               | 2026-10-24 23:09:38.766129-03 | 
+(7 filas)
+
+VALIDACION: conteos exactos preservados.
+             relname             | reltuples | columnas_con_estadisticas 
+---------------------------------+-----------+---------------------------
+ categoria                       |         2 |                         5
+ mv_resumen_ventas_categoria_mes |        26 |                         6
+ usuario                         |         3 |                         9
+(3 filas)
+
+          base          |              fin              
+------------------------+-------------------------------
+ foodstore_restore_test | 2026-10-24 23:09:38.772594-03
+(1 fila)
+

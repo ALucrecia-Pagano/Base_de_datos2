@@ -16,7 +16,7 @@ Los respaldos completos permanecen fuera del repositorio. Los scripts no se ejec
 
 Este archivo, `README_TP8.md`, es el índice principal del TP8. No hace falta ejecutar scripts para revisar la entrega.
 
-El informe fue reorganizado para la defensa con nuestros datos. Los scripts y la suite conservan su comportamiento: el baseline actual fue bloqueado por la política y el usuario indicó dejar las correcciones de código como propuestas. No confundir los 12/12 históricos con pruebas actuales. Antes de entregar, revisar el PDF y los pendientes de `docs/cierre_revision_20261024.md`.
+El 24/10, entre las 23:04 y las 23:09, se ejecutó el ciclo completo con los scripts finales: 14/14 pruebas simuladas, respaldo y restauración de ambas bases con PASS, diagnóstico y mantenimiento. Evidencias en `evidencias/validacion_final_20261024/`. Los ensayos de las 00:32 a las 00:44 se conservan como antecedente.
 
 | Archivo o carpeta | Para qué sirve |
 |---|---|
@@ -27,8 +27,9 @@ El informe fue reorganizado para la defensa con nuestros datos. Los scripts y la
 | `backup_foodstore.ps1`, `restore_test.ps1`, `health_check.sql`, `maintenance.sql` | Scripts de respaldo, restauración, diagnóstico y mantenimiento; revisarlos antes de cualquier ejecución autorizada. |
 | `pg_common.ps1` | Funciones compartidas utilizadas por los scripts PowerShell. |
 | `evidencias/` | Resultados y registros que respaldan lo informado. |
+| `evidencias/validacion_final_20261024/` | Respaldo, restauración, diagnóstico y mantenimiento ejecutados con los scripts finales. |
 | `docs/` | Registro de integración y antecedentes históricos conservados. |
-| `pruebas/test_delivery.ps1` | Pruebas aisladas con herramientas simuladas; no demuestran una restauración real sobre PostgreSQL. |
+| `pruebas/test_delivery.ps1` | 14 pruebas con herramientas simuladas; la restauración real está en `evidencias/validacion_final_20261024/`. |
 | `script_validation.md` | Explica qué validaciones se hicieron y sus límites. |
 | `MANIFEST_SHA256.txt` | Lista de huellas digitales para comprobar la integridad de los archivos. |
 | `TPUnidad_6_Mantenimiento_FoodStore (1).pdf` | Consigna original del trabajo. |

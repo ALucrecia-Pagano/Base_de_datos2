@@ -1,0 +1,6 @@
+psql:maintenance.sql:12: INFO:  analizando «public.categoria»
+psql:maintenance.sql:12: INFO:  «categoria»: se procesaron 1 de 1 páginas, que contenían 2 filas vigentes y 0 filas no vigentes; 2 filas en la muestra, 2 total de filas estimadas
+psql:maintenance.sql:12: INFO:  analizando «public.usuario»
+psql:maintenance.sql:12: INFO:  «usuario»: se procesaron 1 de 1 páginas, que contenían 3 filas vigentes y 0 filas no vigentes; 3 filas en la muestra, 3 total de filas estimadas
+psql:maintenance.sql:12: INFO:  analizando «public.mv_resumen_ventas_categoria_mes»
+psql:maintenance.sql:12: INFO:  «mv_resumen_ventas_categoria_mes»: se procesaron 1 de 1 páginas, que contenían 26 filas vigentes y 0 filas no vigentes; 26 filas en la muestra, 26 total de filas estimadas

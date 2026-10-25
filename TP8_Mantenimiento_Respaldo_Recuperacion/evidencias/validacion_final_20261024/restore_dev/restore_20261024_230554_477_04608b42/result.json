@@ -1,0 +1,33 @@
+﻿{
+    "status":  "PASS",
+    "target":  "foodstore_restore_test",
+    "metadata_path":  "C:\\Users\\hp\\TP8_Backups\\foodstore_dev_20261024_230414_270_8ff1a537\\metadata.json",
+    "started_at":  "2026-10-24T23:05:54.5491904-03:00",
+    "rto_seconds":  2.5788433,
+    "rpo_proxy_seconds":  100.3614621,
+    "rpo_note":  "Age of backup start at recovery start; freshness proxy, not measured data loss or guaranteed RPO.",
+    "metrics":  {
+                    "counts":  {
+                                   "categoria":  2,
+                                   "cliente":  3,
+                                   "producto":  3,
+                                   "pedido":  5,
+                                   "detalle_pedido":  7
+                               },
+                    "invalid":  {
+                                    "producto_precio_negativo":  0,
+                                    "producto_stock_negativo":  0,
+                                    "detalle_cantidad_no_positiva":  0,
+                                    "detalle_precio_negativo":  0,
+                                    "detalle_subtotal_incorrecto":  0,
+                                    "producto_categoria_huerfana":  0,
+                                    "pedido_cliente_huerfano":  0,
+                                    "detalle_pedido_huerfano":  0,
+                                    "detalle_producto_huerfano":  0
+                                }
+                },
+    "error":  null,
+    "recovery_start":  "2026-10-24T23:05:55.1093842-03:00",
+    "elapsed_attempt_seconds":  2.5788433,
+    "finished_at":  "2026-10-24T23:05:57.7411603-03:00"
+}

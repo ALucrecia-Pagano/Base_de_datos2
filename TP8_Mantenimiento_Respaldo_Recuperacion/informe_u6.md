@@ -39,13 +39,19 @@ Las restauraciones conservaron también 6 tablas, 5 vistas y 57 restricciones. L
 ## Objetivos y resultados
 
 Respaldos utilizados:
-- **Dev:** iniciado a las 00:32:38,094, con 46.877 bytes.
-- **Carga:** 7.321.779 bytes, con marca registrada a las 00:32:43,629, justo antes de iniciar el respaldo. Es el mismo respaldo que se reutilizó en la repetición.
+- **Scripts finales:** dev iniciado a las 23:04:14,748 (46.877 bytes); carga iniciado a las 23:07:31,677 (7.321.779 bytes).
+- **Ensayo previo:**
+  - **Dev:** iniciado a las 00:32:38,094, con 46.877 bytes.
+  - **Carga:** 7.321.779 bytes, con marca registrada a las 00:32:43,629, justo antes de iniciar el respaldo. Es el mismo respaldo que se reutilizó en la repetición.
 
-| Indicador | Meta (SPEC 23/10) | Dev | Carga (repetición) |
+| Indicador | Meta | Dev | Carga |
 |---|---|---:|---:|
-| RTO observado | ≤ 15 minutos | 2,9817064 s | 8,1943358 s |
-| Antigüedad del respaldo al iniciar (aproximación al RPO) | RPO ≤ 24 horas | 0,7817533 s | aprox. 272,6074609 s |
+| **RTO, scripts finales** (24/10, 23:05 y 23:08) | ≤ 15 min | **2,5788433 s** | **9,1510594 s** |
+| RTO, ensayo previo (24/10, 00:32 y 00:37) | ≤ 15 min | 2,9817064 s | 8,1943358 s |
+| **Antigüedad, scripts finales** | RPO ≤ 24 h | **100,3614621 s** | **49,9573628 s** |
+| Antigüedad, ensayo previo | RPO ≤ 24 h | 0,7817533 s | aprox. 272,6074609 s |
+
+En los scripts finales, la antigüedad incluye el tiempo de autorización entre el respaldo y la restauración.
 
 El RTO se mide desde inmediatamente antes de crear el destino hasta que terminan las validaciones.
 
@@ -61,13 +67,13 @@ El diagnóstico registró cero consultas ajenas activas y cero deadlocks acumula
 - conservaron 2, 3 y 26 filas;
 - sus columnas con estadísticas pasaron de 0 a 5, 9 y 6.
 
-No se aplicó VACUUM ni VACUUM FULL: las tablas grandes no tenían tuplas muertas y la consigna excluye VACUUM FULL como mantenimiento periódico. Tampoco se hizo mantenimiento sobre las bases originales. `maintenance.sql` incluye ahora la revisión de `last_autovacuum` y `last_autoanalyze` antes y después del `ANALYZE`; en el ensayo realizado, esa revisión se tomó del diagnóstico de `health_check.sql`.
+No se aplicó VACUUM ni VACUUM FULL: las tablas grandes no tenían tuplas muertas y la consigna excluye VACUUM FULL como mantenimiento periódico. Tampoco se hizo mantenimiento sobre las bases originales. `maintenance.sql` incluye ahora la revisión de `last_autovacuum` y `last_autoanalyze` antes y después del `ANALYZE`. En la ejecución final, `maintenance.sql` registró que autovacuum ya había analizado las cuatro tablas grandes, mientras que las tres relaciones chicas tenían 2, 3 y 26 modificaciones, por debajo del umbral de autoanalyze, y `last_analyze` en NULL. Tras el `ANALYZE`, `last_analyze` pasó a 23:09:38 en las tres, con los conteos preservados.
 
 ## Incidente
 
 En el primer intento con la base de carga se detectó una diferencia entre origen y restaurada. Los valores eran iguales: solo cambiaba el orden de las claves del JSON.
 
-Se corrigió la comparación para que fuera por valor, y se verificaron nuevamente, en vivo, la fuente y la restaurada. Autoricé borrar solo ese destino y repetir la restauración. El RTO informado es el de la repetición.
+Se corrigió la comparación para que fuera por valor, y se verificaron nuevamente, en vivo, la fuente y la restaurada. Autoricé borrar solo ese destino y repetir la restauración. El RTO del ensayo previo es el de la repetición.
 
 `restore_test.ps1` ya incorpora las dos lecciones: compara tabla por tabla, así que no depende del orden de las claves, y guarda el resultado aunque falle.
 
@@ -87,11 +93,13 @@ Cada operación sobre las bases requirió mi autorización: respaldos, borrado d
 - el caso del segundo borrado, registrado en `evidencias/LEEME.md`: cuando Codex intentó borrar el segundo destino apoyándose en la autorización del primero, el sistema de revisión de la herramienta lo bloqueó, y el borrado se hizo solo después de mi autorización específica.
 
 **Pruebas de los scripts finales.**
-- `backup_foodstore.ps1` se ejecutó con ambas bases y terminó en PASS.
-- La guarda de `restore_test.ps1` abortó sin borrar el destino existente, tal como estaba diseñada.
-- El RTO informado proviene del ensayo previo, no de ese script.
+El 24/10, entre las 23:04 y las 23:09, se ejecutó el ciclo completo con los scripts entregados. Claude Code ejecutó cada operación después de mi autorización explícita:
+- `pruebas/test_delivery.ps1`: 14 de 14 pruebas aprobadas con herramientas simuladas.
+- `backup_foodstore.ps1`: PASS en ambas bases, con los nueve controles en cero y el dump nombrado con fecha y hora.
+- `restore_test.ps1`: PASS en ambas restauraciones, con conteos idénticos a la línea base y los nueve controles en cero.
+- Antes de cada borrado de `foodstore_restore_test` se comprobó que no tuviera conexiones.
 
-**Revisión posterior.** No leí en detalle los cuatro scripts antes de su ejecución. Los revisé después con Claude Code, que también usé para auditar este informe y la SPEC y para contrastar los números con las evidencias. Los cambios los decidí yo.
+**Revisión posterior.** No leí en detalle los cuatro scripts antes de su ejecución. Los revisé después con Claude Code, que también usé para auditar este informe y la SPEC y para contrastar los números con las evidencias. Los cambios los decidí yo. Para la ejecución final, revisé y aprobé cada cambio de código antes de aplicarlo y autoricé cada operación de forma individual.
 
 ## Mejora y conclusión
 
@@ -103,6 +111,7 @@ Evidencias:
 - `evidencias/results.json`;
 - `evidencias/LEEME.md`;
 - `evidencias/foodstore_tp3_carga/repeticion/timing.json`;
-- `evidencias/salud_mantenimiento/`.
+- `evidencias/salud_mantenimiento/`;
+- `evidencias/validacion_final_20261024/`.
 
 Los respaldos `.dump` se conservan fuera del repositorio.

@@ -34,7 +34,7 @@ Desde la carpeta del TP8. Cada operación requiere autorización previa.
    powershell.exe -NoProfile -ExecutionPolicy RemoteSigned -File .\pruebas\test_delivery.ps1
    ```
 
-2. Respaldo de cada base. El script imprime la ruta del `metadata.json`, que queda en `C:\Users\hp\TP8_Backups\<base>_<fecha_hora>_<id>\`.
+2. Respaldo de cada base. El script imprime la ruta del `metadata.json`, que queda en `C:\Users\hp\TP8_Backups\<base>_<fecha_hora>_<id>\`. Cada respaldo registra su salida en `logs/` y el resultado (PASS o FAIL, tamaño, SHA256 y horarios) en `metadata.json`, dentro de la misma carpeta fechada.
 
    ```powershell
    powershell.exe -NoProfile -ExecutionPolicy RemoteSigned -File .\backup_foodstore.ps1 -SourceDatabase foodstore_dev

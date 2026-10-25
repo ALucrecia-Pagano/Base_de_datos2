@@ -295,7 +295,7 @@ Respaldo custom de `foodstore_dev` (adaptación local de `foodstore`) y `foodsto
 
 Los conteos fueron idénticos antes y después en ambas ejecuciones (dev 2/3/3/5/7; carga 2/20.003/50.003/200.005/499.571) y los nueve controles de integridad dieron cero. La antigüedad del respaldo aproxima el RPO, pero no mide datos perdidos; en la validación final incluye el tiempo de autorización. `maintenance.sql` registró que autovacuum ya había analizado las tablas grandes y aplicó `ANALYZE` solo a `categoria`, `usuario` y `mv_resumen_ventas_categoria_mes` del destino (columnas con estadísticas de 0 a 5/9/6, conteos preservados); no se usó VACUUM FULL. El incidente documentado fue una falsa diferencia por el orden de las claves JSON, corregida comparando por valor.
 
-**Control humano.** Codex generó los scripts y ejecutó el ensayo previo; Claude Code revisó la entrega y ejecutó la validación final. Cada operación sobre PostgreSQL requirió autorización individual, y un borrado del destino que Codex intentó con la autorización de otro destino fue bloqueado hasta recibir una autorización específica. Las 14 pruebas simuladas aprobaron.
+**Control humano.** Codex generó los scripts y ejecutó el ensayo previo; Claude Code revisó la entrega, aplicó con aprobación previa las correcciones de código y ejecutó la validación final. Cada operación sobre PostgreSQL requirió autorización individual, y un borrado del destino que Codex intentó con la autorización de otro destino fue bloqueado hasta recibir una autorización específica. Las 14 pruebas simuladas aprobaron.
 
 **Límites.** Dos mediciones por base en un laboratorio local, sin programación periódica; la restauración no incluye roles ni permisos.
 

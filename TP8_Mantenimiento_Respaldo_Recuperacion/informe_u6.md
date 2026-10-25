@@ -16,7 +16,7 @@ El destino descartable fue `foodstore_restore_test`. Las bases originales no se 
 
 ## Procedimiento y validaciones
 
-Se generaron respaldos en formato custom con `pg_dump -Fc`. Para restaurar, se creó el destino desde `template0` y se ejecutó `pg_restore --exit-on-error --no-owner --no-privileges`. Cada origen se ensayó por separado, uno después del otro. Autoricé por separado cada borrado de `foodstore_restore_test`.
+Se generaron respaldos en formato custom con `pg_dump -Fc`. Para restaurar, se creó el destino desde `template0` y se ejecutó `pg_restore --exit-on-error --no-owner --no-privileges`. Cada respaldo registra su salida en `logs/` y el resultado (PASS o FAIL, tamaño, SHA256 y horarios) en `metadata.json`, dentro de la misma carpeta fechada. Cada origen se ensayó por separado, uno después del otro. Autoricé por separado cada borrado de `foodstore_restore_test`.
 
 Antes del respaldo y después de la restauración se registraron estos conteos exactos. Fueron idénticos en el ensayo previo y en la validación final:
 
@@ -100,7 +100,7 @@ El 24/10, entre las 23:04 y las 23:09, se respaldaron y restauraron ambas bases 
 - `restore_test.ps1`: PASS en ambas restauraciones, con conteos idénticos a la línea base y los nueve controles en cero.
 - Antes de cada borrado de `foodstore_restore_test` se comprobó que no tuviera conexiones.
 
-**Revisión posterior.** No leí en detalle los cuatro scripts antes de su ejecución. Los revisé después con Claude Code, que también usé para auditar este informe y la SPEC y para contrastar los números con las evidencias. Los cambios los decidí yo. Para la ejecución final, revisé y aprobé cada cambio de código antes de aplicarlo y autoricé cada operación de forma individual.
+**Revisión posterior.** No leí en detalle los cuatro scripts antes de su ejecución. Los revisé después con Claude Code, que también usé para auditar este informe y la SPEC y para contrastar los números con las evidencias. Los cambios los decidí yo. Para la ejecución final, revisé y aprobé cada cambio de código antes de aplicarlo y autoricé cada operación de forma individual. Los cambios de código de esta etapa (nueve controles, nombre del dump con fecha, cierre con ROLLBACK y revisión de autovacuum) los aplicó Claude Code después de mi aprobación.
 
 ## Mejora y conclusión
 

@@ -300,4 +300,4 @@ Respaldo custom de `foodstore_dev` (adaptación local de `foodstore`) y `foodsto
 - **Ensayo previo (24/10, 00:32 a 00:44):** RTO de 2,9817064 s y 8,1943358 s; antigüedad de 0,7817533 s y aprox. 272,6074609 s.
 - Conteos idénticos antes y después en ambas bases (2/3/3/5/7 y 2/20.003/50.003/200.005/499.571) y nueve controles de integridad en cero.
 - `ANALYZE` solo sobre `categoria`, `usuario` y `mv_resumen_ventas_categoria_mes` del destino: columnas con estadísticas de 0 a 5/9/6, conteos preservados. Sin VACUUM FULL.
-- IA: Codex (scripts y ensayo previo) y Claude Code (revisión y validación final), con autorización humana por operación.
+- IA: Codex (scripts y ensayo previo) y Claude Code (revisión, correcciones de código y validación final), con autorización humana por operación.

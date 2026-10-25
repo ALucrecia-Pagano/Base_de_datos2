@@ -116,4 +116,4 @@ Evidencias:
 - `evidencias/salud_mantenimiento/`;
 - `evidencias/validacion_final_20261024/`.
 
-Los respaldos `.dump` se conservan fuera del repositorio.
+Los respaldos `.dump` no se entregan porque incluyen la tabla `usuario` con hashes de contraseñas; su creación, tamaño, SHA256 y restauración exitosa constan en `evidencias/validacion_final_20261024/`.

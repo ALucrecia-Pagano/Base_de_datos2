@@ -16,7 +16,7 @@
 
 `foodstore_dev` representa la base `foodstore` de la consigna; `foodstore_tp3_carga` permite comparar con mayor volumen. El único destino de restauración es `foodstore_restore_test`.
 
-Los `.dump` no se incluyen porque contienen los datos completos de las bases. Los de la validación final están en `C:\Users\hp\TP8_Backups`, y los del ensayo previo, en su carpeta de trabajo original (`ensayos_tp8_20261024_003237`). La consigna permite omitirlos si el aula limita el tamaño de los archivos; la evidencia de su creación, tamaño y restauración está en `evidencias/validacion_final_20261024/`.
+Los `.dump` no se incluyen: además de los datos completos de las bases, contienen la tabla `usuario`, cuya columna `contrasena` guarda hashes de contraseñas (esquema del TP5). Los de la validación final están en `C:\Users\hp\TP8_Backups`, y los del ensayo previo, en su carpeta de trabajo original (`ensayos_tp8_20261024_003237`). Como pide la consigna cuando se omite el respaldo, `evidencias/validacion_final_20261024/` registra su creación (nombre con fecha y hora), tamaño, SHA256 y restauración exitosa.
 
 ## Requisitos
 

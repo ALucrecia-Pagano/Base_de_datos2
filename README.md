@@ -33,7 +33,8 @@ El repositorio conserva entregas, scripts de experimentación, respaldos y evide
 - [TP7: bitácora de IA](TP7_Administracion_y_Seguridad/BITACORA.md)
 - [Bitácora de IA consolidada (exigida por el PDF, Parte E)](BITACORA.md)
 - [README de TP8](TP8_Mantenimiento_Respaldo_Recuperacion/README_TP8.md)
-- [Informe post-incidente de TP8 en PDF](TP8_Mantenimiento_Respaldo_Recuperacion/informe_u6.pdf)
+- [Informe post-incidente de TP8 de Amanda Pagano en PDF](TP8_Mantenimiento_Respaldo_Recuperacion/informe_u6_Amanda_Pagano_2026-10-24.pdf)
+- [Informe post-incidente de TP8 de Mateo Liendo en PDF](TP8_Mantenimiento_Respaldo_Recuperacion/informe_u6_Mateo_Liendo_2026-10-26.pdf)
 
 ## Estructura del repositorio
 
@@ -116,7 +117,9 @@ Practicos/
 │   ├── docs/                              # plan, informes, log anonimizado, equivalencia, evidencias
 │   └── BITACORA.md                        # Bitácora de trabajo de TP7 (antecedente; la consolidada vive en la raíz)
 └── TP8_Mantenimiento_Respaldo_Recuperacion/ # Respaldo, monitoreo, mantenimiento y restauración
-    ├── SPEC_U6.md, informe_u6.md, informe_u6.pdf
+    ├── SPEC_U6.md
+    ├── informe_u6_Amanda_Pagano_2026-10-24.md, informe_u6_Amanda_Pagano_2026-10-24.pdf
+    ├── informe_u6_Mateo_Liendo_2026-10-26.md, informe_u6_Mateo_Liendo_2026-10-26.pdf
     ├── backup_foodstore.ps1, restore_test.ps1, pg_common.ps1
     ├── health_check.sql, maintenance.sql
     ├── pruebas/                           # 14 pruebas con herramientas simuladas
@@ -288,7 +291,7 @@ Los archivos de log originales se preservan intactos como evidencia histórica. 
 
 ## TP8 — Mantenimiento, respaldo y recuperación (Unidad 6)
 
-Entrega individual: Amanda Pagano.
+Cada integrante entrega su informe individual en la carpeta del TP8. Esta sección resume el de Amanda Pagano; el de Mateo Liendo está en [informe_u6_Mateo_Liendo_2026-10-26.pdf](TP8_Mantenimiento_Respaldo_Recuperacion/informe_u6_Mateo_Liendo_2026-10-26.pdf).
 
 [Carpeta del TP8 — Mantenimiento, respaldo y recuperación](TP8_Mantenimiento_Respaldo_Recuperacion/)
 

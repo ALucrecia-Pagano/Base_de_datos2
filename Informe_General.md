@@ -12,7 +12,7 @@
 
 ## Introducción
 
-Este informe integra los trabajos prácticos de la cursada sobre **FoodStore**. El recorrido comprende modelado y normalización (TP1), integridad y concurrencia (TP2), carga masiva y optimización (TP3), reportes analíticos (TP4), índices y vistas (TP5), y FNBC y desnormalización controlada (TP6). El TP7 (Administración y seguridad, Unidad 5) tiene las Partes A–E terminadas y publicadas, más una corrección de seguridad posterior aplicada y publicada en `88675cc`; el cierre documental y los prompts de trabajo se publicaron en `39e4c6e`; tiene sección propia más abajo. El TP8 (Mantenimiento, respaldo y recuperación, Unidad 6) es una entrega individual de Amanda Pagano; está terminado y tiene sección propia antes de la conclusión.
+Este informe integra los trabajos prácticos de la cursada sobre **FoodStore**. El recorrido comprende modelado y normalización (TP1), integridad y concurrencia (TP2), carga masiva y optimización (TP3), reportes analíticos (TP4), índices y vistas (TP5), y FNBC y desnormalización controlada (TP6). El TP7 (Administración y seguridad, Unidad 5) tiene las Partes A–E terminadas y publicadas, más una corrección de seguridad posterior aplicada y publicada en `88675cc`; el cierre documental y los prompts de trabajo se publicaron en `39e4c6e`; tiene sección propia más abajo. El TP8 (Mantenimiento, respaldo y recuperación, Unidad 6) se entrega con un informe individual por integrante; la sección propia, antes de la conclusión, resume el de Amanda Pagano.
 
 En TP1 a TP5 se documentó el uso de Kiro, OpenCode o GitHub Copilot según la etapa y el integrante. En las correcciones de TP5 también se utilizaron Claude Code y Claude, registrados en su DUIA. En TP6 se utilizaron **ChatGPT y Codex CLI** para analizar, proponer scripts, revisar evidencias y preparar documentación. En TP7 (Unidad 5) se utilizan **Kiro** (especificación de roles), **OpenCode con Muse Spark 1.3 Free** (preparación, validación, instalación, simulacro, reconstrucción C.4 y anonimización/equivalencia D) y asistencia de **Codex** (inventario local), con revisión y autorización humana por paso. Las propuestas se revisaron y los cambios de archivos se realizaron con autorización humana; las ejecuciones en PostgreSQL fueron realizadas por el grupo y sus salidas se utilizaron como evidencia. No se atribuyen a TP6 las herramientas utilizadas en otras entregas. En TP8 (Unidad 6) se utilizaron **Codex** (generación de scripts y ensayo previo) y **Claude Code** (revisión, correcciones y validación final con los scripts entregados). A diferencia de las etapas anteriores, en TP8 los ensayos en PostgreSQL los ejecutaron esos agentes, cada uno después de una autorización humana individual; los controles previos (conteos, inspección de estructura y un respaldo preparatorio) los ejecutó Amanda Pagano.
 
@@ -284,7 +284,7 @@ Fuentes: [informe de auditoría](TP7_Administracion_y_Seguridad/docs/informe_aud
 
 ## TP8 — Mantenimiento, respaldo y recuperación (Unidad 6)
 
-Entrega individual: Amanda Pagano.
+Cada integrante entrega su informe individual en la carpeta del TP8. Esta sección resume el de Amanda Pagano; el de Mateo Liendo está en [informe_u6_Mateo_Liendo_2026-10-26.pdf](TP8_Mantenimiento_Respaldo_Recuperacion/informe_u6_Mateo_Liendo_2026-10-26.pdf).
 
 Respaldo custom de `foodstore_dev` (adaptación local de `foodstore`) y `foodstore_tp3_carga`, restauración en el destino descartable `foodstore_restore_test`, diagnóstico de solo lectura y mantenimiento justificado, en PostgreSQL 17.11. Las metas, fijadas el 23/10 antes de los ensayos, fueron RPO ≤ 24 h y RTO ≤ 15 min.
 
@@ -299,7 +299,7 @@ Los conteos fueron idénticos antes y después en ambas ejecuciones (dev 2/3/3/5
 
 **Límites.** Dos mediciones por base en un laboratorio local, sin programación periódica; la restauración no incluye roles ni permisos.
 
-Fuentes: [README del TP8](TP8_Mantenimiento_Respaldo_Recuperacion/README_TP8.md), [informe post-incidente](TP8_Mantenimiento_Respaldo_Recuperacion/informe_u6.md) y [validación de scripts](TP8_Mantenimiento_Respaldo_Recuperacion/script_validation.md).
+Fuentes: [README del TP8](TP8_Mantenimiento_Respaldo_Recuperacion/README_TP8.md), [informe post-incidente de Amanda Pagano](TP8_Mantenimiento_Respaldo_Recuperacion/informe_u6_Amanda_Pagano_2026-10-24.md) y [validación de scripts](TP8_Mantenimiento_Respaldo_Recuperacion/script_validation.md).
 
 ## Conclusión
 

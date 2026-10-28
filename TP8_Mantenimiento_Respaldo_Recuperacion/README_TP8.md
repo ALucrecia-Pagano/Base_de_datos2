@@ -1,9 +1,10 @@
 # TP8 — Mantenimiento, respaldo y recuperación
 
-Trabajo práctico de la Unidad 6. Este archivo es el índice de la entrega.
+Trabajo práctico de la Unidad 6. Este archivo es el índice de la entrega. Cada integrante entrega su informe individual en esta carpeta.
 
 - [Especificación y objetivos](SPEC_U6.md).
-- [Informe post-incidente en PDF](informe_u6.pdf) y [versión editable](informe_u6.md).
+- [Informe post-incidente de Amanda Pagano en PDF](informe_u6_Amanda_Pagano_2026-10-24.pdf) y [versión editable](informe_u6_Amanda_Pagano_2026-10-24.md).
+- [Informe individual de Mateo Liendo en PDF](informe_u6_Mateo_Liendo_2026-10-26.pdf) y [versión editable](informe_u6_Mateo_Liendo_2026-10-26.md).
 - [Evidencias de los ensayos](evidencias/LEEME.md).
 - [Validación de scripts](script_validation.md).
 - [Revisión de cierre anterior](docs/cierre_revision_20261024.md), conservada como antecedente: sus pendientes se resolvieron en la validación final del 24/10.
@@ -16,13 +17,14 @@ Los respaldos completos permanecen fuera del repositorio. Toda ejecución sobre 
 
 No hace falta ejecutar scripts para revisar la entrega.
 
-El 24/10, entre las 23:04 y las 23:09, se respaldaron y restauraron ambas bases con los scripts finales (PASS), y se ejecutaron el diagnóstico y el mantenimiento. Las 14 pruebas simuladas también pasaron. Evidencias en `evidencias/validacion_final_20261024/`. Los ensayos de las 00:32 a las 00:44 se conservan como antecedente.
+El 24/10, entre las 23:04 y las 23:09 (informe de Amanda Pagano), se respaldaron y restauraron ambas bases con los scripts finales (PASS), y se ejecutaron el diagnóstico y el mantenimiento. Las 14 pruebas simuladas también pasaron. Evidencias en `evidencias/validacion_final_20261024/`. Los ensayos de las 00:32 a las 00:44 se conservan como antecedente.
 
 | Archivo o carpeta | Para qué sirve |
 |---|---|
 | `LEEME_ENTREGA.md` | Manual de entrega: alcance, requisitos e instrucciones de uso. |
-| `informe_u6.pdf` | Informe post-incidente: evidencias, RPO/RTO, simulacro y mejora propuesta. |
-| `informe_u6.md` | Versión editable del mismo informe. |
+| `informe_u6_Amanda_Pagano_2026-10-24.pdf` | Informe individual de Amanda Pagano. Informe post-incidente: evidencias, RPO/RTO, simulacro y mejora propuesta. |
+| `informe_u6_Amanda_Pagano_2026-10-24.md` | Versión editable del mismo informe. |
+| `informe_u6_Mateo_Liendo_2026-10-26.pdf`, `informe_u6_Mateo_Liendo_2026-10-26.md` | Informe individual de Mateo Liendo. |
 | `SPEC_U6.md` | Especificación: objetivos, frecuencias, criterios de éxito y seguridad. |
 | `backup_foodstore.ps1`, `restore_test.ps1`, `health_check.sql`, `maintenance.sql` | Scripts de respaldo, restauración, diagnóstico y mantenimiento; revisarlos antes de cualquier ejecución autorizada. |
 | `pg_common.ps1` | Funciones compartidas utilizadas por los scripts PowerShell. |

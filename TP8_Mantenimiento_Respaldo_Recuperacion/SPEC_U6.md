@@ -25,4 +25,4 @@ El PASS de `restore_test.ps1` confirma la restauración y las validaciones; la c
 
 ## Revisión
 
-La SPEC inicial se redactó con asistencia de IA, y los scripts los generó Codex (la cátedra admite agentes en lugar de OpenCode). Cada operación sobre las bases requirió autorización humana individual, y los scripts finales se revisaron y corrigieron con Claude Code antes de la entrega. Ver `informe_u6.md`.
+La SPEC inicial se redactó con asistencia de IA, y los scripts los generó Codex (la cátedra admite agentes en lugar de OpenCode). Cada operación sobre las bases requirió autorización humana individual, y los scripts finales se revisaron y corrigieron con Claude Code antes de la entrega. Ver `informe_u6_Amanda_Pagano_2026-10-24.md`.

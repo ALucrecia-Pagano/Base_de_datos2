@@ -1,0 +1,36 @@
+{
+  "operador": "Mateo_Liendo",
+  "base_origen": "foodstore_dev",
+  "tipo_respaldo": "custom_pg_dump",
+  "estado": "PASS",
+  "fecha_hora_inicio": "2026-10-26T17:47:47.6800163-03:00",
+  "fecha_hora_fin": "2026-10-26T17:47:48.6550162-03:00",
+  "ruta_respaldo_externa": "C:\\Users\\Mateows\\TP8_Backups\\Mateo_Liendo\\foodstore_dev_20261026_174747_665_990189c9",
+  "archivo_dump": "foodstore_dev_20261026_174747_665_990189c9.dump",
+  "sha256": "E9F4B863285740BBD328BE9D7D017EA6E18BF133949A6ED2148162532A263905",
+  "tamano_bytes": 79722,
+  "validacion": {
+    "pg_restore_list": true,
+    "archivo_no_vacio": true,
+    "hash_verificado": true,
+    "conteos_baseline": {
+      "categoria": 2,
+      "cliente": 3,
+      "producto": 3,
+      "pedido": 5,
+      "detalle_pedido": 7
+    },
+    "integridad_invalid": {
+      "producto_precio_negativo": 0,
+      "producto_stock_negativo": 0,
+      "detalle_cantidad_no_positiva": 0,
+      "detalle_precio_negativo": 0,
+      "detalle_subtotal_incorrecto": 0,
+      "producto_categoria_huerfana": 0,
+      "pedido_cliente_huerfano": 0,
+      "detalle_pedido_huerfano": 0,
+      "detalle_producto_huerfano": 0
+    }
+  },
+  "observacion": "El respaldo real fue conservado fuera del repositorio, conforme al protocolo del TP8. Esta evidencia documenta la ejecución y su validación sin incluir el dump completo."
+}

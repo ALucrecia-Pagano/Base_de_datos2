@@ -5,6 +5,7 @@ Trabajo práctico de la Unidad 6. Este archivo es el índice de la entrega. Cada
 - [Especificación y objetivos](SPEC_U6.md).
 - [Informe post-incidente de Amanda Pagano en PDF](informe_u6_Amanda_Pagano_2026-10-24.pdf) y [versión editable](informe_u6_Amanda_Pagano_2026-10-24.md).
 - [Informe individual de Mateo Liendo en PDF](informe_u6_Mateo_Liendo_2026-10-26.pdf) y [versión editable](informe_u6_Mateo_Liendo_2026-10-26.md).
+- [Informe individual de Lucas Avila en PDF](informe_u6_Lucas_Avila_2026-10-29.pdf) y [versión editable](informe_u6_Lucas_Avila_2026-10-29.md).
 - [Evidencias de los ensayos](evidencias/LEEME.md).
 - [Validación de scripts](script_validation.md).
 - [Revisión de cierre anterior](docs/cierre_revision_20261024.md), conservada como antecedente: sus pendientes se resolvieron en la validación final del 24/10.
@@ -25,6 +26,7 @@ El 24/10, entre las 23:04 y las 23:09 (informe de Amanda Pagano), se respaldaron
 | `informe_u6_Amanda_Pagano_2026-10-24.pdf` | Informe individual de Amanda Pagano. Informe post-incidente: evidencias, RPO/RTO, simulacro y mejora propuesta. |
 | `informe_u6_Amanda_Pagano_2026-10-24.md` | Versión editable del mismo informe. |
 | `informe_u6_Mateo_Liendo_2026-10-26.pdf`, `informe_u6_Mateo_Liendo_2026-10-26.md` | Informe individual de Mateo Liendo. |
+| `informe_u6_Lucas_Avila_2026-10-29.pdf`, `informe_u6_Lucas_Avila_2026-10-29.md` | Informe individual de Lucas Avila. |
 | `SPEC_U6.md` | Especificación: objetivos, frecuencias, criterios de éxito y seguridad. |
 | `backup_foodstore.ps1`, `restore_test.ps1`, `health_check.sql`, `maintenance.sql` | Scripts de respaldo, restauración, diagnóstico y mantenimiento; revisarlos antes de cualquier ejecución autorizada. |
 | `pg_common.ps1` | Funciones compartidas utilizadas por los scripts PowerShell. |

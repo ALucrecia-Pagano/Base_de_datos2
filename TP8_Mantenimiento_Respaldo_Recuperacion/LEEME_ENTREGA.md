@@ -13,6 +13,7 @@
 | `pruebas/test_delivery.ps1` | 14 pruebas con herramientas simuladas, sin conexión a PostgreSQL. |
 | `informe_u6_Amanda_Pagano_2026-10-24.pdf`, `informe_u6_Amanda_Pagano_2026-10-24.md` | Informe post-incidente individual de Amanda Pagano. |
 | `informe_u6_Mateo_Liendo_2026-10-26.pdf`, `informe_u6_Mateo_Liendo_2026-10-26.md` | Informe individual de Mateo Liendo. |
+| `informe_u6_Lucas_Avila_2026-10-29.pdf`, `informe_u6_Lucas_Avila_2026-10-29.md` | Informe individual de Lucas Avila. |
 | `evidencias/` | Ensayo previo y validación final; sin dumps. |
 
 `foodstore_dev` representa la base `foodstore` de la consigna; `foodstore_tp3_carga` permite comparar con mayor volumen. El único destino de restauración es `foodstore_restore_test`.

@@ -35,6 +35,7 @@ El repositorio conserva entregas, scripts de experimentación, respaldos y evide
 - [README de TP8](TP8_Mantenimiento_Respaldo_Recuperacion/README_TP8.md)
 - [Informe post-incidente de TP8 de Amanda Pagano en PDF](TP8_Mantenimiento_Respaldo_Recuperacion/informe_u6_Amanda_Pagano_2026-10-24.pdf)
 - [Informe post-incidente de TP8 de Mateo Liendo en PDF](TP8_Mantenimiento_Respaldo_Recuperacion/informe_u6_Mateo_Liendo_2026-10-26.pdf)
+- [Informe post-incidente de TP8 de Lucas Avila en PDF](TP8_Mantenimiento_Respaldo_Recuperacion/informe_u6_Lucas_Avila_2026-10-29.pdf)
 
 ## Estructura del repositorio
 
@@ -120,6 +121,7 @@ Practicos/
     ├── SPEC_U6.md
     ├── informe_u6_Amanda_Pagano_2026-10-24.md, informe_u6_Amanda_Pagano_2026-10-24.pdf
     ├── informe_u6_Mateo_Liendo_2026-10-26.md, informe_u6_Mateo_Liendo_2026-10-26.pdf
+    ├── informe_u6_Lucas_Avila_2026-10-29.md, informe_u6_Lucas_Avila_2026-10-29.pdf
     ├── backup_foodstore.ps1, restore_test.ps1, pg_common.ps1
     ├── health_check.sql, maintenance.sql
     ├── pruebas/                           # 14 pruebas con herramientas simuladas
@@ -291,7 +293,7 @@ Los archivos de log originales se preservan intactos como evidencia histórica. 
 
 ## TP8 — Mantenimiento, respaldo y recuperación (Unidad 6)
 
-Cada integrante entrega su informe individual en la carpeta del TP8. Esta sección resume el de Amanda Pagano; el de Mateo Liendo está en [informe_u6_Mateo_Liendo_2026-10-26.pdf](TP8_Mantenimiento_Respaldo_Recuperacion/informe_u6_Mateo_Liendo_2026-10-26.pdf).
+Cada integrante entrega su informe individual en la carpeta del TP8. Esta sección resume el de Amanda Pagano; el de Mateo Liendo está en [informe_u6_Mateo_Liendo_2026-10-26.pdf](TP8_Mantenimiento_Respaldo_Recuperacion/informe_u6_Mateo_Liendo_2026-10-26.pdf). El de Lucas Avila está en [informe_u6_Lucas_Avila_2026-10-29.pdf](TP8_Mantenimiento_Respaldo_Recuperacion/informe_u6_Lucas_Avila_2026-10-29.pdf).
 
 [Carpeta del TP8 — Mantenimiento, respaldo y recuperación](TP8_Mantenimiento_Respaldo_Recuperacion/)
 

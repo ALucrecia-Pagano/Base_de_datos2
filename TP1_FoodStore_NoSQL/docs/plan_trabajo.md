@@ -2,7 +2,7 @@
 
 Las atribuciones de ejecución a Amanda y Mateo y las referencias a sus máquinas corresponden a lo informado por los integrantes; Git y los JSON no demuestran por sí solos autoría ni máquina de ejecución. No deben presentarse como una única ejecución; ambos aportes se integran en la entrega grupal.
 
-Las consultas y la comparación de las consignas 4–5 fueron aportadas, con ejecución informada por Mateo. La captura MongoDB disponible está recortada: no muestra completa c) ni la salida de d). Los resultados aportados se conservan; queda pendiente completar esas evidencias antes de cerrar la revisión de las consignas 4–5.
+Las consultas y la comparación de las consignas 4–5 fueron aportadas, con ejecución informada por Mateo. Su captura MongoDB no mostraba completas c) ni d); la reejecución de Amanda del 2026-11-01, con los mismos scripts, completa esa evidencia con resultados coincidentes. Los resultados de Mateo se conservan.
 
 ## Alcance
 
@@ -35,9 +35,9 @@ El equipo completo revisa la conclusión y el informe final. Cada integrante tra
 2. **Redactado e implementado:** diseño de consignas 1 y 3, con correspondencia, tipos BSON, ejemplo e integridad. **Pendiente:** revisión y aprobación grupal de destino, cliente y método según [decisiones.md](decisiones.md), y confirmación de suficiencia académica de ID más alias.
 3. **Realizado:** extracción y código de migración con detección de IDs existentes, sin reemplazos silenciosos. La aprobación documental no autoriza nuevas ejecuciones.
 4. **Realizado por Amanda:** ejecución manual de su extracción y migración el 2026-10-28, con conservación de datos y cantidades verificada según las evidencias del [resultado](resultado_migracion.md). No repetir esa inserción.
-5. **Aporte recibido, revisión pendiente de completar evidencias:** ejecución informada por Mateo; prueba local independiente del 2026-10-29, con `extraccion_20261029_102959.json` conservada como anexo (mismo arreglo `extraccion` que la fuente oficial), sus evidencias y las consultas de MongoDB y PostgreSQL de las consignas 4–5. No reemplaza la migración de Amanda; la fuente oficial sigue siendo `extraccion_20261028_170446.json`.
-6. **Pendiente (Lucas, consignas 6–7):** consultar una IA y contrastar dos afirmaciones con documentación oficial o resultados reproducibles; redactar conclusión para revisión grupal.
-7. **Pendiente (equipo):** integrar el aporte de Amanda ya redactado, las evidencias y los trabajos restantes en el PDF, revisar grupalmente y preparar entrega.
+5. **Realizado (Mateo, con reejecución de Amanda):** ejecución informada por Mateo; prueba local independiente del 2026-10-29, con `extraccion_20261029_102959.json` conservada como anexo (mismo arreglo `extraccion` que la fuente oficial), sus evidencias y las consultas de MongoDB y PostgreSQL de las consignas 4–5. No reemplaza la migración de Amanda; la fuente oficial sigue siendo `extraccion_20261028_170446.json`. El 2026-11-01 Amanda reejecutó los mismos scripts y completó las evidencias MongoDB de c) y d), con resultados coincidentes; borrador en [aporte_mateo.md](../informe/aporte_mateo.md), pendiente de OK de Mateo.
+6. **Aportado (Lucas, consignas 6–7):** consulta a Gemini, contraste de dos afirmaciones con documentación oficial y laboratorio, y borrador de conclusión en [contraste_ia.md](contraste_ia.md) y [aporte_lucas.md](../informe/aporte_lucas.md). Pendiente: captura de la respuesta original de Gemini, solicitada a Lucas.
+7. **Pendiente (equipo):** integrar los aportes y las evidencias en el PDF final, obtener el OK de Mateo y Lucas a la conclusión y al PDF, y preparar la entrega.
 
 ## Estado real
 
@@ -71,9 +71,11 @@ Estado de la preparación documental:
 - [x] Amanda informó la ejecución manual de su migración en Compass; se inspeccionaron sus capturas de inserción y verificación.
 - [x] Migración de Amanda de cinco pedidos y siete líneas ejecutada el 2026-10-28 y verificada según sus evidencias inspeccionadas.
 - [x] Consignas 4–5: consultas y comparación aportadas, con ejecución informada por Mateo.
-- [ ] Consignas 4–5: completar evidencias MongoDB de c) y d) y cerrar su revisión.
-- [ ] Consignas 6–7: consulta a IA, contraste de dos afirmaciones y borrador de conclusión completados (Lucas).
-- [ ] Informe final integrado y conclusión revisados por el equipo.
+- [x] Consignas 4–5: evidencias MongoDB de c) y d) completadas por la reejecución de Amanda del 2026-11-01.
+- [x] Consignas 6–7: consulta a IA, contraste de dos afirmaciones y borrador de conclusión aportados (Lucas).
+- [ ] Captura de la respuesta original de Gemini (solicitada a Lucas).
+- [ ] OK de Mateo a [aporte_mateo.md](../informe/aporte_mateo.md) y OK de Mateo y Lucas a la conclusión y al PDF.
+- [ ] Informe final integrado (PDF) y conclusión revisados por el equipo.
 
 ## Entregables
 
@@ -105,13 +107,15 @@ Se inspeccionaron visualmente [migracion_insercion.png](../evidencias/migracion_
 
 El [resultado de migración](resultado_migracion.md) registra procedimiento, resultados y límites. Amanda realizó la ejecución en Compass; el asistente revisó archivos y capturas, sin conectarse a motores. Para Compass fue necesaria la importación explícita de `Buffer` mediante `require("buffer")`, sin cambiar la evidencia ni su hash. La hora exacta de migración, las versiones de MongoDB/Compass y la configuración efectiva de `retryWrites` no se acreditan en las imágenes.
 
-Las verificaciones de migración no completan por sí solas las consignas 4–5 ni 6–7. Las consignas 4–5 se documentan en la sección siguiente; 6–7 y la aprobación grupal del diseño siguen pendientes.
+Las verificaciones de migración no completan por sí solas las consignas 4–5 ni 6–7. Las consignas 4–5 se documentan en la sección siguiente y las 6–7 en [contraste_ia.md](contraste_ia.md); la aprobación grupal del diseño sigue pendiente.
 
 ### Consultas 4–5: ejecución informada por Mateo — 2026-10-29
 
 Mateo informó la ejecución de las cuatro consultas MongoDB y las equivalentes PostgreSQL de b) y c) en su entorno local, así como la validación e inserción de su lote. La captura de verificación muestra cinco pedidos, siete líneas, tipos BSON correctos y correspondencia con la extracción del 29/10; no acredita por sí sola la inserción previa. MongoDB Server 9.0.4 y mongosh 2.14.0 son versiones informadas, no comprobadas en las capturas disponibles. PostgreSQL 17.10 consta en el contexto del JSON del 29/10; el uso de psql se ve en la captura SQL.
 
-Resultados aportados por Mateo (respaldo visual parcial en MongoDB):
+El 2026-11-01 Amanda reejecutó manualmente los mismos scripts en su computadora (PostgreSQL con `psql`, MongoDB en la shell de Compass) y obtuvo los mismos resultados, con salidas completas de a)–d) en sus capturas.
+
+Resultados aportados por Mateo y confirmados por la reejecución de Amanda:
 
 - MongoDB y PostgreSQL devolvieron los IDs 1–5 para el estado `ENTREGADO`.
 - Ambos motores devolvieron los IDs 1, 3 y 5 para el producto ID 1.
@@ -130,4 +134,4 @@ evidencias legibles junto con el informe; no deben incluir contraseñas.
 - Modelo, comparación y contraste en los documentos de `docs/`; evidencias según [su guía](../evidencias/README.md).
 - Esquema y requisitos del informe en [informe/README.md](../informe/README.md).
 
-Esta documentación no autoriza nuevas conexiones ni ejecuciones en motores. El diseño conserva su estado propuesto; la extracción local de Mateo, la migración y las consultas de las consignas 4–5 quedan documentadas con sus resultados y límites. Permanecen pendientes completar las evidencias MongoDB de c) y d) para cerrar la revisión de 4–5, el análisis de IA, la conclusión y la revisión grupal del informe.
+Esta documentación no autoriza nuevas conexiones ni ejecuciones en motores. El diseño conserva su estado propuesto; la extracción local de Mateo, la migración y las consultas de las consignas 4–5 quedan documentadas con sus resultados y límites. Las evidencias de 4–5 quedaron completas con la reejecución de Amanda y el contraste de IA fue aportado por Lucas. Permanecen pendientes la captura de la respuesta original de Gemini, el OK de Mateo y Lucas a la conclusión y al PDF, las versiones de MongoDB y Compass de Amanda, la confirmación docente del cliente con ID más alias y el PDF final.

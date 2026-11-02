@@ -39,8 +39,9 @@ printjson(db.pedidos.aggregate([
 ]).toArray());
 
 // d) Totales estrictamente superiores a $3000.00.
-// El umbral separa los pedidos de mayor importe del lote sin incluir el total
-// de $2800.00; Decimal128 evita convertir dinero a Number/Double.
+// El lote suma $14700.00 en 5 pedidos (promedio $2940.00): el umbral selecciona
+// los pedidos por encima del promedio y excluye el de $2800.00, cercano a él.
+// Decimal128 evita convertir dinero a Number/Double.
 printjson(db.pedidos.find(
   { _id: { $in: loteIds }, total: { $gt: umbralTotal } },
   { _id: 1, total: 1, estado: 1 }

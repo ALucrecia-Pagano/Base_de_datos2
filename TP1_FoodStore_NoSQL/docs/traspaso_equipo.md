@@ -2,7 +2,7 @@
 
 Las atribuciones de ejecución a Amanda y Mateo y las referencias a sus máquinas corresponden a lo informado por los integrantes; Git y los JSON no demuestran por sí solos autoría ni máquina de ejecución. No deben presentarse como una única ejecución; ambos aportes se integran en la entrega grupal.
 
-Las consultas y la comparación de las consignas 4–5 fueron aportadas, con ejecución informada por Mateo. La captura MongoDB disponible está recortada: no muestra completa c) ni la salida de d). Los resultados aportados se conservan; queda pendiente completar esas evidencias antes de cerrar la revisión de las consignas 4–5.
+Las consultas y la comparación de las consignas 4–5 fueron aportadas, con ejecución informada por Mateo. Su captura MongoDB no mostraba completas c) ni d); la reejecución de Amanda del 2026-11-01, con los mismos scripts, completa esa evidencia con resultados coincidentes. Los resultados de Mateo se conservan.
 
 Registro: 2026-10-28. Aplicar [AGENTS.md](../../AGENTS.md), [CLAUDE.md](../../CLAUDE.md) y la [guía de colaboración](../../CONTRIBUTING.md). Referencia académica principal: [consigna oficial](../consignas/BDII_Unidad7_TP_FoodStore_NoSQL.pdf). Este documento organiza tareas pendientes; no registra nuevas ejecuciones ni autoriza operaciones en motores.
 
@@ -65,7 +65,7 @@ No es necesario volver a consultar PostgreSQL para reconstruir desde esta extrac
 
 ## Mateo — consignas 4 y 5
 
-Archivos asignados: [consultas_mongodb.js](../mongodb/consultas_mongodb.js), [consultas_postgresql.sql](../postgresql/consultas_postgresql.sql) y [comparacion_resultados.md](comparacion_resultados.md). Las consultas y la comparación fueron aportadas por Mateo, quien informó su ejecución el 2026-10-29; deben completarse las evidencias MongoDB de c) y d) antes de cerrar la revisión e integrar las capturas legibles al informe.
+Archivos asignados: [consultas_mongodb.js](../mongodb/consultas_mongodb.js), [consultas_postgresql.sql](../postgresql/consultas_postgresql.sql) y [comparacion_resultados.md](comparacion_resultados.md). Las consultas y la comparación fueron aportadas por Mateo, quien informó su ejecución el 2026-10-29. Las evidencias MongoDB de c) y d) se completaron con la reejecución de Amanda del 2026-11-01; falta integrar las capturas legibles al informe. Borrador: [aporte_mateo.md](../informe/aporte_mateo.md), pendiente de OK de Mateo.
 
 Consigna 4: registrar las cuatro consultas MongoDB y sus resultados: a) todos los pedidos con identificador y estado; b) estado existente; c) producto en el arreglo de líneas; d) total superior a un umbral elegido y justificado. Usar los nombres de campos implementados e importes Decimal128 desde texto; no convertir dinero a Number.
 

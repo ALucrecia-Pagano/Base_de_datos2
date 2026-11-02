@@ -2,10 +2,10 @@
 
 Las atribuciones de ejecución a Amanda y Mateo y las referencias a sus máquinas corresponden a lo informado por los integrantes; Git y los JSON no demuestran por sí solos autoría ni máquina de ejecución. No deben presentarse como una única ejecución; ambos aportes se integran en la entrega grupal.
 
-Las consultas y la comparación de las consignas 4–5 fueron aportadas, con ejecución informada por Mateo. La captura MongoDB disponible está recortada: no muestra completa c) ni la salida de d). Los resultados aportados se conservan; queda pendiente completar esas evidencias antes de cerrar la revisión de las consignas 4–5.
+Las consultas y la comparación de las consignas 4–5 fueron aportadas, con ejecución informada por Mateo. Su captura MongoDB no mostraba completas c) ni d); la reejecución de Amanda del 2026-11-01, con los mismos scripts, completa esa evidencia con resultados coincidentes. Los resultados de Mateo se conservan.
 
 Aplicar las [reglas del proyecto](../../AGENTS.md). Esta carpeta conserva
-evidencias de dos trabajos independientes, según lo informado por los integrantes.
+evidencias de los trabajos de los integrantes, según lo informado por ellos.
 
 ## Amanda — extracción y migración del 2026-10-28 (fuente oficial)
 
@@ -34,14 +34,30 @@ evidencias de dos trabajos independientes, según lo informado por los integrant
 - Responsable: Mateo.
 - Registro: [comparacion_resultados.md](../docs/comparacion_resultados.md).
 - Este trabajo no reemplaza ni modifica la migración documentada de Amanda.
+- La captura MongoDB no muestra completas c) ni d); esas salidas se completan
+  con la reejecución de Amanda del 2026-11-01.
+
+## Amanda — reejecución de consultas 4–5 del 2026-11-01
+
+- Consultas de solo lectura ejecutadas manualmente por Amanda en su computadora,
+  con los scripts sin modificar: `psql -X -U postgres -d foodstore_dev -f
+  TP1_FoodStore_NoSQL/postgresql/consultas_postgresql.sql` y
+  `mongodb/consultas_mongodb.js` pegado completo en la shell de Compass sobre
+  `foodstore_unidad7`.
+- Evidencias: [PostgreSQL, b) y c)](consultas_postgresql_amanda.png);
+  [MongoDB 1, base, conteo, script y parámetros](consultas_mongodb_amanda_1.png);
+  [MongoDB 2, a), b) e inicio de c)](consultas_mongodb_amanda_2.png);
+  [MongoDB 3, c) y d) completas](consultas_mongodb_amanda_3.png).
+- Responsable: Amanda. Las capturas no acreditan versiones de MongoDB ni de Compass.
+- Registro: [comparacion_resultados.md](../docs/comparacion_resultados.md).
 
 Las dos extracciones y sus evidencias se conservan separadas aunque describan
 el mismo subconjunto de pedidos; la oficial es la de Amanda. La revisión del asistente fue documental y
 visual, sin ejecutar motores ni migraciones.
 
 Estas evidencias corresponden a la extracción, migración y consultas del lote;
-no sustituyen el contraste de IA ni el trabajo de las consignas 6–7, que siguen
-pendientes.
+no sustituyen el contraste de IA de las consignas 6–7, cuyas salidas de
+laboratorio se registran en [contraste_ia.md](../docs/contraste_ia.md).
 
 Para cada ejecución autorizada registrar:
 

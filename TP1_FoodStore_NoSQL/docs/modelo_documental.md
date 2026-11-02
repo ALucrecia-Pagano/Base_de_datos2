@@ -16,7 +16,7 @@ La [extracción real](../evidencias/extraccion_20261028_170446.json), con SHA-25
 
 Las elecciones iniciales se implementaron sin que ello constituya aprobación grupal. La sección 7 conserva explícitamente la secuencia propuesta antes de ejecutar; el [traspaso al equipo](traspaso_equipo.md) describe el procedimiento de reproducción y las tareas pendientes.
 
-La referencia histórica fija el procedimiento con la fuente y el hash de Amanda; el [script compartido actual](../mongodb/migracion_pedidos.js) cambió posteriormente `FUENTE` y `SHA` para la extracción del 29/10 de Mateo. Esa configuración posterior no corresponde a la ejecución original de Amanda. Las rutas de las capturas son anteriores al traslado a `TP1_FoodStore_NoSQL/`.
+La referencia histórica fija el procedimiento con la fuente y el hash de Amanda; el [script compartido actual](../mongodb/migracion_pedidos.js) usa esa misma fuente oficial y su hash. Una revisión intermedia los había cambiado para la extracción del 29/10 del anexo de Mateo; esa configuración se revirtió. Las rutas de las capturas son anteriores al traslado a `TP1_FoodStore_NoSQL/`.
 
 ## 1. Subconjunto y claves del origen
 

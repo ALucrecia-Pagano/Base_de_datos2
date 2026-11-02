@@ -6,9 +6,10 @@ Las consultas y la comparación de las consignas 4–5 fueron aportadas, con eje
 
 Aplicar [AGENTS.md](../../AGENTS.md). Amanda informó la ejecución manual de su
 migración en Compass el 2026-10-28; el asistente inspeccionó sus capturas y
-documentó el resultado, sin nuevas conexiones ni ejecuciones. El repositorio
-también conserva el trabajo independiente de Mateo del 2026-10-29, con otra
-extracción, hash y evidencias, documentado en
+documentó el resultado, sin nuevas conexiones ni ejecuciones. La fuente oficial
+de la migración es la extracción de Amanda. El repositorio también conserva, como
+anexo, la prueba local independiente de Mateo del 2026-10-29, con su propia
+extracción y evidencias, documentada en
 [comparacion_resultados.md](../docs/comparacion_resultados.md). No deben presentarse como una única ejecución; ambos aportes se integran en la entrega grupal. Estas instrucciones no autorizan repetir ninguna carga.
 
 ## Incidencia de Buffer y resultado registrado
@@ -23,11 +24,11 @@ Se conservaron la comprobación UTF-8, el SHA-256 y los demás controles. Este a
 
 Las capturas de [inserción](../evidencias/migracion_insercion.png) y [verificación](../evidencias/migracion_verificacion_amanda.png), inspeccionadas el 2026-10-28, muestran inserción confirmada de IDs `Long` 1–5 en `foodstore_unidad7.pedidos` y verificación satisfactoria de cinco pedidos, siete líneas, tipos BSON correctos y correspondencia completa con el lote fuente. No acreditan versiones ni la configuración efectiva de `retryWrites`. No volver a usar el modo `insertar` para repetir una verificación: el script se detendrá si esos IDs ya existen; para una comprobación posterior autorizada corresponde el modo de lectura `verificar`.
 
-## Fuente de la ejecución de Amanda
+## Fuente oficial de la migración
 
-Para la ejecución de Amanda se utilizó
-`extraccion_20261028_170446.json`. Se validó el archivo original sin
-modificarlo:
+La fuente oficial de la consigna 2, acordada por el equipo como única
+exportación, es `extraccion_20261028_170446.json`, utilizada en la ejecución de
+Amanda. Se validó el archivo original sin modificarlo:
 
 - Fuente: [extraccion_20261028_170446.json](../evidencias/extraccion_20261028_170446.json).
 - SHA-256: `3973789e22039731d20c1b5227d6907b09fa8065830e88c798264006eeaae243`.
@@ -36,12 +37,12 @@ modificarlo:
 - Todos los controles generales verdaderos, incluido `extraer`; cinco pedidos (IDs 1–5) y siete líneas. Controles detallados satisfactorios y sin submilisegundos.
 - Fórmulas comprobadas localmente con aritmética decimal exacta; sin observaciones ni nombres/contactos personales del cliente.
 
-El historial conserva una revisión del script configurada con esta fuente y su
-hash. Una revisión posterior cambió `FUENTE` y `SHA` para utilizar
-`extraccion_20261029_102959.json`, correspondiente al trabajo independiente de
-Mateo. El archivo actual conserva el encabezado histórico de Amanda y la
-configuración operativa de Mateo; esta combinación no prueba que Amanda haya
-repetido su migración el 2026-10-29. El script compartido lee `extraccion` del
+El script actual está configurado con esta fuente y su hash, en `FUENTE` y `SHA`.
+Una revisión intermedia del historial los había cambiado para usar
+`extraccion_20261029_102959.json`, la extracción de la prueba local de Mateo;
+el hash configurado entonces correspondía a su copia local con finales CRLF y no
+coincidía con la copia versionada, por lo que el script fallaba en un clon
+nuevo. Esa configuración se revirtió a la fuente oficial. El script compartido lee `extraccion` del
 archivo configurado y no usa las referencias esperadas como datos de carga.
 Comprueba el SHA-256 antes de convertir, valida el lote completo y exige IDs
 Long, cantidades Int32, importes Decimal128 desde texto y fechas Date sin
@@ -61,12 +62,14 @@ Configurar la conexión revisada con `retryWrites=false` antes de insertar: adem
 ## Rutas actuales y trazabilidad
 
 `FOODSTORE_RAIZ` sigue siendo la raíz del repositorio, sin agregar
-`TP1_FoodStore_NoSQL`. La configuración operativa actual de `FUENTE` apunta a
-`TP1_FoodStore_NoSQL/evidencias/extraccion_20261029_102959.json` y su `SHA`
-corresponde a esa fuente. Esa configuración pertenece a la revisión posterior
-de Mateo; no reinterpreta ni reemplaza la configuración histórica de Amanda.
-Las rutas visibles en las capturas corresponden a sus respectivas ejecuciones y
-no se modificaron.
+`TP1_FoodStore_NoSQL`. La configuración actual de `FUENTE` apunta a
+`TP1_FoodStore_NoSQL/evidencias/extraccion_20261028_170446.json` y su `SHA` es
+`3973789e22039731d20c1b5227d6907b09fa8065830e88c798264006eeaae243`, el de la
+fuente oficial, protegida con `-text` en [.gitattributes](../../.gitattributes).
+`extraccion_20261029_102959.json` se conserva solo como anexo de la prueba
+local independiente de Mateo; no es fuente operativa del script. Las rutas
+visibles en las capturas corresponden a sus respectivas ejecuciones y no se
+modificaron.
 
 ## Ejecución manual desde la shell de Compass
 

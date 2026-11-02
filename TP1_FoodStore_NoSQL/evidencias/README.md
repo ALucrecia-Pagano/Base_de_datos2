@@ -7,9 +7,12 @@ Las consultas y la comparación de las consignas 4–5 fueron aportadas, con eje
 Aplicar las [reglas del proyecto](../../AGENTS.md). Esta carpeta conserva
 evidencias de dos trabajos independientes, según lo informado por los integrantes.
 
-## Amanda — extracción y migración del 2026-10-28
+## Amanda — extracción y migración del 2026-10-28 (fuente oficial)
 
-- Extracción: `extraccion_20261028_170446.json`, con su hash histórico.
+- Extracción: `extraccion_20261028_170446.json`, fuente oficial de la migración
+  y única exportación acordada por el equipo. SHA-256
+  `3973789e22039731d20c1b5227d6907b09fa8065830e88c798264006eeaae243`,
+  configurado en `mongodb/migracion_pedidos.js`.
 - Evidencias: [inserción](migracion_insercion.png),
   [verificación](migracion_verificacion_amanda.png) y
   [documento del pedido 1](pedido_1_documento.png).
@@ -18,9 +21,13 @@ evidencias de dos trabajos independientes, según lo informado por los integrant
 - El renombrado posterior de la captura de verificación no representa una nueva
   ejecución ni una segunda migración de Amanda.
 
-## Mateo — trabajo independiente del 2026-10-29
+## Mateo — anexo: prueba local independiente del 2026-10-29
 
-- Extracción: `extraccion_20261029_102959.json`, con su hash histórico.
+- Extracción: `extraccion_20261029_102959.json`, conservada como anexo de su
+  prueba local; no es fuente operativa del script. Su arreglo `extraccion` es
+  idéntico al de la fuente oficial. El hash `0e17c782…` corresponde a su copia
+  local con CRLF; la copia versionada (LF) da `cece1385…`. Detalle en
+  [comparacion_resultados.md](../docs/comparacion_resultados.md).
 - Evidencias: [MongoDB](consultas_mongodb_consignas_4_5.png),
   [PostgreSQL](consultas_postgresql_consignas_4_5.png) y
   [verificación de Mateo](migracion_verificacion_mateo_20261029.png).
@@ -29,7 +36,7 @@ evidencias de dos trabajos independientes, según lo informado por los integrant
 - Este trabajo no reemplaza ni modifica la migración documentada de Amanda.
 
 Las dos extracciones y sus evidencias se conservan separadas aunque describan
-el mismo subconjunto de pedidos. La revisión del asistente fue documental y
+el mismo subconjunto de pedidos; la oficial es la de Amanda. La revisión del asistente fue documental y
 visual, sin ejecutar motores ni migraciones.
 
 Estas evidencias corresponden a la extracción, migración y consultas del lote;

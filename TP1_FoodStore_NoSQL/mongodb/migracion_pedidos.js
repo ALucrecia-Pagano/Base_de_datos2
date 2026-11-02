@@ -7,8 +7,8 @@
 // Antes de insertar: conexión revisada con retryWrites=false.
 (() => {
   const BASE = "foodstore_unidad7", COLECCION = "pedidos";
-  const FUENTE = "TP1_FoodStore_NoSQL/evidencias/extraccion_20261029_102959.json";
-  const SHA = "0e17c782de3063ec88fd871251b848aedac4084d4620663b336475f0db1b794f";
+  const FUENTE = "TP1_FoodStore_NoSQL/evidencias/extraccion_20261028_170446.json";
+  const SHA = "3973789e22039731d20c1b5227d6907b09fa8065830e88c798264006eeaae243";
   const modo = globalThis.FOODSTORE_MODO || "validar";
   globalThis.FOODSTORE_MODO = "validar"; // No reutilizar una orden de inserción.
   let fase = "validacion_local";

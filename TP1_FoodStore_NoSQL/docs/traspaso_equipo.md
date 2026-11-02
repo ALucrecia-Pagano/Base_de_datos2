@@ -38,12 +38,12 @@ Se excluyeron observaciones y nombres/contactos personales del cliente. El alias
 | [modelo_documental.md](modelo_documental.md) y [decisiones.md](decisiones.md) | Diseño inicial, implementación documentada y revisión grupal pendiente |
 | [extraccion_pedidos.sql](../postgresql/extraccion_pedidos.sql) | Extracción PostgreSQL de solo lectura del subconjunto 1–5 |
 | [extraccion_20261028_170446.json](../evidencias/extraccion_20261028_170446.json) | Fuente real e inmutable de la migración de Amanda; controles y datos de intercambio |
-| [extraccion_20261029_102959.json](../evidencias/extraccion_20261029_102959.json) | Fuente de la ejecución independiente de Mateo; controles y datos de intercambio |
+| [extraccion_20261029_102959.json](../evidencias/extraccion_20261029_102959.json) | Anexo de la prueba local independiente de Mateo; mismo arreglo `extraccion` que la fuente oficial. No es fuente operativa del script |
 | [migracion_pedidos.js](../mongodb/migracion_pedidos.js) y [guía MongoDB](../mongodb/README.md) | Conversión, comprobación de IDs, inserción y verificación; modos separados |
 | [resultado_migracion.md](resultado_migracion.md) | Ejecución manual de Amanda y evidencia de resultados |
 | [aporte_amanda.md](../informe/aporte_amanda.md) | Texto breve para integrar al PDF grupal |
 
-SHA-256 obligatorio de la extracción original:
+SHA-256 obligatorio de la extracción original, configurado en `FUENTE` y `SHA` del script:
 
 ```text
 3973789e22039731d20c1b5227d6907b09fa8065830e88c798264006eeaae243

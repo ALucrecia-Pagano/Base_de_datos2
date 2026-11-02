@@ -35,7 +35,7 @@ El equipo completo revisa la conclusión y el informe final. Cada integrante tra
 2. **Redactado e implementado:** diseño de consignas 1 y 3, con correspondencia, tipos BSON, ejemplo e integridad. **Pendiente:** revisión y aprobación grupal de destino, cliente y método según [decisiones.md](decisiones.md), y confirmación de suficiencia académica de ID más alias.
 3. **Realizado:** extracción y código de migración con detección de IDs existentes, sin reemplazos silenciosos. La aprobación documental no autoriza nuevas ejecuciones.
 4. **Realizado por Amanda:** ejecución manual de su extracción y migración el 2026-10-28, con conservación de datos y cantidades verificada según las evidencias del [resultado](resultado_migracion.md). No repetir esa inserción.
-5. **Aporte recibido, revisión pendiente de completar evidencias:** ejecución informada por Mateo; trabajo independiente del 2026-10-29 con `extraccion_20261029_102959.json`, sus evidencias y las consultas de MongoDB y PostgreSQL de las consignas 4–5. No reemplaza la migración de Amanda.
+5. **Aporte recibido, revisión pendiente de completar evidencias:** ejecución informada por Mateo; prueba local independiente del 2026-10-29, con `extraccion_20261029_102959.json` conservada como anexo (mismo arreglo `extraccion` que la fuente oficial), sus evidencias y las consultas de MongoDB y PostgreSQL de las consignas 4–5. No reemplaza la migración de Amanda; la fuente oficial sigue siendo `extraccion_20261028_170446.json`.
 6. **Pendiente (Lucas, consignas 6–7):** consultar una IA y contrastar dos afirmaciones con documentación oficial o resultados reproducibles; redactar conclusión para revisión grupal.
 7. **Pendiente (equipo):** integrar el aporte de Amanda ya redactado, las evidencias y los trabajos restantes en el PDF, revisar grupalmente y preparar entrega.
 
@@ -67,7 +67,7 @@ Estado de la preparación documental:
 - [ ] Modelo y reglas de integridad revisados y aprobados por el equipo.
 - [ ] Suficiencia de cliente con ID más alias confirmada con equipo/docente.
 - [x] Tipos/rangos y precisión de fecha del lote comprobados según la extracción y los controles documentados; tipos BSON verificados según las evidencias de migración.
-- [x] Código de migración preparado desde el archivo real de Amanda, con instrucciones y verificaciones posteriores; el historial conserva una revisión posterior configurada con la extracción de Mateo.
+- [x] Código de migración preparado desde el archivo real de Amanda, con instrucciones y verificaciones posteriores; el script actual vuelve a usar esa fuente oficial y su SHA-256, después de una revisión intermedia del historial configurada con la extracción del anexo de Mateo.
 - [x] Amanda informó la ejecución manual de su migración en Compass; se inspeccionaron sus capturas de inserción y verificación.
 - [x] Migración de Amanda de cinco pedidos y siete líneas ejecutada el 2026-10-28 y verificada según sus evidencias inspeccionadas.
 - [x] Consignas 4–5: consultas y comparación aportadas, con ejecución informada por Mateo.

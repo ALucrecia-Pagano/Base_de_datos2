@@ -135,20 +135,20 @@ grupal y el informe final permanecen pendientes.
 
 Según lo informado por los integrantes, Amanda realizó su extracción y migración el 2026-10-28 con
 `extraccion_20261028_170446.json`, el hash histórico registrado para ese archivo
-y sus propias evidencias. Mateo realizó un trabajo independiente el 2026-10-29
-con `extraccion_20261029_102959.json`, su hash histórico y sus evidencias de
-consultas y verificación. Aunque ambas extracciones contienen el mismo
+y sus propias evidencias; esa es la fuente oficial de la migración. Mateo
+realizó una prueba local independiente el 2026-10-29 con
+`extraccion_20261029_102959.json`, conservada como anexo junto con sus
+evidencias de consultas y verificación. Aunque ambas extracciones contienen el mismo
 subconjunto documentado, no deben presentarse como una única ejecución; ambos aportes
 se integran en la entrega grupal. El renombrado de
 `migracion_verificacion_amanda.png` no representa una nueva migración de Amanda.
 
 El repositorio conserva un único archivo compartido
-`mongodb/migracion_pedidos.js`, con revisiones sucesivas en el historial: una
-versión estaba configurada con la extracción de Amanda y una revisión posterior
-cambió `FUENTE` y `SHA` para utilizar la extracción de Mateo. El archivo actual
-conserva el encabezado histórico de Amanda y la configuración operativa de
-Mateo; esta combinación no prueba que Amanda haya repetido su migración el
-2026-10-29.
+`mongodb/migracion_pedidos.js`. Su configuración actual de `FUENTE` y `SHA`
+apunta a la fuente oficial `extraccion_20261028_170446.json`. Una revisión
+intermedia del historial había apuntado a la extracción del anexo de Mateo con
+el hash de su copia local CRLF, que no coincide con la copia versionada; esa
+configuración se revirtió.
 
 ## Rutas de ejecución actuales
 

@@ -67,7 +67,8 @@ La conclusión y la entrega final serán revisadas por el equipo completo.
 - Comprobación de conexión: ping con resultado ok: 1.
 
 El archivo de extracción registra PostgreSQL Server 17.11.
-Las versiones de MongoDB Server y Compass quedan pendientes de registrar.
+Versiones informadas por Amanda: MongoDB Server 9.0.4 y MongoDB Compass 1.53.2,
+con mongosh integrado 2.9.2 (registro informado, sin captura de versiones).
 
 ## Datos de origen comprobados
 
@@ -116,9 +117,11 @@ contraste de afirmaciones de IA y conclusión de hasta 200 palabras.
 - [x] Contraste de afirmaciones de IA aportado por Lucas.
 - [ ] Captura de la respuesta original de Gemini (solicitada a Lucas).
 - [ ] OK de Mateo y Lucas a la conclusión y al PDF.
-- [ ] Versiones de MongoDB Server y Compass de Amanda registradas.
+- [x] Versiones de MongoDB Server (9.0.4) y Compass (1.53.2, mongosh integrado 2.9.2)
+  de Amanda registradas, según lo informado.
 - [ ] Confirmación docente del cliente con ID más alias.
-- [ ] Informe final integrado (PDF).
+- [x] Borrador del informe en [informe/](informe/README.md), pendiente del OK de Mateo y Lucas.
+- [ ] Informe final integrado (PDF) aprobado por el equipo.
 
 El [modelo documental](docs/modelo_documental.md) está redactado; su aprobación
 grupal continúa pendiente. La migración documentada corresponde a cinco pedidos

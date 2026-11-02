@@ -84,7 +84,7 @@ Cuando el script esté revisado y la ejecución autorizada:
    ```
 
 3. Copiar **el contenido completo** de [migracion_pedidos.js](migracion_pedidos.js) desde el editor y pegarlo como un solo bloque en la shell. El modo predeterminado solo valida el archivo. Esta vía evita asumir que `load()` esté disponible en la versión integrada de Compass. El script necesita acceso local mediante `require("fs")`, `require("path")`, `require("crypto")` y la importación explícita de `Buffer` desde `require("buffer")`.
-4. Si otra shell restringe esos módulos o el acceso a archivos, detenerse: usar la alternativa externa descrita abajo, sin transcribir los documentos ni quitar el control de hash. La ejecución de Amanda en Compass está documentada; la versión instalada y la compatibilidad de otros entornos no se infieren de las capturas.
+4. Si otra shell restringe esos módulos o el acceso a archivos, detenerse: usar la alternativa externa descrita abajo, sin transcribir los documentos ni quitar el control de hash. La ejecución de Amanda en Compass está documentada; según lo informado por Amanda, usó MongoDB Server 9.0.4 y Compass 1.53.2 con mongosh integrado 2.9.2. La compatibilidad de otros entornos no se infiere de las capturas.
 5. Si la validación local es satisfactoria, seleccionar explícitamente el destino y activar una sola inserción:
 
    ```javascript

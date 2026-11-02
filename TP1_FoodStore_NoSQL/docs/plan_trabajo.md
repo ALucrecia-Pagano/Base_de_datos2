@@ -37,7 +37,7 @@ El equipo completo revisa la conclusión y el informe final. Cada integrante tra
 4. **Realizado por Amanda:** ejecución manual de su extracción y migración el 2026-10-28, con conservación de datos y cantidades verificada según las evidencias del [resultado](resultado_migracion.md). No repetir esa inserción.
 5. **Realizado (Mateo, con reejecución de Amanda):** ejecución informada por Mateo; prueba local independiente del 2026-10-29, con `extraccion_20261029_102959.json` conservada como anexo (mismo arreglo `extraccion` que la fuente oficial), sus evidencias y las consultas de MongoDB y PostgreSQL de las consignas 4–5. No reemplaza la migración de Amanda; la fuente oficial sigue siendo `extraccion_20261028_170446.json`. El 2026-11-01 Amanda reejecutó los mismos scripts y completó las evidencias MongoDB de c) y d), con resultados coincidentes; borrador en [aporte_mateo.md](../informe/aporte_mateo.md), pendiente de OK de Mateo.
 6. **Aportado (Lucas, consignas 6–7):** consulta a Gemini, contraste de dos afirmaciones con documentación oficial y laboratorio, y borrador de conclusión en [contraste_ia.md](contraste_ia.md) y [aporte_lucas.md](../informe/aporte_lucas.md). Pendiente: captura de la respuesta original de Gemini, solicitada a Lucas.
-7. **Pendiente (equipo):** integrar los aportes y las evidencias en el PDF final, obtener el OK de Mateo y Lucas a la conclusión y al PDF, y preparar la entrega.
+7. **Pendiente (equipo):** borrador del PDF armado el 2026-11-01 en [informe/](../informe/README.md); falta obtener el OK de Mateo y Lucas a la conclusión y al PDF, y preparar la entrega.
 
 ## Estado real
 
@@ -62,7 +62,7 @@ Estado de la preparación documental:
 - [x] Amanda informó que ejecutó manualmente la extracción; el asistente no la ejecutó.
 - [x] Archivo de extracción comprobado localmente: JSON UTF-8, contexto, controles, cinco pedidos, siete líneas y fórmulas.
 - [x] Versión PostgreSQL 17.11 registrada según el contexto de la extracción de Amanda.
-- [ ] Versiones de MongoDB y Compass registradas.
+- [x] Versiones de MongoDB y Compass registradas: Amanda informó MongoDB Server 9.0.4 y Compass 1.53.2, con mongosh integrado 2.9.2.
 - [x] Destino, tipos BSON, tratamiento del cliente y método de migración implementados y documentados; aprobación grupal pendiente.
 - [ ] Modelo y reglas de integridad revisados y aprobados por el equipo.
 - [ ] Suficiencia de cliente con ID más alias confirmada con equipo/docente.
@@ -105,7 +105,7 @@ Las [instrucciones de MongoDB](../mongodb/README.md) explican ejecución manual 
 
 Se inspeccionaron visualmente [migracion_insercion.png](../evidencias/migracion_insercion.png) y [migracion_verificacion_amanda.png](../evidencias/migracion_verificacion_amanda.png). La primera muestra destino `foodstore_unidad7.pedidos`, validación local satisfactoria, `insercionConfirmada: true` e IDs `Long` 1–5. La segunda muestra `verificacion: satisfactoria`, cinco pedidos, siete líneas, `tiposBSON: correctos` y correspondencia con todos los campos del lote fuente. Ambas refieren a `extraccion_20261028_170446.json` y al SHA-256 consignado arriba, que se comprobó nuevamente sobre el archivo local.
 
-El [resultado de migración](resultado_migracion.md) registra procedimiento, resultados y límites. Amanda realizó la ejecución en Compass; el asistente revisó archivos y capturas, sin conectarse a motores. Para Compass fue necesaria la importación explícita de `Buffer` mediante `require("buffer")`, sin cambiar la evidencia ni su hash. La hora exacta de migración, las versiones de MongoDB/Compass y la configuración efectiva de `retryWrites` no se acreditan en las imágenes.
+El [resultado de migración](resultado_migracion.md) registra procedimiento, resultados y límites. Amanda realizó la ejecución en Compass; el asistente revisó archivos y capturas, sin conectarse a motores. Para Compass fue necesaria la importación explícita de `Buffer` mediante `require("buffer")`, sin cambiar la evidencia ni su hash. La hora exacta de migración, las versiones de MongoDB/Compass y la configuración efectiva de `retryWrites` no se acreditan en las imágenes; Amanda informó después las versiones (MongoDB Server 9.0.4, Compass 1.53.2, mongosh integrado 2.9.2).
 
 Las verificaciones de migración no completan por sí solas las consignas 4–5 ni 6–7. Las consignas 4–5 se documentan en la sección siguiente y las 6–7 en [contraste_ia.md](contraste_ia.md); la aprobación grupal del diseño sigue pendiente.
 
@@ -134,4 +134,4 @@ evidencias legibles junto con el informe; no deben incluir contraseñas.
 - Modelo, comparación y contraste en los documentos de `docs/`; evidencias según [su guía](../evidencias/README.md).
 - Esquema y requisitos del informe en [informe/README.md](../informe/README.md).
 
-Esta documentación no autoriza nuevas conexiones ni ejecuciones en motores. El diseño conserva su estado propuesto; la extracción local de Mateo, la migración y las consultas de las consignas 4–5 quedan documentadas con sus resultados y límites. Las evidencias de 4–5 quedaron completas con la reejecución de Amanda y el contraste de IA fue aportado por Lucas. Permanecen pendientes la captura de la respuesta original de Gemini, el OK de Mateo y Lucas a la conclusión y al PDF, las versiones de MongoDB y Compass de Amanda, la confirmación docente del cliente con ID más alias y el PDF final.
+Esta documentación no autoriza nuevas conexiones ni ejecuciones en motores. El diseño conserva su estado propuesto; la extracción local de Mateo, la migración y las consultas de las consignas 4–5 quedan documentadas con sus resultados y límites. Las evidencias de 4–5 quedaron completas con la reejecución de Amanda y el contraste de IA fue aportado por Lucas. Permanecen pendientes la captura de la respuesta original de Gemini, el OK de Mateo y Lucas a la conclusión y al borrador del PDF, la confirmación docente del cliente con ID más alias y el PDF final.

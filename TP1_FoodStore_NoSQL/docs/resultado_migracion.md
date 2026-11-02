@@ -58,7 +58,7 @@ Comprobación local de la extracción original de Amanda, sin motores: cinco ped
 - No se instalaron validadores permanentes. La verificación de una carga no garantiza que futuras escrituras mantengan las reglas de integridad.
 - Una inserción ordenada no constituye una transacción de todo el lote. El resultado satisfactorio de esta ejecución no demuestra que los mecanismos de error o concurrencia se hayan ensayado. No se documentan reintentos ni recuperaciones automáticas.
 - `retryWrites=false` es un requisito de las instrucciones de ejecución, pero no aparece en estas capturas y no se acredita su configuración mediante ellas.
-- La fecha indicada arriba es la del registro documental. No se infiere una hora exacta de migración a partir de los nombres de las imágenes o de la fecha de la extracción. Las versiones de MongoDB Server y Compass siguen pendientes de registrar.
+- La fecha indicada arriba es la del registro documental. No se infiere una hora exacta de migración a partir de los nombres de las imágenes o de la fecha de la extracción. Las versiones no se ven en las capturas; Amanda informó MongoDB Server 9.0.4 y MongoDB Compass 1.53.2, con mongosh integrado 2.9.2.
 
 ## Estado académico y siguientes tareas
 

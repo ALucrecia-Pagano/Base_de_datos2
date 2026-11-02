@@ -35,7 +35,7 @@ Ambas imágenes muestran la misma referencia al archivo fuente y el SHA-256 indi
 
 La [captura del documento](../evidencias/pedido_1_documento.png), inspeccionada visualmente, muestra la selección de `foodstore_unidad7` y `db.pedidos.findOne({ _id: Long("1") })`. La salida contiene `_id: Long('1')`, fecha `2026-03-01T23:30:00.000Z`, forma de pago `EFECTIVO`, estado `ENTREGADO`, cliente con ID Long 1 y alias `Cliente 1`, y dos líneas: producto Long 1, Muzzarella, cantidad 2, precio Decimal128 1000.00 y subtotal 2000.00; producto Long 3, Coca 1.5L, cantidad 1, precio Decimal128 800.00 y subtotal 800.00. El total visible es Decimal128 2800.00.
 
-Esta captura ilustra un documento y su estructura; no muestra el hash ni verifica el lote completo, el tipo BSON de las cantidades o el estado actual de las bases. No sustituye las dos capturas de inserción y verificación ni acredita las consultas pendientes de las consignas 4–5. El asistente inspeccionó la imagen sin ejecutar la consulta ni modificarla.
+Esta captura ilustra un documento y su estructura; no muestra el hash ni verifica el lote completo, el tipo BSON de las cantidades o el estado actual de las bases. No sustituye las dos capturas de inserción y verificación ni acredita las consultas de las consignas 4–5, que tienen sus propias evidencias. El asistente inspeccionó la imagen sin ejecutar la consulta ni modificarla.
 
 ## Qué comprueba el procedimiento
 
@@ -62,6 +62,6 @@ Comprobación local de la extracción original de Amanda, sin motores: cinco ped
 
 ## Estado académico y siguientes tareas
 
-La migración del lote está **ejecutada manualmente por Amanda y verificada según las evidencias inspeccionadas**. Este registro no declara aprobación grupal del diseño ni resuelve la consulta pendiente sobre suficiencia académica del cliente con ID y alias.
+La migración del lote está **ejecutada manualmente por Amanda y verificada según las evidencias inspeccionadas**. El diseño fue aprobado por el equipo con el informe final (2026-11-01); sigue pendiente la confirmación docente de la suficiencia del cliente con ID y alias.
 
-Las consultas y comparación de las consignas 4 y 5 fueron aportadas posteriormente, con ejecución informada por Mateo; la reejecución de Amanda del 2026-11-01 completó sus evidencias, con resultados coincidentes, según [comparacion_resultados.md](comparacion_resultados.md). Las consignas 6 y 7 fueron aportadas por Lucas en [contraste_ia.md](contraste_ia.md); queda pendiente la captura de la respuesta original de Gemini, además de la revisión grupal de conclusión e informe. Las verificaciones internas de migración no sustituyen las evidencias específicas de las consultas.
+Las consultas y comparación de las consignas 4 y 5 fueron aportadas posteriormente, con ejecución informada por Mateo; la reejecución de Amanda del 2026-11-01 completó sus evidencias, con resultados coincidentes, según [comparacion_resultados.md](comparacion_resultados.md). Las consignas 6 y 7 fueron aportadas por Lucas en [contraste_ia.md](contraste_ia.md); la conversación con Gemini está respaldada por las capturas `gemini_lucas_1.jpeg` a `gemini_lucas_5.jpeg`, aportadas por Lucas y enlazadas allí. La conclusión y el informe final fueron aprobados por el equipo el 2026-11-01. Las verificaciones internas de migración no sustituyen las evidencias específicas de las consultas.

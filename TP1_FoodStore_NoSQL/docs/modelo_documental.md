@@ -1,6 +1,6 @@
 # Modelo documental — diseño inicial e implementación, consignas 1 y 3
 
-Responsable: Amanda. Fecha: 2026-10-28. **Estado actual: implementado y migrado manualmente por Amanda, con verificación documentada; aprobación grupal pendiente.** Referencias: [plan](plan_trabajo.md), [decisiones](decisiones.md) y [reglas](../../AGENTS.md).
+Responsable: Amanda. Fecha: 2026-10-28. **Estado actual: implementado y migrado manualmente por Amanda, con verificación documentada; aprobado por el equipo con el informe final (2026-11-01).** Referencias: [plan](plan_trabajo.md), [decisiones](decisiones.md) y [reglas](../../AGENTS.md).
 
 La referencia académica principal es la [consigna oficial](../consignas/BDII_Unidad7_TP_FoodStore_NoSQL.pdf): página 1, consignas 1–3; página 2, consultas y entrega; página 3, correspondencia con la versión real de FoodStore. La consigna 1 pide identificar tablas y claves y esquematizar documentos; la 3 pide dos reglas de integridad y justificar el embebido. La migración de la consigna 2 ya fue ejecutada por Amanda y se documenta en el [resultado](resultado_migracion.md); se conserva el procedimiento inicialmente propuesto como antecedente.
 
@@ -12,9 +12,9 @@ Amanda ejecutó manualmente la extracción y la migración a `foodstore_unidad7.
 
 La implementación utiliza `_id` igual al ID del pedido, cliente con ID Long y alias sintético, líneas embebidas, cantidades Int32, fechas Date e importes Decimal128. **Se excluyeron todas las observaciones**, además de nombres/contactos personales del cliente; esto concreta y acota la opción inicialmente contemplada en la tabla de correspondencia. Los nombres de productos son actuales y los precios históricos provienen del detalle. El [script histórico con fuente y SHA de Amanda](https://github.com/ALucrecia-Pagano/Bases-de-datos-II-NoSQL/blob/73ee80a6c5b35b75491d81ebf30c03371a88ec68/mongodb/migracion_pedidos.js) calcula con BigInt en centavos, controla fechas sin pérdida submilisegundo e incorpora `Buffer` mediante `require("buffer")` para Compass.
 
-La [extracción real](../evidencias/extraccion_20261028_170446.json), con SHA-256 `3973789e22039731d20c1b5227d6907b09fa8065830e88c798264006eeaae243`, informa claves bigint, cantidades integer y fechas sin submilisegundos. Sus controles y las capturas documentan la ejecución del procedimiento; no se instalaron validadores permanentes. La revisión grupal del diseño y la suficiencia académica de ID más alias siguen pendientes. La implementación no constituye aprobación grupal ni completa las consignas 6–7; las consignas 4–5 se documentan en [comparacion_resultados.md](comparacion_resultados.md).
+La [extracción real](../evidencias/extraccion_20261028_170446.json), con SHA-256 `3973789e22039731d20c1b5227d6907b09fa8065830e88c798264006eeaae243`, informa claves bigint, cantidades integer y fechas sin submilisegundos. Sus controles y las capturas documentan la ejecución del procedimiento; no se instalaron validadores permanentes. El diseño fue aprobado por el equipo con el informe final; sigue pendiente la confirmación docente de la suficiencia de ID más alias. Las consignas 4–5 se documentan en [comparacion_resultados.md](comparacion_resultados.md) y las 6–7 en [contraste_ia.md](contraste_ia.md).
 
-Las elecciones iniciales se implementaron sin que ello constituya aprobación grupal. La sección 7 conserva explícitamente la secuencia propuesta antes de ejecutar; el [traspaso al equipo](traspaso_equipo.md) describe el procedimiento de reproducción y las tareas pendientes.
+Las elecciones iniciales se implementaron sin que ello constituya aprobación grupal. La sección 7 conserva explícitamente la secuencia propuesta antes de ejecutar; el [traspaso al equipo](traspaso_equipo.md) describe el procedimiento de reproducción y la organización del trabajo.
 
 La referencia histórica fija el procedimiento con la fuente y el hash de Amanda; el [script compartido actual](../mongodb/migracion_pedidos.js) usa esa misma fuente oficial y su hash. Una revisión intermedia los había cambiado para la extracción del 29/10 del anexo de Mateo; esa configuración se revirtió. Las rutas de las capturas son anteriores al traslado a `TP1_FoodStore_NoSQL/`.
 
@@ -31,7 +31,7 @@ Origen: PostgreSQL, base `foodstore_dev`.
 
 Estas relaciones describen el modelo aportado. La extracción documenta tipos y existencia de referencias del lote; esta revisión documental no verifica las definiciones de claves mediante una conexión al esquema real.
 
-Destino implementado: base `foodstore_unidad7`, colección `pedidos`, prevista como colección ordinaria local sin particionamiento. Las capturas documentan la carga en ese destino; no se migraron colecciones adicionales. La aprobación grupal del diseño sigue pendiente.
+Destino implementado: base `foodstore_unidad7`, colección `pedidos`, prevista como colección ordinaria local sin particionamiento. Las capturas documentan la carga en ese destino; no se migraron colecciones adicionales. El diseño fue aprobado por el equipo con el informe final.
 
 ## 2. Correspondencia PostgreSQL → MongoDB
 
@@ -62,19 +62,19 @@ No se trasladan nombres, email, teléfono, dirección ni `created_at` del client
 - **Importes:** `Decimal128("1000.00")` expresa un decimal BSON; construirlo desde texto, sin conversión intermedia a Double. Decimal128 admite 34 cifras significativas, suficientes para estos precios `numeric(10,2)` y los totales aportados. No impone por sí mismo una escala de dos decimales ni las reglas del negocio. [S1, S2]
 - **Fecha:** `ISODate("2026-03-01T23:30:00.000Z")` representa el mismo instante que `2026-03-01T20:30:00-03:00`; `Z` indica UTC. BSON Date registra milisegundos desde la época Unix y no almacena el desplazamiento original. La extracción y el script comprobaron que las fechas del lote no tienen fracciones submilisegundo. Una nueva fuente con esas fracciones debe bloquearse y revisarse, sin truncarlas silenciosamente. No confundir Date con el tipo interno Timestamp. [S2]
 
-La sintaxis se contrastó documentalmente con MongoDB; no se evaluó el ejemplo en mongosh. Las versiones de servidor y herramienta disponibles siguen pendientes de registrar.
+La sintaxis se contrastó documentalmente con MongoDB; no se evaluó el ejemplo en mongosh. Versiones informadas por Amanda: MongoDB Server 9.0.4, Compass 1.53.2 y mongosh integrado 2.9.2.
 
 ## 3. Cliente embebido y privacidad
 
 Se implementó `cliente` con `id` y `alias` determinista: para el cliente 1, `Cliente 1`. El alias es una **transformación sintética para la entrega**, no un nombre extraído de PostgreSQL. El mismo ID produce el mismo alias en todos sus pedidos.
 
-Esto permite reconocer al cliente asociado y vincular sus pedidos sin publicar nombres o contactos reales. Es una representación mínima razonable para consultar pedidos, pero la consigna no define qué considera datos esenciales: **queda pendiente confirmar con el equipo/docente si ID más alias satisface ese requisito**. Si se pide más información, acordar su tratamiento antes de implementarla, sin inventar atributos reales ni incorporar contactos personales.
+Esto permite reconocer al cliente asociado y vincular sus pedidos sin publicar nombres o contactos reales. Es una representación mínima razonable para consultar pedidos, pero la consigna no define qué considera datos esenciales: el equipo lo aprobó con el informe final y **queda pendiente la confirmación docente de que ID más alias satisface ese requisito**. Si se pide más información, acordar su tratamiento antes de implementarla, sin inventar atributos reales ni incorporar contactos personales.
 
 Conservar IDs es necesario para la trazabilidad exigida, pero el alias no garantiza anonimización irreversible: los IDs pueden vincularse con el origen privado. Mantener el origen y cualquier correspondencia personal fuera de la entrega pública.
 
 ## 4. Único documento ilustrativo: pedido 1
 
-**Ejemplo ilustrativo del diseño inicial, no ejecutado como bloque**, escrito en notación de mongosh para mostrar tipos BSON; no es JSON estricto ni un script de inserción. El modelo implementado conserva esta estructura; su aprobación grupal sigue pendiente. Las observaciones están excluidas del modelo implementado.
+**Ejemplo ilustrativo del diseño inicial, no ejecutado como bloque**, escrito en notación de mongosh para mostrar tipos BSON; no es JSON estricto ni un script de inserción. El modelo implementado conserva esta estructura y fue aprobado por el equipo con el informe final. Las observaciones están excluidas del modelo implementado.
 
 ```javascript
 {
@@ -172,4 +172,4 @@ Consulta documental: 2026-10-28. La documentación en línea no acredita la vers
 - **S7.** [MongoDB — insertMany](https://www.mongodb.com/docs/manual/reference/method/db.collection.insertMany/): inserción ordenada y detención ante errores.
 - **S8.** [MongoDB — Model Monetary Data](https://www.mongodb.com/docs/manual/tutorial/model-monetary-data/): uso de decimal para importes frente a aproximaciones binarias.
 
-Pendiente de revisión: aprobación grupal del diseño implementado y suficiencia académica de ID más alias. Versiones informadas por Amanda: MongoDB Server 9.0.4, Compass 1.53.2 y mongosh integrado 2.9.2. Los tipos y las fechas del lote ya fueron comprobados según la extracción y la verificación documentada; todas las observaciones se excluyeron. No se eligió moneda porque no fue informada. Cualquier nueva ejecución requiere autorización y no debe repetir la inserción existente.
+Estado: diseño implementado aprobado por el equipo con el informe final (2026-11-01); pendiente la confirmación docente de la suficiencia de ID más alias. Versiones informadas por Amanda: MongoDB Server 9.0.4, Compass 1.53.2 y mongosh integrado 2.9.2. Los tipos y las fechas del lote ya fueron comprobados según la extracción y la verificación documentada; todas las observaciones se excluyeron. No se eligió moneda porque no fue informada. Cualquier nueva ejecución requiere autorización y no debe repetir la inserción existente.

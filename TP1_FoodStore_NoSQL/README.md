@@ -109,22 +109,25 @@ contraste de afirmaciones de IA y conclusión de hasta 200 palabras.
 - [x] Instalación y conexión local de MongoDB comprobadas.
 - [x] Cantidad de pedidos y detalles de origen verificada.
 - [x] Estructura de las tablas de origen revisada.
-- [x] Modelo documental redactado; aprobación grupal pendiente.
+- [x] Modelo documental redactado y aprobado por el equipo con el informe final.
 - [x] Migración ejecutada manualmente por Amanda y verificada según capturas.
 - [x] Consultas y comparación aportadas, con ejecución informada por Mateo.
 - [x] Consultas ejecutadas y comparadas en ambos motores, con evidencias completas
   de a)–d) por la reejecución de Amanda del 2026-11-01.
 - [x] Contraste de afirmaciones de IA aportado por Lucas.
-- [ ] Captura de la respuesta original de Gemini (solicitada a Lucas).
-- [ ] OK de Mateo y Lucas a la conclusión y al PDF.
 - [x] Versiones de MongoDB Server (9.0.4) y Compass (1.53.2, mongosh integrado 2.9.2)
   de Amanda registradas, según lo informado.
+- [x] Informe final integrado en [informe/](informe/README.md), aprobado por el equipo
+  (OK de Mateo y Lucas del 2026-11-01) y listo para entregar.
 - [ ] Confirmación docente del cliente con ID más alias.
-- [x] Borrador del informe en [informe/](informe/README.md), pendiente del OK de Mateo y Lucas.
-- [ ] Informe final integrado (PDF) aprobado por el equipo.
+- [ ] Corrección de la cátedra.
 
-El [modelo documental](docs/modelo_documental.md) está redactado; su aprobación
-grupal continúa pendiente. La migración documentada corresponde a cinco pedidos
+La conversación con Gemini de la consigna 6 está respaldada por cinco capturas
+aportadas por Lucas (`evidencias/gemini_lucas_1.jpeg` a `gemini_lucas_5.jpeg`),
+enlazadas desde [contraste_ia.md](docs/contraste_ia.md).
+
+El [modelo documental](docs/modelo_documental.md) está redactado y fue aprobado
+por el equipo con el informe final. La migración documentada corresponde a cinco pedidos
 y siete líneas en `foodstore_unidad7.pedidos`, con IDs `Long` 1–5, tipos BSON
 correctos y correspondencia con todos los campos del lote fuente, según las
 salidas de Compass inspeccionadas durante la revisión documental del asistente.
@@ -138,7 +141,8 @@ El [resultado de las consultas y comparación](docs/comparacion_resultados.md)
 documenta la ejecución de las consignas 4 y 5 informada por Mateo y la
 reejecución de Amanda del 2026-11-01, que completa las evidencias de MongoDB.
 El [contraste de IA](docs/contraste_ia.md) de las consignas 6 y 7 fue aportado
-por Lucas. La revisión grupal y el informe final permanecen pendientes.
+por Lucas. El informe final fue aprobado por el equipo el 2026-11-01 y está listo
+para entregar.
 
 ### Trazabilidad de ejecuciones independientes
 

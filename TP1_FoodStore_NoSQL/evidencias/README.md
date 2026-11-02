@@ -55,9 +55,24 @@ Las dos extracciones y sus evidencias se conservan separadas aunque describan
 el mismo subconjunto de pedidos; la oficial es la de Amanda. La revisión del asistente fue documental y
 visual, sin ejecutar motores ni migraciones.
 
-Estas evidencias corresponden a la extracción, migración y consultas del lote;
-no sustituyen el contraste de IA de las consignas 6–7, cuyas salidas de
-laboratorio se registran en [contraste_ia.md](../docs/contraste_ia.md).
+## Lucas — consulta a IA y contraste, consignas 6–7
+
+- Capturas de la conversación con Gemini, aportadas por Lucas, en orden de lectura:
+  - [gemini_lucas_1.jpeg](gemini_lucas_1.jpeg) y [gemini_lucas_2.jpeg](gemini_lucas_2.jpeg):
+    pregunta enviada.
+  - [gemini_lucas_3.jpeg](gemini_lucas_3.jpeg): secciones 1 (Almacenamiento) y 2
+    (Consulta de un pedido completo) de la respuesta.
+  - [gemini_lucas_4.jpeg](gemini_lucas_4.jpeg): sección 3 (Integridad y coherencia),
+    con las dos afirmaciones contrastadas.
+  - [gemini_lucas_5.jpeg](gemini_lucas_5.jpeg): afirmación sobre MongoDB y
+    recomendación completa.
+- Las capturas muestran el modelo «Gemini Flash-Lite» y no muestran la fecha del
+  chat; la fecha 29/10/2026 es la informada por Lucas. No muestran correos ni
+  datos personales.
+- Salidas de laboratorio: [prueba_validacion_expr_salida.txt](prueba_validacion_expr_salida.txt)
+  y [contraste_integridad_postgresql_salida.txt](contraste_integridad_postgresql_salida.txt).
+- Responsable: Lucas.
+- Registro: [contraste_ia.md](../docs/contraste_ia.md).
 
 Para cada ejecución autorizada registrar:
 

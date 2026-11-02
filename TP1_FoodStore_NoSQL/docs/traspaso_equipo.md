@@ -4,11 +4,11 @@ Las atribuciones de ejecución a Amanda y Mateo y las referencias a sus máquina
 
 Las consultas y la comparación de las consignas 4–5 fueron aportadas, con ejecución informada por Mateo. Su captura MongoDB no mostraba completas c) ni d); la reejecución de Amanda del 2026-11-01, con los mismos scripts, completa esa evidencia con resultados coincidentes. Los resultados de Mateo se conservan.
 
-Registro: 2026-10-28. Aplicar [AGENTS.md](../../AGENTS.md), [CLAUDE.md](../../CLAUDE.md) y la [guía de colaboración](../../CONTRIBUTING.md). Referencia académica principal: [consigna oficial](../consignas/BDII_Unidad7_TP_FoodStore_NoSQL.pdf). Este documento organiza tareas pendientes; no registra nuevas ejecuciones ni autoriza operaciones en motores.
+Registro: 2026-10-28. Aplicar [AGENTS.md](../../AGENTS.md), [CLAUDE.md](../../CLAUDE.md) y la [guía de colaboración](../../CONTRIBUTING.md). Referencia académica principal: [consigna oficial](../consignas/BDII_Unidad7_TP_FoodStore_NoSQL.pdf). Este documento organizó el reparto de tareas; no registra nuevas ejecuciones ni autoriza operaciones en motores.
 
 ## Estado recibido y modelo implementado
 
-Amanda ejecutó manualmente la migración en Compass. Las [capturas de inserción](../evidencias/migracion_insercion.png) y [verificación](../evidencias/migracion_verificacion_amanda.png), inspeccionadas en la revisión documental, muestran inserción confirmada de los IDs Long 1–5, cinco pedidos, siete líneas, tipos BSON correctos y correspondencia con todos los campos del lote fuente. Ver [resultado y límites](resultado_migracion.md). La aprobación grupal del diseño sigue pendiente; la verificación de migración no completa las consignas 4–7.
+Amanda ejecutó manualmente la migración en Compass. Las [capturas de inserción](../evidencias/migracion_insercion.png) y [verificación](../evidencias/migracion_verificacion_amanda.png), inspeccionadas en la revisión documental, muestran inserción confirmada de los IDs Long 1–5, cinco pedidos, siete líneas, tipos BSON correctos y correspondencia con todos los campos del lote fuente. Ver [resultado y límites](resultado_migracion.md). El diseño fue aprobado por el equipo con el informe final; la verificación de migración no completa por sí sola las consignas 4–7.
 
 La migración de Amanda del 2026-10-28 y el trabajo independiente de Mateo del
 2026-10-29, según lo informado por los integrantes, se realizaron en sus respectivas
@@ -35,7 +35,7 @@ Se excluyeron observaciones y nombres/contactos personales del cliente. El alias
 
 | Archivo | Uso |
 |---|---|
-| [modelo_documental.md](modelo_documental.md) y [decisiones.md](decisiones.md) | Diseño inicial, implementación documentada y revisión grupal pendiente |
+| [modelo_documental.md](modelo_documental.md) y [decisiones.md](decisiones.md) | Diseño inicial, implementación documentada y aprobación del equipo con el informe final |
 | [extraccion_pedidos.sql](../postgresql/extraccion_pedidos.sql) | Extracción PostgreSQL de solo lectura del subconjunto 1–5 |
 | [extraccion_20261028_170446.json](../evidencias/extraccion_20261028_170446.json) | Fuente real e inmutable de la migración de Amanda; controles y datos de intercambio |
 | [extraccion_20261029_102959.json](../evidencias/extraccion_20261029_102959.json) | Anexo de la prueba local independiente de Mateo; mismo arreglo `extraccion` que la fuente oficial. No es fuente operativa del script |
@@ -65,7 +65,7 @@ No es necesario volver a consultar PostgreSQL para reconstruir desde esta extrac
 
 ## Mateo — consignas 4 y 5
 
-Archivos asignados: [consultas_mongodb.js](../mongodb/consultas_mongodb.js), [consultas_postgresql.sql](../postgresql/consultas_postgresql.sql) y [comparacion_resultados.md](comparacion_resultados.md). Las consultas y la comparación fueron aportadas por Mateo, quien informó su ejecución el 2026-10-29. Las evidencias MongoDB de c) y d) se completaron con la reejecución de Amanda del 2026-11-01; falta integrar las capturas legibles al informe. Borrador: [aporte_mateo.md](../informe/aporte_mateo.md), pendiente de OK de Mateo.
+Archivos asignados: [consultas_mongodb.js](../mongodb/consultas_mongodb.js), [consultas_postgresql.sql](../postgresql/consultas_postgresql.sql) y [comparacion_resultados.md](comparacion_resultados.md). Las consultas y la comparación fueron aportadas por Mateo, quien informó su ejecución el 2026-10-29. Las evidencias MongoDB de c) y d) se completaron con la reejecución de Amanda del 2026-11-01; las capturas legibles están integradas al informe final. Aporte: [aporte_mateo.md](../informe/aporte_mateo.md), con OK de Mateo del 2026-11-01.
 
 Consigna 4: registrar las cuatro consultas MongoDB y sus resultados: a) todos los pedidos con identificador y estado; b) estado existente; c) producto en el arreglo de líneas; d) total superior a un umbral elegido y justificado. Usar los nombres de campos implementados e importes Decimal128 desde texto; no convertir dinero a Number.
 
@@ -97,13 +97,13 @@ Criterios de aceptación de la consigna 7:
 
 - Seleccionar dos afirmaciones concretas de esa respuesta y contrastar cada una con documentación oficial identificable o resultados reproducibles del laboratorio. Distinguir la propuesta de IA de lo implementado, ejecutado y verificado.
 - Registrar fuente/enlace y fecha de consulta o procedimiento y evidencia, junto con resultado y límites del contraste. Las [fuentes del modelo](modelo_documental.md#8-fuentes-oficiales-consultadas-y-dudas) y el [resultado de migración](resultado_migracion.md) son insumos, no un contraste ya completado.
-- Conclusión de hasta 200 palabras sobre mantener PostgreSQL, usar MongoDB en el subconjunto o combinar tecnologías, sustentada en al menos dos criterios técnicos. Revisión grupal pendiente.
+- Conclusión de hasta 200 palabras sobre mantener PostgreSQL, usar MongoDB en el subconjunto o combinar tecnologías, sustentada en al menos dos criterios técnicos. Aprobada por el equipo con el informe final (2026-11-01).
 
 ## Evidencias e integración
 
 Para cada ejecución futura autorizada registrar fecha, hora/zona, motor/base, versiones conocidas, consulta o archivo y parámetros, cantidades e IDs pertinentes, salida observada y limitaciones. Aplicar la [guía de evidencias](../evidencias/README.md); conservar originales y producir copias anonimizadas si se requieren. No atribuir al asistente ejecuciones hechas por integrantes.
 
-El PDF grupal sigue pendiente: hasta cinco páginas sin contar código adjunto, sin imágenes decorativas ni conversaciones extensas. Integrar el aporte de Amanda, las consultas/comparaciones de Mateo, el contraste/conclusión de Lucas y la revisión del equipo según [informe/README.md](../informe/README.md). Usar ramas descriptivas y pull request; la protección remota de `main` no está comprobada.
+El PDF grupal está en [informe/](../informe/README.md): integra el aporte de Amanda, las consultas y comparaciones de Mateo y el contraste y la conclusión de Lucas, en hasta cinco páginas sin contar código adjunto. Fue aprobado por el equipo (OK de Mateo y Lucas del 2026-11-01) y está listo para entregar. Usar ramas descriptivas y pull request; la protección remota de `main` no está comprobada.
 
 ## Conservación del hash al compartir
 

@@ -1,12 +1,12 @@
 # Contraste de IA — consignas 6 y 7
 
-Responsable: Lucas Ávila. Referencias: [plan](plan_trabajo.md) y [reglas](../../AGENTS.md). Revisión grupal de la conclusión pendiente.
+Responsable: Lucas Ávila. Referencias: [plan](plan_trabajo.md) y [reglas](../../AGENTS.md). Conclusión aprobada por el equipo con el informe final (2026-11-01).
 
 ## Registro de la asistencia de IA
 
 - **Consulta de la consigna 6:** Gemini, modelo informado por Lucas como Flash-Lite (no comprobado por otro medio), el 29/10/2026. Se usó un chat nuevo, sin contexto previo.
 - **Asistencia en la preparación:** Claude (Anthropic) ayudó a Lucas a redactar la pregunta, a elegir las dos afirmaciones a contrastar, a leer la documentación oficial y a preparar los scripts de laboratorio (PostgreSQL y MongoDB) y este texto. Lucas ejecutó el script en su equipo y revisó cada resultado. Claude no tuvo acceso a ningún motor de bases de datos.
-- La respuesta completa de Gemini se conserva en el historial de Lucas; aquí se reproducen solo los fragmentos pertinentes.
+- **Capturas de la conversación con Gemini**, aportadas por Lucas, en orden de lectura: pregunta enviada en [gemini_lucas_1.jpeg](../evidencias/gemini_lucas_1.jpeg) y [gemini_lucas_2.jpeg](../evidencias/gemini_lucas_2.jpeg); secciones 1 y 2 de la respuesta en [gemini_lucas_3.jpeg](../evidencias/gemini_lucas_3.jpeg); sección 3, con las dos afirmaciones contrastadas, en [gemini_lucas_4.jpeg](../evidencias/gemini_lucas_4.jpeg); afirmación sobre MongoDB y recomendación completa en [gemini_lucas_5.jpeg](../evidencias/gemini_lucas_5.jpeg). Muestran el modelo «Gemini Flash-Lite»; no muestran la fecha del chat, por lo que el 29/10/2026 sigue siendo la fecha informada por Lucas. Aquí se reproducen solo los fragmentos pertinentes.
 
 ## Consigna 6 — consulta a la IA
 
@@ -26,7 +26,7 @@ Responsable: Lucas Ávila. Referencias: [plan](plan_trabajo.md) y [reglas](../..
 
 ## Afirmación 1 — validación entre campos en MongoDB
 
-- **Afirmación de la IA (textual):** en MongoDB, «la coherencia matemática (`subtotal = cantidad × precio` y `total = suma de subtotales`) debe ser impuesta estrictamente por la lógica de la aplicación o mediante validadores de esquema (`$jsonSchema`), ya que MongoDB no valida dependencias cruzadas entre campos internos de forma automática».
+- **Afirmación de la IA (textual):** en MongoDB, «la coherencia matemática (`subtotal = cantidad × precio` y `total = suma de subtotales`) debe ser impuesta estrictamente por la lógica de la aplicación o mediante validadores de esquema (`$jsonSchema`), ya que MongoDB no valida dependencias cruzadas entre campos internos de forma automática». La frase se ve textual en [gemini_lucas_4.jpeg](../evidencias/gemini_lucas_4.jpeg).
 - **Fuente oficial:** MongoDB Manual, [Specify Validation With Query Operators](https://www.mongodb.com/docs/manual/core/schema-validation/specify-query-expression-rules/) (manual vigente, que el selector de versión muestra como 9.0), consultada el 29/10/2026.
 - **Contraste:** la página indica que se pueden usar operadores de consulta como `$eq` y `$gt` para comparar campos, y que un uso habitual es crear reglas dinámicas que comparan varios campos a la vez. Su ejemplo define un validador con `$expr` que exige `totalWithVAT = total × (1 + VAT)` y rechaza con «Document failed validation» el documento que no cumple. Por lo tanto, **la afirmación es imprecisa**: existe validación entre campos dentro del mismo documento, mediante `$expr`, aunque `$jsonSchema` por sí solo no la expresa. No se permiten `$expr` con `$function`, `$near`, `$nearSphere`, `$text` ni `$where`.
 - **Procedimiento (laboratorio, ejecutado por Lucas el 29/10/2026):** [prueba_validacion_expr_mongodb.js](../mongodb/prueba_validacion_expr_mongodb.js), ejecutado con `mongosh` 2.14.1 sobre MongoDB Server 9.0.4, instalado en el equipo de Lucas. Crea una colección de ensayo, `pedidos_validados`, en una base propia (`prueba_validacion_lucas`), con un validador `$expr` que exige dos reglas: `total` igual a la suma de los subtotales de `lineas`, y cada subtotal igual a `cantidad × precio_unitario`. Usa documentos sintéticos con los mismos tipos del modelo (Long, Int32 y Decimal128) y no toca `foodstore_unidad7`. Salida: [prueba_validacion_expr_salida.txt](../evidencias/prueba_validacion_expr_salida.txt).
@@ -43,7 +43,7 @@ Responsable: Lucas Ávila. Referencias: [plan](plan_trabajo.md) y [reglas](../..
 
 ## Afirmación 2 — integridad en PostgreSQL
 
-- **Afirmación de la IA (textual):** PostgreSQL «ofrece garantías ACID estrictas mediante restricciones de clave foránea (`FOREIGN KEY`), garantizando que un pedido no pueda apuntar a un cliente o producto inexistente».
+- **Afirmación de la IA (textual):** PostgreSQL «ofrece garantías ACID estrictas mediante restricciones de clave foránea (`FOREIGN KEY`), garantizando que un pedido no pueda apuntar a un cliente o producto inexistente». La frase se ve textual en [gemini_lucas_4.jpeg](../evidencias/gemini_lucas_4.jpeg).
 - **Procedimiento (laboratorio, ejecutado por Lucas el 29/10/2026):** [contraste_integridad_postgresql.sql](../postgresql/contraste_integridad_postgresql.sql), ejecutado con `psql` sobre PostgreSQL 17.11 en la copia descartable `foodstore_restore_test`, restaurada desde un respaldo de `foodstore_dev` (TP8). Cada prueba corre dentro de `BEGIN ... ROLLBACK`. Salida: [contraste_integridad_postgresql_salida.txt](../evidencias/contraste_integridad_postgresql_salida.txt).
 - **Resultados observados:**
 

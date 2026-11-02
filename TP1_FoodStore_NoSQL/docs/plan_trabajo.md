@@ -8,7 +8,7 @@ Las consultas y la comparación de las consignas 4–5 fueron aportadas, con eje
 
 Preparar un modelo de pedidos con detalles y datos esenciales del cliente; migrar al menos cinco pedidos desde PostgreSQL a MongoDB conservando identificadores, instantes de fecha, estados, cantidades y precios históricos. Las reglas comunes están en [AGENTS.md](../../AGENTS.md) y el flujo colaborativo en [CONTRIBUTING.md](../../CONTRIBUTING.md).
 
-Referencia académica principal: [consigna oficial de Unidad 7](../consignas/BDII_Unidad7_TP_FoodStore_NoSQL.pdf), leída el 2026-10-28. Según lo informado por los integrantes, la migración de Amanda fue ejecutada manualmente el 2026-10-28 a partir de su extracción y sus capturas. Posteriormente, Mateo realizó un trabajo independiente el 2026-10-29 con otra extracción y sus propias evidencias. No deben presentarse como una única ejecución; ambos aportes se integran en la entrega grupal. El [modelo propuesto](modelo_documental.md) conserva su estado pendiente de aprobación del equipo.
+Referencia académica principal: [consigna oficial de Unidad 7](../consignas/BDII_Unidad7_TP_FoodStore_NoSQL.pdf), leída el 2026-10-28. Según lo informado por los integrantes, la migración de Amanda fue ejecutada manualmente el 2026-10-28 a partir de su extracción y sus capturas. Posteriormente, Mateo realizó un trabajo independiente el 2026-10-29 con otra extracción y sus propias evidencias. No deben presentarse como una única ejecución; ambos aportes se integran en la entrega grupal. El [modelo documental](modelo_documental.md) fue aprobado por el equipo con el informe final.
 
 ### Precisiones de la consigna oficial frente a los documentos iniciales
 
@@ -17,7 +17,7 @@ Referencia académica principal: [consigna oficial de Unidad 7](../consignas/BDI
 - La consigna 6 exige que la consulta a IA mencione el modelo actual, el acceso frecuente a pedidos completos y la coherencia de cantidades y precios. Esto deberá contemplarse al completar esa etapa.
 - La consigna 7 exige una conclusión de hasta 200 palabras sustentada en al menos dos criterios técnicos, evaluando PostgreSQL, MongoDB para el subconjunto o combinación.
 - El PDF final debe incluir evidencias legibles y código con instrucciones efectivamente ejecutadas; excluye imágenes decorativas, transcripciones extensas y datos personales reales. Las plantillas actuales aún no constituyen esa entrega.
-- La página 3 aclara que los nombres teóricos son ilustrativos: se emplean las tablas y columnas reales aportadas por Amanda. El requisito de datos esenciales del cliente no precisa atributos mínimos; la suficiencia de ID más alias queda pendiente de consulta.
+- La página 3 aclara que los nombres teóricos son ilustrativos: se emplean las tablas y columnas reales aportadas por Amanda. El requisito de datos esenciales del cliente no precisa atributos mínimos; la suficiencia de ID más alias queda pendiente de confirmación docente.
 
 ## Responsabilidades acordadas
 
@@ -32,12 +32,12 @@ El equipo completo revisa la conclusión y el informe final. Cada integrante tra
 ## Secuencia y estado de avance
 
 1. **Realizado:** preparación de estructura, reglas y plantillas.
-2. **Redactado e implementado:** diseño de consignas 1 y 3, con correspondencia, tipos BSON, ejemplo e integridad. **Pendiente:** revisión y aprobación grupal de destino, cliente y método según [decisiones.md](decisiones.md), y confirmación de suficiencia académica de ID más alias.
+2. **Redactado e implementado:** diseño de consignas 1 y 3, con correspondencia, tipos BSON, ejemplo e integridad. Aprobado por el equipo con el informe final (2026-11-01), según [decisiones.md](decisiones.md). **Pendiente:** confirmación docente de la suficiencia de ID más alias.
 3. **Realizado:** extracción y código de migración con detección de IDs existentes, sin reemplazos silenciosos. La aprobación documental no autoriza nuevas ejecuciones.
 4. **Realizado por Amanda:** ejecución manual de su extracción y migración el 2026-10-28, con conservación de datos y cantidades verificada según las evidencias del [resultado](resultado_migracion.md). No repetir esa inserción.
-5. **Realizado (Mateo, con reejecución de Amanda):** ejecución informada por Mateo; prueba local independiente del 2026-10-29, con `extraccion_20261029_102959.json` conservada como anexo (mismo arreglo `extraccion` que la fuente oficial), sus evidencias y las consultas de MongoDB y PostgreSQL de las consignas 4–5. No reemplaza la migración de Amanda; la fuente oficial sigue siendo `extraccion_20261028_170446.json`. El 2026-11-01 Amanda reejecutó los mismos scripts y completó las evidencias MongoDB de c) y d), con resultados coincidentes; borrador en [aporte_mateo.md](../informe/aporte_mateo.md), pendiente de OK de Mateo.
-6. **Aportado (Lucas, consignas 6–7):** consulta a Gemini, contraste de dos afirmaciones con documentación oficial y laboratorio, y borrador de conclusión en [contraste_ia.md](contraste_ia.md) y [aporte_lucas.md](../informe/aporte_lucas.md). Pendiente: captura de la respuesta original de Gemini, solicitada a Lucas.
-7. **Pendiente (equipo):** borrador del PDF armado el 2026-11-01 en [informe/](../informe/README.md); falta obtener el OK de Mateo y Lucas a la conclusión y al PDF, y preparar la entrega.
+5. **Realizado (Mateo, con reejecución de Amanda):** ejecución informada por Mateo; prueba local independiente del 2026-10-29, con `extraccion_20261029_102959.json` conservada como anexo (mismo arreglo `extraccion` que la fuente oficial), sus evidencias y las consultas de MongoDB y PostgreSQL de las consignas 4–5. No reemplaza la migración de Amanda; la fuente oficial sigue siendo `extraccion_20261028_170446.json`. El 2026-11-01 Amanda reejecutó los mismos scripts y completó las evidencias MongoDB de c) y d), con resultados coincidentes; aporte en [aporte_mateo.md](../informe/aporte_mateo.md), con OK de Mateo del 2026-11-01.
+6. **Aportado (Lucas, consignas 6–7):** consulta a Gemini, contraste de dos afirmaciones con documentación oficial y laboratorio, y borrador de conclusión en [contraste_ia.md](contraste_ia.md) y [aporte_lucas.md](../informe/aporte_lucas.md). La conversación con Gemini está respaldada por las capturas [1](../evidencias/gemini_lucas_1.jpeg), [2](../evidencias/gemini_lucas_2.jpeg), [3](../evidencias/gemini_lucas_3.jpeg), [4](../evidencias/gemini_lucas_4.jpeg) y [5](../evidencias/gemini_lucas_5.jpeg), aportadas por Lucas.
+7. **Realizado (equipo):** informe final en [informe/](../informe/README.md), aprobado por el equipo (OK de Mateo y Lucas del 2026-11-01) y listo para entregar.
 
 ## Estado real
 
@@ -57,13 +57,13 @@ Estado de la preparación documental:
 
 - [x] Estructura, reglas de colaboración y plantillas creadas.
 - [x] Consigna oficial leída y precisiones académicas registradas.
-- [x] Diseño de consignas 1 y 3 redactado, con fuentes oficiales y ejemplo no ejecutado; [aporte de Amanda para consignas 1–3](../informe/aporte_amanda.md) redactado, pendiente de revisión grupal.
+- [x] Diseño de consignas 1 y 3 redactado, con fuentes oficiales y ejemplo no ejecutado; [aporte de Amanda para consignas 1–3](../informe/aporte_amanda.md) redactado e integrado al informe aprobado.
 - [x] [Script de extracción](../postgresql/extraccion_pedidos.sql) preparado y revisado estáticamente, sin conexión a motores.
 - [x] Amanda informó que ejecutó manualmente la extracción; el asistente no la ejecutó.
 - [x] Archivo de extracción comprobado localmente: JSON UTF-8, contexto, controles, cinco pedidos, siete líneas y fórmulas.
 - [x] Versión PostgreSQL 17.11 registrada según el contexto de la extracción de Amanda.
 - [x] Versiones de MongoDB y Compass registradas: Amanda informó MongoDB Server 9.0.4 y Compass 1.53.2, con mongosh integrado 2.9.2.
-- [x] Destino, tipos BSON, tratamiento del cliente y método de migración implementados y documentados; aprobación grupal pendiente.
+- [x] Destino, tipos BSON, tratamiento del cliente y método de migración implementados, documentados y aprobados por el equipo con el informe final.
 - [ ] Modelo y reglas de integridad revisados y aprobados por el equipo.
 - [ ] Suficiencia de cliente con ID más alias confirmada con equipo/docente.
 - [x] Tipos/rangos y precisión de fecha del lote comprobados según la extracción y los controles documentados; tipos BSON verificados según las evidencias de migración.
@@ -73,9 +73,9 @@ Estado de la preparación documental:
 - [x] Consignas 4–5: consultas y comparación aportadas, con ejecución informada por Mateo.
 - [x] Consignas 4–5: evidencias MongoDB de c) y d) completadas por la reejecución de Amanda del 2026-11-01.
 - [x] Consignas 6–7: consulta a IA, contraste de dos afirmaciones y borrador de conclusión aportados (Lucas).
-- [ ] Captura de la respuesta original de Gemini (solicitada a Lucas).
-- [ ] OK de Mateo a [aporte_mateo.md](../informe/aporte_mateo.md) y OK de Mateo y Lucas a la conclusión y al PDF.
-- [ ] Informe final integrado (PDF) y conclusión revisados por el equipo.
+- [x] Informe final integrado (PDF) y conclusión aprobados por el equipo: OK de Mateo y Lucas del 2026-11-01. Listo para entregar.
+- [ ] Confirmación docente del cliente con ID más alias.
+- [ ] Corrección de la cátedra.
 
 ## Entregables
 
@@ -107,7 +107,7 @@ Se inspeccionaron visualmente [migracion_insercion.png](../evidencias/migracion_
 
 El [resultado de migración](resultado_migracion.md) registra procedimiento, resultados y límites. Amanda realizó la ejecución en Compass; el asistente revisó archivos y capturas, sin conectarse a motores. Para Compass fue necesaria la importación explícita de `Buffer` mediante `require("buffer")`, sin cambiar la evidencia ni su hash. La hora exacta de migración, las versiones de MongoDB/Compass y la configuración efectiva de `retryWrites` no se acreditan en las imágenes; Amanda informó después las versiones (MongoDB Server 9.0.4, Compass 1.53.2, mongosh integrado 2.9.2).
 
-Las verificaciones de migración no completan por sí solas las consignas 4–5 ni 6–7. Las consignas 4–5 se documentan en la sección siguiente y las 6–7 en [contraste_ia.md](contraste_ia.md); la aprobación grupal del diseño sigue pendiente.
+Las verificaciones de migración no completan por sí solas las consignas 4–5 ni 6–7. Las consignas 4–5 se documentan en la sección siguiente y las 6–7 en [contraste_ia.md](contraste_ia.md); el diseño fue aprobado por el equipo con el informe final.
 
 ### Consultas 4–5: ejecución informada por Mateo — 2026-10-29
 
@@ -134,4 +134,4 @@ evidencias legibles junto con el informe; no deben incluir contraseñas.
 - Modelo, comparación y contraste en los documentos de `docs/`; evidencias según [su guía](../evidencias/README.md).
 - Esquema y requisitos del informe en [informe/README.md](../informe/README.md).
 
-Esta documentación no autoriza nuevas conexiones ni ejecuciones en motores. El diseño conserva su estado propuesto; la extracción local de Mateo, la migración y las consultas de las consignas 4–5 quedan documentadas con sus resultados y límites. Las evidencias de 4–5 quedaron completas con la reejecución de Amanda y el contraste de IA fue aportado por Lucas. Permanecen pendientes la captura de la respuesta original de Gemini, el OK de Mateo y Lucas a la conclusión y al borrador del PDF, la confirmación docente del cliente con ID más alias y el PDF final.
+Esta documentación no autoriza nuevas conexiones ni ejecuciones en motores. El diseño fue aprobado por el equipo con el informe final; la extracción local de Mateo, la migración y las consultas de las consignas 4–5 quedan documentadas con sus resultados y límites. Las evidencias de 4–5 quedaron completas con la reejecución de Amanda y el contraste de IA fue aportado por Lucas. El informe final fue aprobado por el equipo (OK de Mateo y Lucas del 2026-11-01) y está listo para entregar; Lucas aportó las capturas de la conversación con Gemini (ver el paso 6). Solo quedan pendientes la confirmación docente del cliente con ID más alias y la corrección de la cátedra.

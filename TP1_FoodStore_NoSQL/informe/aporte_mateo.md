@@ -1,8 +1,8 @@
 # Aporte de Mateo — consultas y comparación entre motores
 
-Redactado por Amanda a partir del trabajo de Mateo (consultas, parámetros y ejecución del 2026-10-29) y de la reejecución de Amanda del 2026-11-01; pendiente de OK de Mateo.
+Redactado por Amanda a partir del trabajo de Mateo (consultas, parámetros y ejecución del 2026-10-29) y de la reejecución de Amanda del 2026-11-01; con OK de Mateo del 2026-11-01.
 
-Borrador para integrar al PDF grupal, consignas 4 y 5 (sección 3 del esquema). Detalle completo, comandos y límites: [comparacion_resultados.md](../docs/comparacion_resultados.md).
+Aporte integrado al informe final aprobado, consignas 4 y 5 (sección 3 del esquema). Detalle completo, comandos y límites: [comparacion_resultados.md](../docs/comparacion_resultados.md).
 
 ## 3. Consultas y comparación de resultados
 

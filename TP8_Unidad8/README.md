@@ -153,7 +153,9 @@ sin ejecutar antes `pruebas_sqlite.sql`):
 .read TP8_Unidad8\movil\casos_2c.sql
 ```
 
-El script ejecuta el semáforo por su cuenta. La última consulta debe mostrar
+El script ejecuta el semáforo por su cuenta, y como `semaforo.sql` termina con un
+`SELECT`, durante la ejecución aparece primero una lista parcial de solicitudes
+(esto es normal). La última consulta debe mostrar
 cinco solicitudes: `c2-solicitud-1` en `CONFLICTO`, `c2-solicitud-2` y
 `c5-solicitud` en `SIMULADO_APROBADO`, y `c3-solicitud` y `c4-solicitud` en
 `RECHAZADO`. Antes de esa consulta aparece el error intencional de C6:

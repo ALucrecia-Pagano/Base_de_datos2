@@ -15,29 +15,35 @@ decide. PostgreSQL conserva la autoridad sobre precios, stock y ventas.
 
 ## Estructura del repositorio
 
-La estructura de entrega solicitada por la cátedra es:
+La estructura de entrega solicitada por la cátedra, con los archivos que ya
+existen en `TP8_Unidad8/`, es:
 
 ```text
-food-store/
+TP8_Unidad8/
 ├── README.md
 ├── movil/
 │   ├── schema_sqlite.sql
 │   ├── pruebas_sqlite.sql
+│   ├── importar_snapshot.sql
 │   ├── semaforo.sql
+│   ├── casos_2c.sql
 │   ├── servidor_snapshot.csv
 │   └── foodstore_movil.db
-├── docs/
-│   └── informe.pdf
-└── kiro/
+├── postgresql/
+│   └── vista_snapshot_movil.sql
+└── docs/
+    ├── informe.pdf              (pendiente: 1.a, 2.c, 3.a, 3.b y 3.c; máximo 6 páginas)
+    ├── kiro/
+    │   ├── requirements.md
+    │   ├── design.md
+    │   └── tasks.md
     ├── bitacora_ia.md
-    ├── DUIA.md
-    ├── requirements.md
-    ├── design.md
-    └── tasks.md
+    └── DUIA.md
 ```
 
-Durante el desarrollo también se conservan scripts, bases de prueba y
-documentación intermedia dentro de `movil/`, `postgresql/` y `docs/`.
+Durante el desarrollo también se conservan bases de prueba y documentación
+intermedia (`docs/consigna_*.md`, `docs/resultado_*.md`) dentro de `movil/` y
+`docs/`.
 
 ## Estado del trabajo práctico
 
@@ -51,6 +57,7 @@ documentación intermedia dentro de `movil/`, `postgresql/` y `docs/`.
 | Consigna 2.a — `v_snapshot_movil` | **[COMPLETADO]** | Se creó la vista de lectura en PostgreSQL, se exportaron tres productos y se importaron a SQLite mediante `servidor_snapshot.csv`. |
 | Consigna 2.b — `semaforo.sql` | **[COMPLETADO]** | Reejecutada con SQLite CLI: solicitud compatible clasificada como `SIMULADO_APROBADO`, con idempotencia y una única solicitud conservada. Veredicto: aprobado. |
 | Consigna 2.c — Casos C2 a C6 | **[COMPLETADO]** | Se verificaron cambio de precio, stock insuficiente, baja lógica, solicitud sin cambios y reenvío con UUID repetido. C1 y C7 quedaron probados en la Consigna 1. |
+| Consigna 4.a — Spec en Kiro | **[COMPLETADO]** | `docs/kiro/requirements.md` con cuatro requisitos EARS (REQ-01 a REQ-04, probados con C2, C3, C4 y C6), `design.md` y `tasks.md`. La spec es retroactiva: se escribió después del código y se comprobó contra él (ver `docs/bitacora_ia.md`). |
 
 La lógica móvil quedó validada con SQLite: la tablet consulta la instantánea y
 arma borradores, mientras que PostgreSQL continúa siendo la fuente de verdad.
@@ -63,11 +70,15 @@ Las pruebas no modificaron PostgreSQL ni MongoDB.
 | Consigna 3.a — Mapa de la capa de datos | Amanda | Tabla o diagrama que integre PostgreSQL, MongoDB de TP7/Unidad 7 y SQLite, indicando qué conserva cada motor y quién es la autoridad sobre cada dato. |
 | Consigna 3.b — Plan de mantenimiento | Amanda | Sección sobre respaldos, pruebas de restauración, comportamiento de las tablets ante la restauración de un respaldo antiguo y revisión periódica de solicitudes `CONFLICTO` o `RECHAZADO`. |
 | Consigna 3.c — Code review con IA | Amanda | Revisión de los scripts de la cursada con OpenCode, usando el Plan Agent; tabla de hallazgos con decisión y motivo, más el desarrollo de al menos tres hallazgos de dos unidades distintas, incluyendo uno descartado con fundamento. |
-| Consigna 4.a — Spec en Kiro | Lucas | `requirements.md` con cuatro requisitos EARS y sus casos de prueba, además de `design.md` y `tasks.md`. |
-| Consigna 4.b — Bitácora de IA y DUIA | Lucas | `bitacora_ia.md` con al menos tres entradas sobre solicitudes, decisiones y descartes de IA, junto con `DUIA.md`. |
+| Consigna 4.b — Bitácora de IA y DUIA | Lucas, Mateo, Amanda | Lucas completó sus entradas y su parte de la DUIA. Faltan que Mateo (Copilot) y Amanda (OpenCode) completen las suyas en `docs/bitacora_ia.md` y `docs/DUIA.md`. |
 | Consigna 4.c — README, informe y defensa | Lucas | README final, `docs/informe.pdf` de hasta seis páginas y ensayo de defensa de diez minutos con mapa, caso en vivo y hallazgo de la revisión con IA. |
 
 ## Guía de ejecución
+
+**Requisitos previos:** PostgreSQL 17 con la base de Food Store (solo lectura),
+SQLite CLI 3.37 o superior (las tablas `STRICT` lo exigen) y una copia de este
+repositorio. Todos los comandos se ejecutan desde la raíz del repositorio,
+porque `casos_2c.sql` usa rutas relativas a `TP8_Unidad8/`.
 
 Los siguientes pasos reproducen lo realizado hasta el momento. Deben
 ejecutarse sobre copias de prueba y con datos ficticios. PostgreSQL se utiliza
@@ -132,6 +143,35 @@ solicitudes:
 
 El semáforo solo evalúa solicitudes `PENDIENTE`. No descuenta stock, no cambia
 precios y no confirma ventas en PostgreSQL.
+
+### 5. Ejecutar los casos C2 a C6
+
+Sobre una copia nueva con el esquema y la instantánea importados (pasos 2 y 3,
+sin ejecutar antes `pruebas_sqlite.sql`):
+
+```sql
+.read TP8_Unidad8\movil\casos_2c.sql
+```
+
+El script ejecuta el semáforo por su cuenta. La última consulta debe mostrar
+cinco solicitudes: `c2-solicitud-1` en `CONFLICTO`, `c2-solicitud-2` y
+`c5-solicitud` en `SIMULADO_APROBADO`, y `c3-solicitud` y `c4-solicitud` en
+`RECHAZADO`. Antes de esa consulta aparece el error intencional de C6:
+`UNIQUE constraint failed: cola_sync.solicitud_uuid`.
+
+### 6. Qué prueba cada requisito de la spec
+
+| Requisito (`docs/kiro/requirements.md`) | Caso | Se ve en |
+|---|---|---|
+| REQ-01 — precio distinto → `CONFLICTO` | C2 | `c2-solicitud-1` |
+| REQ-02 — stock insuficiente → `RECHAZADO` | C3 | `c3-solicitud` |
+| REQ-03 — producto dado de baja → `RECHAZADO` | C4 | `c4-solicitud` |
+| REQ-04 — UUID repetido no se duplica ni se reevalúa | C6 | error de unicidad y estado de `c5-solicitud` sin cambios |
+
+## Entrega
+
+Un `.zip` o el enlace al repositorio con la etiqueta `tp8`, en el campus, antes
+del cierre de la semana 13. No hay entregas tardías.
 
 ## Regla de oro del proyecto
 

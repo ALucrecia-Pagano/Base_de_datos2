@@ -2,7 +2,7 @@
 
 ## Overview
 
-El sistema de sincronización offline de Food Store permite a una tablet Android
+El sistema de sincronización offline de Food Store permite a una tablet
 registrar solicitudes de venta en SQLite mientras no hay conectividad con el
 servidor PostgreSQL. El componente central es el **Semáforo**, un script SQL
 (`semaforo.sql`) que evalúa cada solicitud pendiente contra una instantánea
@@ -207,10 +207,13 @@ Implementadas en `casos_2c.sql` y ejecutadas sobre `foodstore_sync_2c.db`:
 
 ### Prueba de idempotencia
 
-Verificada en `resultado_semaforo_2b.md`: ejecutar `semaforo.sql` dos veces
-sobre la misma base de datos produce exactamente el mismo resultado; la segunda
+Parcialmente verificada en `resultado_semaforo_2b.md`: ejecutar `semaforo.sql` dos veces
+sobre la misma base de datos produce el mismo resultado; la segunda
 ejecución no modifica ninguna fila porque `WHERE estado = 'PENDIENTE'` no
-encuentra filas elegibles tras la primera pasada.
+encuentra filas elegibles tras la primera pasada. Sin embargo,
+`resultado_semaforo_2b.md` indica que la variante actual de `semaforo.sql`
+(con tabla temporal y rechazo de solicitudes sin ítems) debe reejecutarse
+para actualizar la evidencia de idempotencia.
 
 ### Estrategia de bases de datos de prueba
 

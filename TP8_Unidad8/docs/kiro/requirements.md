@@ -112,7 +112,7 @@ gestionar ventas de productos que ya no se comercializan.
    la solicitud en Cola_Sync con motivo `'Producto inexistente en la
    instantánea'`, distinto del motivo por baja lógica.
 
-Se prueba con: C4.
+Se prueba con: C4. En C4 la baja se hace en PostgreSQL (`activo = false`), por lo que la instantánea trae también `disponible = 0`: se cumple el criterio 1 (estado `RECHAZADO`) y, como el producto no disponible tiene mayor prioridad (criterio 2), el motivo registrado es `'Producto no disponible'`.
 
 ### Requirement 4: Idempotencia — UUID no se duplica ni reevalúa
 

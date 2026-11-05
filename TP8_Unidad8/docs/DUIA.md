@@ -36,7 +36,7 @@ Como en los TP anteriores del grupo, cada integrante declara su parte. El detall
 
 | Campo | Detalle |
 |---|---|
-| **Herramientas** | Claude (Anthropic), Antigravity con el modelo Claude Sonnet 5.5 en modo Plan, y el agente de GitHub Copilot. |
+| **Herramientas** | Claude (Anthropic); Antigravity con Claude Sonnet 5.5 (en modo Plan para el code review) y con Gemini 3.8 Flash (para alinear la spec de Kiro con el código y para la auditoría final contra la consigna); y el agente de GitHub Copilot. |
 | **Spec o prompt utilizado** | Claude: revisar el estado del TP contra la consigna y guiar paso a paso la consigna 2.c y la consigna 3. Copilot: prompts cerrados con los bloques exactos a reemplazar en `casos_2c.sql`, `consigna_2c.md` y `resultado_casos_2c.md`, sin commits y sin tocar otros archivos. Antigravity, además del code review: prompts cerrados del mismo tipo para el README, esta DUIA y la bitácora. Antigravity: code review de solo lectura de los 75 scripts de la cursada, con archivo, línea y fragmento citado, una prueba de comprobación por hallazgo y autocrítica de falsos positivos. |
 | **Qué generó** | Claude: los scripts `preparar_casos_2c.sql`, `verificar_sin_cambios_2c.sql` y `recargar_snapshot.sql`, los cambios de `casos_2c.sql` y los borradores de `consigna_3a.md`, `consigna_3b.md` y `consigna_3c.md`. Copilot: la aplicación de cambios ya redactados en `casos_2c.sql` y en la documentación de la 2.c. Antigravity: 24 hallazgos (F01 a F24) y la aplicación de cambios ya redactados en el README, esta DUIA y la bitácora. |
 | **Qué se aceptó** | Preparar C2 y C4 en una copia de PostgreSQL y exportar una instantánea nueva; los cambios puntuales en `casos_2c.sql`; 20 hallazgos aceptados y la corrección de F07. |

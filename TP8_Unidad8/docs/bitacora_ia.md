@@ -73,6 +73,13 @@ Cada entrada se escribió el mismo día de la interacción. Las entradas de la s
 **Qué descarté.** DB Browser for SQLite como herramienta principal de ejecución.
 **Por qué.** Mantenía una transacción implícita y no permitía ejecutar el script completo; se usó SQLite CLI.
 
+## Entrada 10 — 04/11/2026, ~23:05 · Antigravity (Gemini 3.8 Flash) · Amanda
+**Qué pedí.** Una auditoría de solo lectura de `TP8_Unidad8/` contra la consigna oficial, con evidencia por archivo y línea, inconsistencias entre documentos y riesgos de descuento.
+**Qué propuso.** Que la etiqueta `tp8` no apuntaba al último commit; que el criterio 2 del REQ-03 contradecía el motivo de C4; que `verificacion_readme_lucas.md` mostraba una salida anterior; y que la spec es retroactiva.
+**Qué acepté.** Mover la etiqueta al último commit y agregar una nota en `verificacion_readme_lucas.md`.
+**Qué descarté.** La contradicción del REQ-03: la IA cortó la cita y omitió la condición del criterio 2 ("ningún ítem presenta condición de mayor prioridad … producto no disponible"), que ya explica el motivo de C4. Solo se agregó una aclaración debajo del requisito.
+**Por qué.** Lo comprobé leyendo el criterio completo y la precedencia del `CASE` de motivo en `semaforo.sql`.
+
 ## Entradas pendientes de otros integrantes (no completadas por Lucas)
 - **Mateo Liendo — código SQLite (consignas 1 y 2).** Completada en la entrada 9.
 - **Amanda Pagano — consignas 2.c (preparación en PostgreSQL) y 3.** Completadas en las entradas 5 a 8.

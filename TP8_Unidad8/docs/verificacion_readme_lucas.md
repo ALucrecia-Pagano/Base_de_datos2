@@ -1,5 +1,7 @@
 # Verificación de la guía del README desde cero — Lucas Ávila
 
+> **Nota (04/11/2026).** Esta verificación corresponde a la versión de `casos_2c.sql` del 03/11/2026, en la que los cambios de C2 y C4 se simulaban en SQLite. Desde el 04/11/2026 se preparan en PostgreSQL y C4 registra el motivo `'Producto no disponible'`; la ejecución vigente está en `resultado_casos_2c.md`. El contenido de abajo se conserva sin cambios como evidencia de esa fecha.
+
 Fecha: 03/11/2026, 17:13 a 17:16 (hora de Mendoza).
 Equipo: PC con Windows, SQLite CLI 3.54.1 (2026-10-16), ejecutado desde el Símbolo del sistema en la raíz del repositorio, sobre la rama `lucas/tp8-spec-bitacora`.
 

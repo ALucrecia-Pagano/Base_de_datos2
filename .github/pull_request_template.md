@@ -1,6 +1,6 @@
 ## Objetivo y consignas
 
-Pendiente: trabajo y carpeta (por ejemplo, `TP1_FoodStore_NoSQL/`), propósito, consignas y alcance.
+Pendiente: trabajo y carpeta (por ejemplo, `TP1_FoodStore_NoSQL/` o `TP8_Unidad8/`), propósito, consignas y alcance.
 
 ## Cambios realizados
 

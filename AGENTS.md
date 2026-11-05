@@ -9,11 +9,13 @@ FoodStore — Unidad 7: NoSQL. Bases de Datos II, Tecnicatura Universitaria en P
 
 Este proyecto continúa FoodStore. El TP8 anterior corresponde a la Unidad 6; este trabajo corresponde a la Unidad 7 NoSQL y no al TP7 anterior de Administración y Seguridad. No asumir que los archivos del repositorio anterior describen el estado actual de las bases ni modificar ese repositorio.
 
+El repositorio incluye también el TP8 de la Unidad 8 (`TP8_Unidad8/`): la base de la tablet en SQLite y la sincronización simulada con PostgreSQL. Ver el [README del TP8](TP8_Unidad8/README.md) y la sección "TP8 — Unidad 8" de este archivo.
+
 Leer [README.md](README.md), [CONTRIBUTING.md](CONTRIBUTING.md) y el [plan de trabajo](TP1_FoodStore_NoSQL/docs/plan_trabajo.md). Las reglas comunes para asistentes se mantienen en este archivo.
 
 ## Organización del repositorio
 
-Los trabajos se organizan en carpetas. El actual es [TP1 — FoodStore NoSQL, Unidad 7](TP1_FoodStore_NoSQL/README.md). TP1 es la numeración organizativa de este repositorio, no una denominación atribuida a la consigna oficial. Las secciones específicas de FoodStore se aplican a ese trabajo.
+Los trabajos se organizan en carpetas. Son [TP1 — FoodStore NoSQL, Unidad 7](TP1_FoodStore_NoSQL/README.md) y [TP8 — Food Store en la feria, Unidad 8](TP8_Unidad8/README.md). TP1 es la numeración organizativa de este repositorio, no una denominación atribuida a la consigna oficial. Las secciones específicas de FoodStore se aplican a ese trabajo.
 
 ## Alcance y entregables
 
@@ -34,6 +36,14 @@ Amanda ejecutó manualmente la extracción y la migración a `foodstore_unidad7.
 
 Consultar el [resultado de la migración](TP1_FoodStore_NoSQL/docs/resultado_migracion.md) para las evidencias y sus límites, y el [plan vigente](TP1_FoodStore_NoSQL/docs/plan_trabajo.md) para los pendientes. El diseño fue aprobado por el equipo con el informe final. Las consultas y la comparación de las consignas 4–5 fueron aportadas, con ejecución informada por Mateo. La captura MongoDB de Mateo no mostraba completas c) ni d); el 2026-11-01 Amanda reejecutó los mismos scripts de solo lectura y sus capturas completan esa evidencia, con resultados coincidentes. Ver [comparación y límites](TP1_FoodStore_NoSQL/docs/comparacion_resultados.md). Las consignas 6–7 fueron aportadas por Lucas en [contraste_ia.md](TP1_FoodStore_NoSQL/docs/contraste_ia.md). Lucas aportó cinco capturas de la conversación con Gemini (`evidencias/gemini_lucas_1.jpeg` a `gemini_lucas_5.jpeg`), enlazadas desde `contraste_ia.md`. El informe final (`TP1_FoodStore_NoSQL/informe/`) fue aprobado por el equipo (OK de Mateo y Lucas del 2026-11-01) y está listo para entregar. Solo siguen pendientes la confirmación docente del cliente con ID más alias y la corrección de la cátedra.
 
+## TP8 — Unidad 8 (Food Store en la feria)
+
+- Alcance: base de la tablet en SQLite (consigna 1); instantánea, semáforo y casos C2 a C6 (consigna 2); mapa de la capa de datos, plan de mantenimiento y code review con IA (consigna 3); spec en Kiro, bitácora de IA, DUIA, README y defensa (consigna 4).
+- Responsabilidades: Mateo, consignas 1 y 2; Amanda, consigna 3 y la preparación de la 2.c en PostgreSQL; Lucas, consigna 4.a y el README. La bitácora y la DUIA tienen una parte de cada integrante.
+- Bases: PostgreSQL solo en la copia de pruebas `foodstore_tp8_feria`, creada desde `foodstore_dev`. La preparación de la 2.c cambia un precio y una baja lógica en esa copia, nunca en `foodstore_dev`. SQLite solo en copias o en memoria.
+- Regla de oro: la tablet nunca cambia el stock ni el precio del servidor ni confirma ventas; `SIMULADO_APROBADO` no es una venta.
+- Estado: entregado con la etiqueta `tp8` el 04/11/2026. Pendiente: el ensayo de defensa de la semana 13.
+
 ## Forma de trabajo
 
 - Antes de actuar, leer las instrucciones aplicables, revisar el directorio, la rama, el estado de Git y los archivos existentes.
@@ -44,7 +54,7 @@ Consultar el [resultado de la migración](TP1_FoodStore_NoSQL/docs/resultado_mig
 
 ## Bases de datos y protección de datos
 
-- PostgreSQL se conserva como origen de lectura y comparación, sin modificaciones para este TP.
+- PostgreSQL se conserva como origen de lectura y comparación, sin modificaciones para el TP1 (Unidad 7). En el TP8 solo se modifica la copia de pruebas indicada en su sección.
 - No conectarse a motores ni ejecutar consultas, SQL o JavaScript sin autorización para esa etapa y destino. Aprobar o guardar un script no autoriza ejecutarlo.
 - Antes de una ejecución autorizada, identificar motor, conexión sin secretos, base, colección o tablas y efectos esperados. La autorización de una secuencia concreta permite completarla sin repetir la misma pregunta por cada sentencia.
 - No borrar, restaurar, recrear ni sobrescribir bases o colecciones como solución automática ante un error.
@@ -59,7 +69,7 @@ Consultar el [resultado de la migración](TP1_FoodStore_NoSQL/docs/resultado_mig
 - No realizar force push ni configurar protecciones remotas en esta preparación.
 - No agregar firmas, colaboradores ni líneas `Co-authored-by`.
 - Amanda realizó la preparación inicial mientras trabajaba sola y autorizó publicaciones directas en `main` durante esa etapa. Al incorporarse el equipo, el flujo previsto es usar ramas de trabajo y revisión mediante pull request. Ese antecedente no autoriza publicaciones directas para cualquier cambio documental futuro ni acredita protección de `main`. No modificar la parte de otro integrante fuera del alcance autorizado; proponer los cambios necesarios para revisión.
-- Responsabilidades acordadas: Amanda, consignas 1–3; Mateo, 4–5; Lucas, 6–7. El equipo completo revisa la conclusión y el informe final.
+- Responsabilidades acordadas en el TP1 (Unidad 7): Amanda, consignas 1–3; Mateo, 4–5; Lucas, 6–7. Las del TP8 están en su sección. El equipo completo revisa la conclusión y el informe final.
 - Registrar la asistencia de IA de manera académica y verificable en la documentación correspondiente.
 
 ## Evidencias y comunicación

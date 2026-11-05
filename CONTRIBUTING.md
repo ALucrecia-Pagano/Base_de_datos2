@@ -14,6 +14,17 @@ Los archivos de FoodStore se mantienen en `TP1_FoodStore_NoSQL/`; las responsabi
 
 El equipo completo revisa la conclusión y el informe final. Registrar el alcance de cada tarea antes de iniciarla para evitar trabajo superpuesto y coordinar cambios en archivos de otro integrante.
 
+### TP8 — Unidad 8
+
+| Integrante | Consignas |
+|---|---|
+| Mateo | 1 y 2 |
+| Amanda | 3 y la preparación de la 2.c en PostgreSQL |
+| Lucas | 4.a y README |
+| Los tres | 4.b (bitácora y DUIA por partes) y ensayo de defensa |
+
+Los archivos del TP8 se mantienen en `TP8_Unidad8/`.
+
 ## Flujo acordado
 
 Amanda realizó la preparación inicial mientras trabajaba sola y autorizó publicaciones directas en `main` durante esa etapa. Al incorporarse el equipo, el flujo previsto es trabajar en ramas y revisar mediante pull request, según los pasos siguientes. Ese antecedente no autoriza publicaciones directas para cualquier cambio documental futuro ni acredita protección de `main`.

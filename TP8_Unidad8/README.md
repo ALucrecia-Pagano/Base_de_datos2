@@ -65,6 +65,7 @@ intermedia (`docs/consigna_*.md`, `docs/resultado_*.md`) dentro de `movil/` y
 | Consigna 3.b — Plan de mantenimiento | **[COMPLETADO]** | Agregado al plan de la Unidad 6: respaldo y prueba por motor, qué hacen las tablets si se restaura un respaldo viejo y revisión de `CONFLICTO` y `RECHAZADO` (`docs/consigna_3b.md`). |
 | Consigna 3.c — Code review con IA | **[COMPLETADO]** | Revisión de los 75 scripts de la cursada con Antigravity en modo Plan: 24 hallazgos con decisión; tres desarrollados y comprobados en la base (F05 aceptado, F07 corregido, F09 descartado) (`docs/consigna_3c.md`). |
 | Consigna 4.a — Spec en Kiro | **[COMPLETADO]** | `docs/kiro/requirements.md` con cuatro requisitos EARS (REQ-01 a REQ-04, probados con C2, C3, C4 y C6), `design.md` y `tasks.md`. La spec es retroactiva: se escribió después del código y se comprobó contra él (ver `docs/bitacora_ia.md`). |
+| Consigna 4.b — Bitácora de IA y DUIA | **[COMPLETADO]** | `docs/bitacora_ia.md` con nueve entradas de los tres integrantes, con lo aceptado y lo descartado, y `docs/DUIA.md` por partes. |
 
 La lógica móvil quedó validada con SQLite: la tablet consulta la instantánea y
 arma borradores, mientras que PostgreSQL continúa siendo la fuente de verdad.
@@ -74,7 +75,6 @@ Las pruebas no modificaron PostgreSQL ni MongoDB.
 
 | Módulo | Responsable | Entregables faltantes |
 |---|---|---|
-| Consigna 4.b — Bitácora de IA y DUIA | Mateo | Completar su parte (agente de GitHub Copilot) en `docs/bitacora_ia.md` y `docs/DUIA.md`. |
 | Consigna 4.c — Ensayo de defensa | Los tres | Ensayo de diez minutos en la clase de la semana 13: mapa, caso en vivo y hallazgo de la revisión con IA. |
 
 ## Guía de ejecución

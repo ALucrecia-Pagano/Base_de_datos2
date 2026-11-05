@@ -24,9 +24,13 @@ Como en los TP anteriores del grupo, cada integrante declara su parte. El detall
 
 | Campo | Detalle |
 |---|---|
-| **Herramienta** | Agente de GitHub Copilot. |
+| **Herramienta** | Agente de GitHub Copilot integrado en Visual Studio Code. |
 | **Qué generó** | El código de `movil/` (`schema_sqlite.sql`, `semaforo.sql`, `casos_2c.sql`, `importar_snapshot.sql`, `pruebas_sqlite.sql`). |
-| **Detalle (spec o prompt, qué se aceptó, qué se descartó, verificación)** | A completar por Mateo. Dato documentado en `docs/resultado_semaforo_2b.md`: se corrigió un alias SQL con espacio que impedía analizar el script y se agregó una evaluación agrupada con rechazo de solicitudes sin ítems. |
+| **Spec o prompt utilizado** | Leer y comprender el TP8; resolver la consigna 1 (datos que viajan a la tablet, esquema SQLite, pruebas con COMMIT, ROLLBACK, C1 y C7) y la consigna 2 (vista e instantánea desde PostgreSQL, importación a SQLite, semáforo de sincronización y casos C2 a C6); reejecutar y verificar 1.c y 2.b; actualizar el README y repartir las consignas pendientes. |
+| **Qué se aceptó** | Precios en centavos enteros en SQLite; PostgreSQL como fuente de verdad; datos ficticios; pruebas locales sobre copias SQLite; los scripts SQL creados y probados; los resultados de COMMIT, ROLLBACK, C1, C7 y del semáforo; las reejecuciones de 1.c y 2.b; el reparto corregido de las consignas pendientes (Amanda: 3.a, 3.b y 3.c; Lucas: 4.a, 4.b y 4.c). |
+| **Qué se modificó o descartó, y por qué** | Se descartó DB Browser for SQLite como herramienta principal de ejecución, porque mantenía una transacción implícita y no permitía ejecutar el script completo; se usó SQLite CLI. No se aceptó presentar `SIMULADO_APROBADO` como una venta. Corrección documentada en `docs/resultado_semaforo_2b.md`: un alias SQL con espacio que impedía analizar el script, y la evaluación agrupada con rechazo de solicitudes sin ítems. |
+| **Verificación realizada** | Reejecución de 1.c y 2.b con SQLite CLI sobre copias SQLite (`docs/resultado_pruebas_sqlite.md` y `docs/resultado_semaforo_2b.md`). No se modificaron PostgreSQL ni MongoDB. |
+| **Limitaciones declaradas** | En su parte no se usaron Kiro ni OpenCode. Esta declaración se redactó el 04/11/2026 a partir del relato de Mateo, porque en su momento no registró bitácora ni DUIA. |
 
 ## Parte de Amanda Pagano — Mapa, mantenimiento y code review (consigna 3)
 

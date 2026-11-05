@@ -66,6 +66,13 @@ Cada entrada se escribió el mismo día de la interacción. Las entradas de la s
 **Qué descarté.** Esa afirmación: ninguna de las bases tiene hoy los triggers de TP2.
 **Por qué.** Lo comprobé en la base; la prueba de F05 se hizo instalando los triggers dentro de `BEGIN … ROLLBACK`, para mostrar que el UPDATE se bloquea pero el DELETE pasa.
 
+## Entrada 9 — 02/11/2026 (registrada el 04/11/2026) · Agente de GitHub Copilot en VS Code · Mateo
+**Aclaración.** Esta entrada no se escribió el mismo día: Mateo no registró la interacción en su momento y la reconstruyó el 04/11/2026.
+**Qué pedí.** Leer el TP8 y resolver las consignas 1 y 2: datos que viajan, esquema SQLite, pruebas (COMMIT, ROLLBACK, C1, C7), vista e instantánea, importación, semáforo y casos C2 a C6; reejecutar y verificar 1.c y 2.b; actualizar el README.
+**Qué acepté.** Centavos enteros, PostgreSQL como fuente de verdad, datos ficticios, pruebas sobre copias SQLite, los scripts y sus resultados, y las reejecuciones de 1.c y 2.b.
+**Qué descarté.** DB Browser for SQLite como herramienta principal de ejecución.
+**Por qué.** Mantenía una transacción implícita y no permitía ejecutar el script completo; se usó SQLite CLI.
+
 ## Entradas pendientes de otros integrantes (no completadas por Lucas)
-- **Mateo Liendo — código SQLite.** Mateo generó el código de `movil/` con el **agente de GitHub Copilot**. Falta que complete: qué pidió, qué aceptó y qué descartó. Dato documentado en el repositorio: la corrección de un alias SQL con espacio y la variante agrupada del semáforo con rechazo de solicitudes sin ítems (`resultado_semaforo_2b.md`). *La consigna menciona OpenCode para generar el esquema; si no se usó, la DUIA debe decir que fue Copilot.*
+- **Mateo Liendo — código SQLite (consignas 1 y 2).** Completada en la entrada 9.
 - **Amanda Pagano — consignas 2.c (preparación en PostgreSQL) y 3.** Completadas en las entradas 5 a 8.

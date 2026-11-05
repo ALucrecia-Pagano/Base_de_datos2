@@ -69,7 +69,7 @@ intermedia (`docs/consigna_*.md`, `docs/resultado_*.md`) dentro de `movil/` y
 
 La lógica móvil quedó validada con SQLite: la tablet consulta la instantánea y
 arma borradores, mientras que PostgreSQL continúa siendo la fuente de verdad.
-Las pruebas no modificaron PostgreSQL ni MongoDB.
+La simulación no cambió pedidos ni stock en PostgreSQL ni modificó MongoDB.
 
 ### Módulos pendientes
 

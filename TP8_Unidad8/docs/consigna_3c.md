@@ -37,7 +37,7 @@ indicado.
 | F16 | TP3 · `seed_masivo.sql` | Carga masiva sin control de base ni `ON_ERROR_STOP`. | Aceptado | Correcto; los scripts posteriores (TP6, TP7) ya incorporan ese control. |
 | F17 | TP3 · `seed_masivo.sql` y TP2 | Cantidades y stock se generan sin relación entre sí. | Aceptado | Riesgo latente: solo afecta si se instalan los triggers de TP2, que hoy no están en ninguna base. |
 | F18 | TP3 · `verificacion_carga.sql` | El rango esperado en un comentario no coincide con la carga real. | Aceptado | Comentario desactualizado; el valor verificado sí es correcto. |
-| F19 | TP3 · `indices_propuestos.sql` | Crea los 4 índices aunque 3 se revirtieron. | Aceptado | Registro histórico; se ejecutado tal cual, chocaría con TP5. |
+| F19 | TP3 · `indices_propuestos.sql` | Crea los 4 índices aunque 3 se revirtieron. | Aceptado | Registro histórico; si se ejecutara tal cual, chocaría con TP5. |
 | F20 | TP3 · `optimizacion_propuesta_2.sql` | La Propuesta 2 no se mide combinada con la 1, como dice el comentario. | Aceptado | El comentario no coincide con el script. |
 | F21 | TP5 · `medir_q2_rondas.sql` | No se puede repetir con el índice ya aplicado. | Aceptado | Script de medición ya ejecutado y archivado. |
 | F22 | TP5 · `medir_q4_rondas.sql` | `DROP/CREATE INDEX` con `COMMIT` sin control de base. | Aceptado | Correcto; el propio archivo advierte el estado del índice. |

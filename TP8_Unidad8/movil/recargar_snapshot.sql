@@ -1,5 +1,9 @@
 PRAGMA foreign_keys = ON;
 
+-- Si algo falla, sqlite3 se detiene sin llegar al COMMIT: la transacción se
+-- descarta y la tablet conserva la instantánea anterior completa.
+.bail on
+
 -- Recarga la instantánea en una tablet que ya tiene datos.
 -- Antes de ejecutarlo: vaciar snapshot_servidor_import e importar el CSV nuevo
 -- con ".import --csv --skip 1 ...".
@@ -39,3 +43,5 @@ ON CONFLICT (id) DO UPDATE SET
     fecha_copia = excluded.fecha_copia;
 
 COMMIT;
+
+.bail off

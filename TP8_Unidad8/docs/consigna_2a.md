@@ -45,3 +45,5 @@ se utilizó para construir las copias SQLite de las pruebas de las consignas
 2.b y 2.c. Los resultados documentados se conservan en
 [`resultado_semaforo_2b.md`](resultado_semaforo_2b.md) y
 [`resultado_casos_2c.md`](resultado_casos_2c.md).
+
+**Fecha de las copias.** Instantánea inicial (`movil/servidor_snapshot.csv`): 2026-11-02 18:25:45 (UTC−03:00). Instantánea de la consigna 2.c (`movil/servidor_snapshot_2c.csv`): 2026-11-04 20:49:09 (UTC−03:00). Ambas quedan registradas en la columna `fecha_copia`.

@@ -82,7 +82,7 @@ Los cuatro archivos SQL que componen el sistema son:
     - _Requirements: 1.1, 1.2_
 
   - [x] 6.2 Implementar el caso C2 — SIMULADO_APROBADO tras aceptar el precio nuevo
-    - Insertar pedido `c2-aceptado` con precio visto coincidente con la instantánea actualizada
+    - Actualizar el precio del borrador `c2-original` y enviar la solicitud nueva `c2-solicitud-2`
     - Ejecutar `semaforo.sql` y verificar: `estado = 'SIMULADO_APROBADO'`
     - _Requirements: 1.3_
 
@@ -92,8 +92,8 @@ Los cuatro archivos SQL que componen el sistema son:
     - _Requirements: 2.1, 2.2_
 
   - [x] 6.4 Implementar el caso C4 — RECHAZADO por baja lógica
-    - Insertar pedido `c4-baja` y modificar `snapshot_servidor` con `eliminado = 1` para el producto
-    - Verificar: `estado = 'RECHAZADO'`, `motivo = 'Producto dado de baja'`
+    - Insertar pedido `c4-baja`, dar de baja el producto 3 en la copia de PostgreSQL (`activo = false`) y recargar la instantánea `servidor_snapshot_2c.csv`
+    - Verificar: `estado = 'RECHAZADO'`, `motivo = 'Producto no disponible'`; al recargar el catálogo el producto no aparece, pero su fila queda en `producto_cache`
     - _Requirements: 3.1, 3.2_
 
   - [x] 6.5 Implementar el caso C5 — SIMULADO_APROBADO sin cambios

@@ -194,14 +194,14 @@ variación aleatoria de entradas.
 
 ### Pruebas de integración — Casos C2 a C6
 
-Implementadas en `casos_2c.sql` y ejecutadas sobre `foodstore_sync_2c.db`:
+Implementadas en `casos_2c.sql`. Los cambios de C2 y C4 se preparan en la copia de PostgreSQL con `postgresql/preparar_casos_2c.sql`, que exporta `movil/servidor_snapshot_2c.csv`:
 
 | Caso | Precondición clave | Estado esperado | Motivo esperado |
 |---|---|---|---|
 | C2 (solicitud original) | `precio_centavos` modificado en la instantánea | `CONFLICTO` | `'Cambió el precio observado'` |
 | C2 (solicitud nueva) | Precio actualizado aceptado por el operador | `SIMULADO_APROBADO` | `'Precio, disponibilidad y stock coinciden'` |
 | C3 | `cantidad > stock` del producto | `RECHAZADO` | `'Stock insuficiente'` |
-| C4 | `eliminado = 1` en la instantánea | `RECHAZADO` | `'Producto dado de baja'` |
+| C4 | Baja lógica en PostgreSQL (`activo = false`): la instantánea trae `disponible = 0` y `eliminado = 1` | `RECHAZADO` | `'Producto no disponible'` (la disponibilidad se evalúa antes que la baja) |
 | C5 | Sin cambios respecto a la instantánea | `SIMULADO_APROBADO` | `'Precio, disponibilidad y stock coinciden'` |
 | C6 | UUID repetido en `cola_sync` | Error `UNIQUE constraint failed` | La solicitud anterior no cambia de estado |
 

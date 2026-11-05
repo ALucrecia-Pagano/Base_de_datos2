@@ -6,6 +6,8 @@
 
 Como en los TP anteriores del grupo, cada integrante declara su parte. El detalle cronológico de la parte de Lucas está en [bitacora_ia.md](bitacora_ia.md). Cada integrante puede explicar y defender en clase lo que declara.
 
+**Herramientas de IA.** La consigna menciona OpenCode. El docente autorizó usar cualquier herramienta de IA; cada parte declara la que usó realmente.
+
 ## Parte de Lucas Ávila — Spec en Kiro (consigna 4.a) y revisión
 
 | Campo | Detalle |
@@ -30,8 +32,13 @@ Como en los TP anteriores del grupo, cada integrante declara su parte. El detall
 
 | Campo | Detalle |
 |---|---|
-| **Herramienta** | A completar por Amanda (la consigna indica OpenCode, en modo Plan, para el code review 3.c). |
-| **Detalle** | A completar por Amanda. |
+| **Herramientas** | Claude (Anthropic), Antigravity con el modelo Claude Sonnet 5.5 en modo Plan, y el agente de GitHub Copilot. |
+| **Spec o prompt utilizado** | Claude: revisar el estado del TP contra la consigna y guiar paso a paso la consigna 2.c y la consigna 3. Copilot: prompts cerrados con los bloques exactos a reemplazar en `casos_2c.sql`, `consigna_2c.md`, `resultado_casos_2c.md`, el README y esta DUIA, sin commits y sin tocar otros archivos. Antigravity: code review de solo lectura de los 75 scripts de la cursada, con archivo, línea y fragmento citado, una prueba de comprobación por hallazgo y autocrítica de falsos positivos. |
+| **Qué generó** | Claude: los scripts `preparar_casos_2c.sql`, `verificar_sin_cambios_2c.sql` y `recargar_snapshot.sql`, los cambios de `casos_2c.sql` y los borradores de `consigna_3a.md`, `consigna_3b.md` y `consigna_3c.md`. Copilot: la aplicación de cambios ya redactados en archivos existentes. Antigravity: 24 hallazgos (F01 a F24). |
+| **Qué se aceptó** | Preparar C2 y C4 en una copia de PostgreSQL y exportar una instantánea nueva; los cambios puntuales en `casos_2c.sql`; 20 hallazgos aceptados y la corrección de F07. |
+| **Qué se modificó o descartó, y por qué** | (1) Reescribir `casos_2c.sql` completo: se limitó a cambios puntuales para no reemplazar el trabajo de Mateo. (2) La primera pasada de Antigravity cubrió 54 de 75 scripts: se le pidió completar el resto. (3) Los hallazgos F09, F10 y F11 se descartaron con fundamento, y en F02 la IA interpretó mal `views.sql` (ver `consigna_3c.md`). (4) Claude afirmó, a partir del DUIA de TP2, que los triggers estaban instalados en `foodstore_copia_trabajo`; la base mostró que no, y la prueba de F05 se hizo instalándolos dentro de la transacción. |
+| **Verificación realizada** | Todo se ejecutó en copias: `foodstore_tp8_feria` (copia de `foodstore_dev`), bases SQLite en memoria o fuera del repositorio y `BEGIN … ROLLBACK` en PostgreSQL. Casos C2 a C6 con SQLite 3.54.1; pedidos y stock iguales antes y después (5 pedidos, 7 detalles, stock total 185). F05, F07 y F09 comprobados en la base, con prueba de regresión después de corregir F07. Cada diff de Copilot se revisó antes del commit. |
+| **Limitaciones declaradas** | Los hallazgos no desarrollados se decidieron por lectura del código, sin comprobación en la base. Los respaldos de MongoDB y de la tablet de la consigna 3.b son un plan, no se ensayaron. A las herramientas de IA solo se les dieron scripts y datos ficticios. |
 
 ## Datos personales
 No se cargaron contraseñas, correos ni datos personales reales en las herramientas de IA ni en las bases. Las pruebas usan datos inventados y copias de la base.

@@ -38,6 +38,34 @@ Cada entrada se escribió el mismo día de la interacción. Las entradas de la s
 
 ---
 
+## Entrada 5 — 04/11/2026, ~20:30 · Claude (Anthropic) · Amanda
+**Qué pedí.** Revisar el estado del TP8 contra la consigna y el repositorio, y planificar lo que faltaba.
+**Qué propuso.** Que la consigna 2.c no cumplía "cambiar datos en la copia del servidor y exportar una instantánea nueva", y preparar C2 y C4 en una copia de PostgreSQL. También propuso reescribir `casos_2c.sql`.
+**Qué acepté.** Preparar los casos en PostgreSQL (`foodstore_tp8_feria`) y exportar `servidor_snapshot_2c.csv`.
+**Qué descarté.** Reescribir `casos_2c.sql` completo: lo limité a cuatro cambios puntuales.
+**Por qué.** Para no reemplazar el trabajo de Mateo; los borradores, los UUID y el orden de los casos quedaron iguales.
+
+## Entrada 6 — 04/11/2026, ~20:55 · Agente de GitHub Copilot · Amanda
+**Qué pedí.** Aplicar en `casos_2c.sql` cuatro reemplazos con el texto exacto y ejecutar la verificación.
+**Qué hizo.** Aplicó los cuatro cambios, pero no pudo ejecutar la verificación porque `sqlite3` no estaba instalado.
+**Qué acepté.** Los cambios, después de revisar el diff línea por línea.
+**Qué descarté.** Su verificación: la ejecuté yo con SQLite 3.54.1 y comparé con lo esperado.
+**Por qué.** Un cambio que no se ejecutó no está comprobado.
+
+## Entrada 7 — 04/11/2026, ~21:45 · Antigravity (Claude Sonnet 5.5, modo Plan) · Amanda
+**Qué pedí.** Code review de solo lectura de los 75 scripts de la cursada, con archivo, línea, fragmento citado, prueba de comprobación y autocrítica.
+**Qué propuso.** En la primera pasada leyó 54 de 75 scripts (el listado le truncó rutas). Después de autorizarle un segundo listado, completó 75 de 75: 24 hallazgos.
+**Qué acepté.** 20 hallazgos como válidos (los de TP ya calificados quedan como mejora) y la corrección de F07.
+**Qué descarté.** F09, F10 y F11, y la lectura de `views.sql` en F02 (indica correrse después de `schema.sql`, no correr `schema.sql` sobre la base de carga).
+**Por qué.** F09 se refutó en la base; F10 y F11 son condiciones documentadas en la Unidad 6 y en TP7 (ver `consigna_3c.md`).
+
+## Entrada 8 — 04/11/2026, ~22:00 · Claude (Anthropic) · Amanda
+**Qué pedí.** Diseñar pruebas en la base para F05, F07 y F09.
+**Qué propuso.** Para F05, borrar un pedido ENTREGADO. Afirmó, según el DUIA de TP2, que los triggers estaban instalados en `foodstore_copia_trabajo`.
+**Qué acepté.** Las pruebas de F07 (antes y después de corregir, más regresión) y de F09 (vista, clave foránea y productos sin ventas).
+**Qué descarté.** Esa afirmación: ninguna de las bases tiene hoy los triggers de TP2.
+**Por qué.** Lo comprobé en la base; la prueba de F05 se hizo instalando los triggers dentro de `BEGIN … ROLLBACK`, para mostrar que el UPDATE se bloquea pero el DELETE pasa.
+
 ## Entradas pendientes de otros integrantes (no completadas por Lucas)
 - **Mateo Liendo — código SQLite.** Mateo generó el código de `movil/` con el **agente de GitHub Copilot**. Falta que complete: qué pidió, qué aceptó y qué descartó. Dato documentado en el repositorio: la corrección de un alias SQL con espacio y la variante agrupada del semáforo con rechazo de solicitudes sin ítems (`resultado_semaforo_2b.md`). *La consigna menciona OpenCode para generar el esquema; si no se usó, la DUIA debe decir que fue Copilot.*
-- **Amanda Pagano — code review (3.c).** Entradas y hallazgo descartado a completar por Amanda.
+- **Amanda Pagano — consignas 2.c (preparación en PostgreSQL) y 3.** Completadas en las entradas 5 a 8.

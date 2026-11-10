@@ -11,7 +11,7 @@ Este proyecto continúa FoodStore. El TP8 anterior corresponde a la Unidad 6; es
 
 El repositorio incluye también el TP8 de la Unidad 8 (`TP8_Unidad8/`): la base de la tablet en SQLite y la sincronización simulada con PostgreSQL. Ver el [README del TP8](TP8_Unidad8/README.md) y la sección "TP8 — Unidad 8" de este archivo.
 
-Leer [README.md](README.md), [CONTRIBUTING.md](CONTRIBUTING.md) y el [plan de trabajo](TP1_FoodStore_NoSQL/docs/plan_trabajo.md). Las reglas comunes para asistentes se mantienen en este archivo.
+Leer [README.md](README.md), [CONTRIBUTING.md](../CONTRIBUTING.md) y el [plan de trabajo](TP1_FoodStore_NoSQL/docs/plan_trabajo.md). Las reglas comunes para asistentes se mantienen en este archivo.
 
 ## Organización del repositorio
 

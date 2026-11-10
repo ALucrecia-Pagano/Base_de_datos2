@@ -27,6 +27,6 @@ TP1 es la numeración organizativa de este repositorio; no significa que la cons
 
 ## Organización y colaboración
 
-Cada trabajo reúne sus consignas, documentación, evidencias, informe y scripts en su carpeta. Las [instrucciones generales](AGENTS.md), la [guía de colaboración](CONTRIBUTING.md) y las configuraciones compartidas permanecen en la raíz.
+Cada trabajo reúne sus consignas, documentación, evidencias, informe y scripts en su carpeta. Las [instrucciones generales](AGENTS.md), la [guía de colaboración](../CONTRIBUTING.md) y las configuraciones compartidas permanecen en la raíz.
 
 El [README de FoodStore](TP1_FoodStore_NoSQL/README.md) conserva su presentación específica, responsabilidades, estado y pendientes. La reorganización no supone nuevas ejecuciones ni completa consignas pendientes. El [README del TP8](TP8_Unidad8/README.md) tiene el estado de cada consigna, la estructura de entrega y la guía para crear todo desde cero.

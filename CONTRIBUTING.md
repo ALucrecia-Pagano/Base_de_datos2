@@ -1,6 +1,6 @@
 # Guía de colaboración
 
-Leer [README.md](README.md), [AGENTS.md](AGENTS.md) y el [plan de trabajo](TP1_FoodStore_NoSQL/docs/plan_trabajo.md) antes de comenzar. Las siguientes son convenciones de colaboración; no acreditan una configuración de GitHub. La protección de `main` todavía no fue comprobada.
+Leer [README.md](README.md), [AGENTS.md](AGENTS.md) y el [plan de trabajo](NoSQL_y_Movil/TP1_FoodStore_NoSQL/docs/plan_trabajo.md) antes de comenzar. Las siguientes son convenciones de colaboración; no acreditan una configuración de GitHub. La protección de `main` todavía no fue comprobada.
 
 Los archivos de FoodStore se mantienen en `TP1_FoodStore_NoSQL/`; las responsabilidades siguientes corresponden a ese trabajo. Las reglas generales permanecen en la raíz.
 

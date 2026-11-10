@@ -65,7 +65,7 @@ Configurar la conexión revisada con `retryWrites=false` antes de insertar: adem
 `TP1_FoodStore_NoSQL`. La configuración actual de `FUENTE` apunta a
 `TP1_FoodStore_NoSQL/evidencias/extraccion_20261028_170446.json` y su `SHA` es
 `3973789e22039731d20c1b5227d6907b09fa8065830e88c798264006eeaae243`, el de la
-fuente oficial, protegida con `-text` en [.gitattributes](../../.gitattributes).
+fuente oficial, protegida con `-text` en [.gitattributes](../../../.gitattributes).
 `extraccion_20261029_102959.json` se conserva solo como anexo de la prueba
 local independiente de Mateo; no es fuente operativa del script. Las rutas
 visibles en las capturas corresponden a sus respectivas ejecuciones y no se

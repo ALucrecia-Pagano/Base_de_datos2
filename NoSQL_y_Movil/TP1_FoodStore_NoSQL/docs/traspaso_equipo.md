@@ -4,7 +4,7 @@ Las atribuciones de ejecución a Amanda y Mateo y las referencias a sus máquina
 
 Las consultas y la comparación de las consignas 4–5 fueron aportadas, con ejecución informada por Mateo. Su captura MongoDB no mostraba completas c) ni d); la reejecución de Amanda del 2026-11-01, con los mismos scripts, completa esa evidencia con resultados coincidentes. Los resultados de Mateo se conservan.
 
-Registro: 2026-10-28. Aplicar [AGENTS.md](../../AGENTS.md), [CLAUDE.md](../../CLAUDE.md) y la [guía de colaboración](../../CONTRIBUTING.md). Referencia académica principal: [consigna oficial](../consignas/BDII_Unidad7_TP_FoodStore_NoSQL.pdf). Este documento organizó el reparto de tareas; no registra nuevas ejecuciones ni autoriza operaciones en motores.
+Registro: 2026-10-28. Aplicar [AGENTS.md](../../AGENTS.md), [CLAUDE.md](../../../CLAUDE.md) y la [guía de colaboración](../../../CONTRIBUTING.md). Referencia académica principal: [consigna oficial](../consignas/BDII_Unidad7_TP_FoodStore_NoSQL.pdf). Este documento organizó el reparto de tareas; no registra nuevas ejecuciones ni autoriza operaciones en motores.
 
 ## Estado recibido y modelo implementado
 
@@ -107,7 +107,7 @@ El PDF grupal está en [informe/](../informe/README.md): integra el aporte de Am
 
 ## Conservación del hash al compartir
 
-Se detectó `core.autocrlf=true` y 418 finales CRLF en la extracción original. Antes de protegerla, `git hash-object` con filtros y sin filtros produjo objetos diferentes; estos IDs de objetos Git no son el SHA-256 de la evidencia. Se incorporó en [.gitattributes](../../.gitattributes) una regla para el archivo exacto (abajo se muestra su ubicación actual tras el traslado):
+Se detectó `core.autocrlf=true` y 418 finales CRLF en la extracción original. Antes de protegerla, `git hash-object` con filtros y sin filtros produjo objetos diferentes; estos IDs de objetos Git no son el SHA-256 de la evidencia. Se incorporó en [.gitattributes](../../../.gitattributes) una regla para el archivo exacto (abajo se muestra su ubicación actual tras el traslado):
 
 ```gitattributes
 /TP1_FoodStore_NoSQL/evidencias/extraccion_20261028_170446.json -text

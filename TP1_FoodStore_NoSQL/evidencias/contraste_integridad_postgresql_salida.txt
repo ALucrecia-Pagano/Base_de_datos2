@@ -1,0 +1,58 @@
+El paginador no se usar�.
+== 0. Estado inicial (copia restaurada) ==
+          base          | pedidos | lineas 
+------------------------+---------+--------
+ foodstore_restore_test |       5 |      7
+(1 fila)
+
+== 0b. pedido NO tiene columna total; subtotal es columna generada ==
+  column_name  
+---------------
+ id
+ id_cliente
+ fecha_hora
+ forma_pago
+ estado
+ observaciones
+(6 filas)
+
+ column_name | is_generated |          generation_expression          
+-------------+--------------+-----------------------------------------
+ subtotal    | ALWAYS       | ((cantidad)::numeric * precio_unitario)
+(1 fila)
+
+== 1. Pedido con cliente inexistente: debe fallar (clave foranea) ==
+BEGIN
+psql:TP1_FoodStore_NoSQL/postgresql/contraste_integridad_postgresql.sql:34: ERROR:  inserción o actualización en la tabla «pedido» viola la llave foránea «fk_pedido_cliente»
+DETALLE:  La llave (id_cliente)=(999999) no está presente en la tabla «cliente».
+ROLLBACK
+== 2. Escribir un subtotal a mano: debe fallar (columna generada) ==
+BEGIN
+psql:TP1_FoodStore_NoSQL/postgresql/contraste_integridad_postgresql.sql:40: ERROR:  no se puede insertar un valor no-predeterminado en la columna «subtotal»
+DETALLE:  La columna «subtotal» es una columna generada.
+ROLLBACK
+== 3. Cantidad cero: debe fallar (CHECK chk_detalle_cantidad_positiva) ==
+BEGIN
+psql:TP1_FoodStore_NoSQL/postgresql/contraste_integridad_postgresql.sql:46: ERROR:  el nuevo registro para la relación «detalle_pedido» viola la restricción «check» «chk_detalle_cantidad_positiva»
+DETALLE:  La fila que falla contiene (1, 1, 0, 100.00, 0.00).
+ROLLBACK
+== 4. Linea con producto inexistente: debe fallar (clave foranea fk_detalle_pedido_producto) ==
+BEGIN
+psql:TP1_FoodStore_NoSQL/postgresql/contraste_integridad_postgresql.sql:52: ERROR:  inserción o actualización en la tabla «detalle_pedido» viola la llave foránea «fk_detalle_pedido_producto»
+DETALLE:  La llave (id_producto)=(999999) no está presente en la tabla «producto».
+ROLLBACK
+== 5. Control positivo: linea valida, el motor calcula el subtotal (2 x 100.00) ==
+BEGIN
+ cantidad | precio_unitario | subtotal 
+----------+-----------------+----------
+        2 |          100.00 |   200.00
+(1 fila)
+
+INSERT 0 1
+ROLLBACK
+== 6. Estado final: nada quedo guardado ==
+ pedidos | lineas 
+---------+--------
+       5 |      7
+(1 fila)
+

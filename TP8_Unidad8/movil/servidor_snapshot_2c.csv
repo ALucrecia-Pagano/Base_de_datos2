@@ -1,0 +1,4 @@
+id,nombre,precio_centavos,stock,disponible,eliminado,fecha_copia
+1,Muzzarella,110000,50,t,f,2026-11-04 20:49:09.683399-03
+2,Napolitana,150000,35,t,f,2026-11-04 20:49:09.683399-03
+3,Coca 1.5L,80000,100,f,t,2026-11-04 20:49:09.683399-03

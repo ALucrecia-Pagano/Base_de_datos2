@@ -1,0 +1,418 @@
+{
+    "estado": "Extracción de intercambio; pendiente de revisión y conversión BSON",
+    "contexto": {
+        "base": "foodstore_dev",
+        "esquema": "public",
+        "aislamiento": "repeatable read",
+        "solo_lectura": "on",
+        "version_servidor": "PostgreSQL 17.11 on x86_64-windows, compiled by msvc-19.44.35228, 64-bit",
+        "fecha_registro_utc": "2026-10-28T20:04:47.783674Z",
+        "server_version_num": "170011"
+    },
+    "controles": {
+        "extraer": true,
+        "pedidos_ok": true,
+        "detalles_ok": true,
+        "base_correcta": true,
+        "cinco_pedidos": true,
+        "siete_detalles": true,
+        "fechas_compatibles_bson_date": true
+    },
+    "extraccion": [
+        {
+            "_id": "1",
+            "total": "2800.00",
+            "estado": "ENTREGADO",
+            "lineas": [
+                {
+                    "cantidad": 2,
+                    "subtotal": "2000.00",
+                    "id_producto": "1",
+                    "nombre_producto": "Muzzarella",
+                    "precio_unitario": "1000.00"
+                },
+                {
+                    "cantidad": 1,
+                    "subtotal": "800.00",
+                    "id_producto": "3",
+                    "nombre_producto": "Coca 1.5L",
+                    "precio_unitario": "800.00"
+                }
+            ],
+            "cliente": {
+                "id": "1",
+                "alias": "Cliente 1"
+            },
+            "fecha_hora": "2026-03-01T23:30:00.000000Z",
+            "forma_pago": "EFECTIVO"
+        },
+        {
+            "_id": "2",
+            "total": "1500.00",
+            "estado": "ENTREGADO",
+            "lineas": [
+                {
+                    "cantidad": 1,
+                    "subtotal": "1500.00",
+                    "id_producto": "2",
+                    "nombre_producto": "Napolitana",
+                    "precio_unitario": "1500.00"
+                }
+            ],
+            "cliente": {
+                "id": "2",
+                "alias": "Cliente 2"
+            },
+            "fecha_hora": "2026-03-02T00:15:00.000000Z",
+            "forma_pago": "TARJETA"
+        },
+        {
+            "_id": "3",
+            "total": "3150.00",
+            "estado": "ENTREGADO",
+            "lineas": [
+                {
+                    "cantidad": 3,
+                    "subtotal": "3150.00",
+                    "id_producto": "1",
+                    "nombre_producto": "Muzzarella",
+                    "precio_unitario": "1050.00"
+                }
+            ],
+            "cliente": {
+                "id": "1",
+                "alias": "Cliente 1"
+            },
+            "fecha_hora": "2026-03-06T00:00:00.000000Z",
+            "forma_pago": "TRANSFERENCIA"
+        },
+        {
+            "_id": "4",
+            "total": "6200.00",
+            "estado": "ENTREGADO",
+            "lineas": [
+                {
+                    "cantidad": 2,
+                    "subtotal": "3000.00",
+                    "id_producto": "2",
+                    "nombre_producto": "Napolitana",
+                    "precio_unitario": "1500.00"
+                },
+                {
+                    "cantidad": 4,
+                    "subtotal": "3200.00",
+                    "id_producto": "3",
+                    "nombre_producto": "Coca 1.5L",
+                    "precio_unitario": "800.00"
+                }
+            ],
+            "cliente": {
+                "id": "3",
+                "alias": "Cliente 3"
+            },
+            "fecha_hora": "2026-03-06T23:45:00.000000Z",
+            "forma_pago": "EFECTIVO"
+        },
+        {
+            "_id": "5",
+            "total": "1050.00",
+            "estado": "ENTREGADO",
+            "lineas": [
+                {
+                    "cantidad": 1,
+                    "subtotal": "1050.00",
+                    "id_producto": "1",
+                    "nombre_producto": "Muzzarella",
+                    "precio_unitario": "1050.00"
+                }
+            ],
+            "cliente": {
+                "id": "2",
+                "alias": "Cliente 2"
+            },
+            "fecha_hora": "2026-03-08T01:00:00.000000Z",
+            "forma_pago": "TARJETA"
+        }
+    ],
+    "pedidos_control": [
+        {
+            "estado": "ENTREGADO",
+            "tipo_id": "bigint",
+            "fecha_utc": "2026-03-01T23:30:00.000000Z",
+            "id_origen": "1",
+            "forma_pago": "EFECTIVO",
+            "id_cliente": "1",
+            "tipo_fecha": "timestamp with time zone",
+            "id_esperado": "1",
+            "fecha_finita": true,
+            "pedido_existe": true,
+            "cliente_existe": true,
+            "tipo_id_cliente": "bigint",
+            "cliente_coincide": true,
+            "cliente_esperado": "1",
+            "tiene_submilisegundos": false,
+            "estado_coincide_referencia": true
+        },
+        {
+            "estado": "ENTREGADO",
+            "tipo_id": "bigint",
+            "fecha_utc": "2026-03-02T00:15:00.000000Z",
+            "id_origen": "2",
+            "forma_pago": "TARJETA",
+            "id_cliente": "2",
+            "tipo_fecha": "timestamp with time zone",
+            "id_esperado": "2",
+            "fecha_finita": true,
+            "pedido_existe": true,
+            "cliente_existe": true,
+            "tipo_id_cliente": "bigint",
+            "cliente_coincide": true,
+            "cliente_esperado": "2",
+            "tiene_submilisegundos": false,
+            "estado_coincide_referencia": true
+        },
+        {
+            "estado": "ENTREGADO",
+            "tipo_id": "bigint",
+            "fecha_utc": "2026-03-06T00:00:00.000000Z",
+            "id_origen": "3",
+            "forma_pago": "TRANSFERENCIA",
+            "id_cliente": "1",
+            "tipo_fecha": "timestamp with time zone",
+            "id_esperado": "3",
+            "fecha_finita": true,
+            "pedido_existe": true,
+            "cliente_existe": true,
+            "tipo_id_cliente": "bigint",
+            "cliente_coincide": true,
+            "cliente_esperado": "1",
+            "tiene_submilisegundos": false,
+            "estado_coincide_referencia": true
+        },
+        {
+            "estado": "ENTREGADO",
+            "tipo_id": "bigint",
+            "fecha_utc": "2026-03-06T23:45:00.000000Z",
+            "id_origen": "4",
+            "forma_pago": "EFECTIVO",
+            "id_cliente": "3",
+            "tipo_fecha": "timestamp with time zone",
+            "id_esperado": "4",
+            "fecha_finita": true,
+            "pedido_existe": true,
+            "cliente_existe": true,
+            "tipo_id_cliente": "bigint",
+            "cliente_coincide": true,
+            "cliente_esperado": "3",
+            "tiene_submilisegundos": false,
+            "estado_coincide_referencia": true
+        },
+        {
+            "estado": "ENTREGADO",
+            "tipo_id": "bigint",
+            "fecha_utc": "2026-03-08T01:00:00.000000Z",
+            "id_origen": "5",
+            "forma_pago": "TARJETA",
+            "id_cliente": "2",
+            "tipo_fecha": "timestamp with time zone",
+            "id_esperado": "5",
+            "fecha_finita": true,
+            "pedido_existe": true,
+            "cliente_existe": true,
+            "tipo_id_cliente": "bigint",
+            "cliente_coincide": true,
+            "cliente_esperado": "2",
+            "tiene_submilisegundos": false,
+            "estado_coincide_referencia": true
+        }
+    ],
+    "totales_control": [
+        {
+            "id_pedido": "1",
+            "total_esperado": "2800.00",
+            "total_calculado": "2800.00",
+            "lineas_encontradas": 2
+        },
+        {
+            "id_pedido": "2",
+            "total_esperado": "1500.00",
+            "total_calculado": "1500.00",
+            "lineas_encontradas": 1
+        },
+        {
+            "id_pedido": "3",
+            "total_esperado": "3150.00",
+            "total_calculado": "3150.00",
+            "lineas_encontradas": 1
+        },
+        {
+            "id_pedido": "4",
+            "total_esperado": "6200.00",
+            "total_calculado": "6200.00",
+            "lineas_encontradas": 2
+        },
+        {
+            "id_pedido": "5",
+            "total_esperado": "1050.00",
+            "total_calculado": "1050.00",
+            "lineas_encontradas": 1
+        }
+    ],
+    "detalles_control": [
+        {
+            "cantidad": 2,
+            "id_pedido": "1",
+            "formula_ok": true,
+            "cantidad_ok": true,
+            "id_producto": "1",
+            "importes_ok": true,
+            "repeticiones": 1,
+            "tipo_cantidad": "integer",
+            "linea_esperada": true,
+            "nombre_producto": "Muzzarella",
+            "precio_esperado": "1000.00",
+            "producto_existe": true,
+            "subtotal_origen": "2000.00",
+            "linea_encontrada": true,
+            "precio_historico": "1000.00",
+            "tipo_id_producto": "bigint",
+            "cantidad_esperada": 2,
+            "subtotal_esperado": "2000.00",
+            "subtotal_calculado": "2000.00",
+            "coincide_referencia": true
+        },
+        {
+            "cantidad": 1,
+            "id_pedido": "1",
+            "formula_ok": true,
+            "cantidad_ok": true,
+            "id_producto": "3",
+            "importes_ok": true,
+            "repeticiones": 1,
+            "tipo_cantidad": "integer",
+            "linea_esperada": true,
+            "nombre_producto": "Coca 1.5L",
+            "precio_esperado": "800.00",
+            "producto_existe": true,
+            "subtotal_origen": "800.00",
+            "linea_encontrada": true,
+            "precio_historico": "800.00",
+            "tipo_id_producto": "bigint",
+            "cantidad_esperada": 1,
+            "subtotal_esperado": "800.00",
+            "subtotal_calculado": "800.00",
+            "coincide_referencia": true
+        },
+        {
+            "cantidad": 1,
+            "id_pedido": "2",
+            "formula_ok": true,
+            "cantidad_ok": true,
+            "id_producto": "2",
+            "importes_ok": true,
+            "repeticiones": 1,
+            "tipo_cantidad": "integer",
+            "linea_esperada": true,
+            "nombre_producto": "Napolitana",
+            "precio_esperado": "1500.00",
+            "producto_existe": true,
+            "subtotal_origen": "1500.00",
+            "linea_encontrada": true,
+            "precio_historico": "1500.00",
+            "tipo_id_producto": "bigint",
+            "cantidad_esperada": 1,
+            "subtotal_esperado": "1500.00",
+            "subtotal_calculado": "1500.00",
+            "coincide_referencia": true
+        },
+        {
+            "cantidad": 3,
+            "id_pedido": "3",
+            "formula_ok": true,
+            "cantidad_ok": true,
+            "id_producto": "1",
+            "importes_ok": true,
+            "repeticiones": 1,
+            "tipo_cantidad": "integer",
+            "linea_esperada": true,
+            "nombre_producto": "Muzzarella",
+            "precio_esperado": "1050.00",
+            "producto_existe": true,
+            "subtotal_origen": "3150.00",
+            "linea_encontrada": true,
+            "precio_historico": "1050.00",
+            "tipo_id_producto": "bigint",
+            "cantidad_esperada": 3,
+            "subtotal_esperado": "3150.00",
+            "subtotal_calculado": "3150.00",
+            "coincide_referencia": true
+        },
+        {
+            "cantidad": 2,
+            "id_pedido": "4",
+            "formula_ok": true,
+            "cantidad_ok": true,
+            "id_producto": "2",
+            "importes_ok": true,
+            "repeticiones": 1,
+            "tipo_cantidad": "integer",
+            "linea_esperada": true,
+            "nombre_producto": "Napolitana",
+            "precio_esperado": "1500.00",
+            "producto_existe": true,
+            "subtotal_origen": "3000.00",
+            "linea_encontrada": true,
+            "precio_historico": "1500.00",
+            "tipo_id_producto": "bigint",
+            "cantidad_esperada": 2,
+            "subtotal_esperado": "3000.00",
+            "subtotal_calculado": "3000.00",
+            "coincide_referencia": true
+        },
+        {
+            "cantidad": 4,
+            "id_pedido": "4",
+            "formula_ok": true,
+            "cantidad_ok": true,
+            "id_producto": "3",
+            "importes_ok": true,
+            "repeticiones": 1,
+            "tipo_cantidad": "integer",
+            "linea_esperada": true,
+            "nombre_producto": "Coca 1.5L",
+            "precio_esperado": "800.00",
+            "producto_existe": true,
+            "subtotal_origen": "3200.00",
+            "linea_encontrada": true,
+            "precio_historico": "800.00",
+            "tipo_id_producto": "bigint",
+            "cantidad_esperada": 4,
+            "subtotal_esperado": "3200.00",
+            "subtotal_calculado": "3200.00",
+            "coincide_referencia": true
+        },
+        {
+            "cantidad": 1,
+            "id_pedido": "5",
+            "formula_ok": true,
+            "cantidad_ok": true,
+            "id_producto": "1",
+            "importes_ok": true,
+            "repeticiones": 1,
+            "tipo_cantidad": "integer",
+            "linea_esperada": true,
+            "nombre_producto": "Muzzarella",
+            "precio_esperado": "1050.00",
+            "producto_existe": true,
+            "subtotal_origen": "1050.00",
+            "linea_encontrada": true,
+            "precio_historico": "1050.00",
+            "tipo_id_producto": "bigint",
+            "cantidad_esperada": 1,
+            "subtotal_esperado": "1050.00",
+            "subtotal_calculado": "1050.00",
+            "coincide_referencia": true
+        }
+    ],
+    "referencias_previas": "Amanda: 5 pedidos y 7 detalles; no son resultados nuevos"
+}

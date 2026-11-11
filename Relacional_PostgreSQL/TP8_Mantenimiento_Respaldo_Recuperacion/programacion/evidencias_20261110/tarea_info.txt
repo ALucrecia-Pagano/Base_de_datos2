@@ -1,0 +1,13 @@
+﻿antes = 2026-11-10 23:17:44.838 -03:00
+
+
+LastRunTime           : 10/11/2026 23:17:47
+LastTaskResult        : 0
+NextRunTime           : 11/11/2026 23:00:00
+NumberOfMissedRuns    : 0
+TaskName              : FoodStore_Respaldo_Diario
+TaskPath              : 
+PSComputerName        : 
+CimClass              : Root/Microsoft/Windows/TaskScheduler:MSFT_TaskDynamicInfo
+CimInstanceProperties : {LastRunTime, LastTaskResult, NextRunTime, NumberOfMissedRuns...}
+CimSystemProperties   : Microsoft.Management.Infrastructure.CimSystemProperties

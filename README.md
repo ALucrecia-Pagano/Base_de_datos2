@@ -14,6 +14,8 @@ Capa de datos completa del proyecto integrador «Food Store»: relacional (Postg
 
 Cada carpeta conserva su README, sus instrucciones para asistentes de IA (`AGENTS.md`) y los TPs tal como fueron entregados.
 
+Informe de la segunda entrega del TPI: [INFORME_TPI_Segunda_Entrega.md](INFORME_TPI_Segunda_Entrega.md).
+
 ## Ramas
 
 - `main`: parte relacional (unidades 1 a 6), tal como se entregó.

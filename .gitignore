@@ -1,2 +1,29 @@
-TP3_Optimizacion/Parte 1 - Poblar la base masivamente con datos generados por IA/respaldo_foodstore_tp3_carga.sql
-TP2_Concurrencia_IA/respaldo_*.sql
+# Respaldos completos de bases (unidades 1 a 6); no se publican.
+Relacional_PostgreSQL/TP3_Optimizacion/Parte 1 - Poblar la base masivamente con datos generados por IA/respaldo_foodstore_tp3_carga.sql
+Relacional_PostgreSQL/TP2_Concurrencia_IA/respaldo_*.sql
+
+# Variables y credenciales locales; conservar el ejemplo publicable.
+.env
+.env.*
+!.env.example
+*.local
+credentials.local.*
+credenciales.local.*
+.pgpass
+pgpass.conf
+*.pem
+*.key
+
+# Respaldos, registros y temporales.
+*.dump
+*.backup
+*.log
+*.tmp
+*.temp
+*.swp
+*.swo
+*~
+Thumbs.db
+.DS_Store
+
+# Las evidencias de texto, JSON y capturas se conservan por defecto.

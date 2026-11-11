@@ -1,0 +1,199 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Food Store NoSQL — Informe Unidad 7</title>
+<!--
+  Fuente editable del informe final. Exportar a PDF con Microsoft Edge headless
+  (ver informe/README.md). Las imágenes se recortan solo con CSS: los .png de
+  evidencias/ no se modifican. Recorte = contenedor con overflow oculto, imagen
+  escalada y desplazada con márgenes negativos.
+-->
+<style>
+  @page { size: A4; margin: 1.5cm; }
+  * { box-sizing: border-box; }
+  html, body { background: #fff; color: #000; }
+  body {
+    margin: 0;
+    font-family: "Segoe UI", Arial, Helvetica, sans-serif;
+    font-size: 10pt;
+    line-height: 1.32;
+  }
+  header { border-bottom: 0.75pt solid #000; padding-bottom: 5pt; margin-bottom: 8pt; }
+  header p { margin: 0; }
+  header .inst { font-size: 9.5pt; }
+  header .tp { font-size: 12.5pt; font-weight: 700; margin: 4pt 0 3pt; }
+  header .meta { font-size: 9.5pt; }
+  header .estado { font-size: 9pt; font-style: italic; margin-top: 3pt; }
+  h2 { font-size: 11.5pt; margin: 10pt 0 4pt; break-after: avoid; page-break-after: avoid; }
+  h3 { font-size: 10pt; margin: 7pt 0 3pt; break-after: avoid; page-break-after: avoid; }
+  p { margin: 0 0 5pt; }
+  ul, ol { margin: 0 0 5pt; padding-left: 16pt; }
+  li { margin-bottom: 1.5pt; }
+  code, pre { font-family: Consolas, "Courier New", monospace; }
+  code { font-size: 9pt; }
+  pre {
+    font-size: 8.5pt; line-height: 1.25; margin: 3pt 0 5pt; padding: 4pt 5pt;
+    border: 0.5pt solid #888; white-space: pre-wrap;
+  }
+  table {
+    border-collapse: collapse; width: 100%; margin: 3pt 0 6pt; font-size: 9.5pt;
+    break-inside: avoid; page-break-inside: avoid;
+  }
+  th, td { border: 0.5pt solid #666; padding: 2pt 4pt; text-align: left; vertical-align: top; }
+  th { font-weight: 600; }
+  td.num { text-align: center; }
+  figure { margin: 4pt 0 6pt; break-inside: avoid; page-break-inside: avoid; }
+  figcaption { font-size: 8.5pt; margin-top: 2pt; }
+  .crop { overflow: hidden; border: 0.5pt solid #888; }
+  .crop img { display: block; max-width: none; }
+  .cols { display: flex; gap: 0.35cm; align-items: flex-start; }
+  .cols > .grow { flex: 1; min-width: 0; }
+  .nota { font-size: 9pt; }
+  .conclusion { border: 0.5pt solid #666; padding: 5pt 7pt; text-align: justify; }
+</style>
+</head>
+<body>
+
+<header>
+  <p class="inst">Universidad Tecnológica Nacional — Facultad Regional Mendoza · Tecnicatura Universitaria en Programación</p>
+  <p class="inst">Bases de Datos II · Comisión 4 · Profesor: Neira Sergio</p>
+  <p class="tp">Trabajo práctico Unidad 7 — NoSQL y nuevas formas de almacenamiento | Food Store</p>
+  <p class="meta">Integrantes y consignas a cargo: Pagano Amanda (1–3), Liendo Mateo (4–5), Ávila Lucas (6–7).</p>
+  <p class="meta">Repositorio: https://github.com/ALucrecia-Pagano/Bases-de-datos-II-NoSQL · Fecha: 1 de noviembre de 2026.</p></header>
+
+<h2>1. Modelo documental (consigna 1)</h2>
+
+<div class="cols">
+  <div class="grow">
+    <p>Se migró el subconjunto «pedidos y detalle de pedidos» de la base PostgreSQL <code>foodstore_dev</code> (esquema <code>public</code>), pedidos 1 a 5, a la colección <code>foodstore_unidad7.pedidos</code>, con un documento por pedido.</p>
+    <table>
+      <tr><th>Tabla</th><th>Claves</th></tr>
+      <tr><td><code>pedido</code></td><td>PK <code>id</code>; FK <code>id_cliente</code> → <code>cliente.id</code></td></tr>
+      <tr><td><code>detalle_pedido</code></td><td>PK (<code>id_pedido</code>, <code>id_producto</code>); FK a <code>pedido.id</code> y <code>producto.id</code></td></tr>
+      <tr><td><code>cliente</code></td><td>PK <code>id</code></td></tr>
+      <tr><td><code>producto</code></td><td>PK <code>id</code>; FK <code>id_categoria</code> (fuera del subconjunto)</td></tr>
+    </table>
+    <p>Esquema de la colección (notación descriptiva):</p>
+<pre>pedidos {
+  _id: Long,            // = pedido.id
+  fecha_hora: Date,     // instante UTC
+  forma_pago: String, estado: String,
+  cliente: { id: Long, alias: String },
+  lineas: [ { id_producto: Long,
+              nombre_producto: String,
+              cantidad: Int32,
+              precio_unitario: Decimal128,
+              subtotal: Decimal128 } ],
+  total: Decimal128
+}</pre>
+    <p><strong>Embebidos:</strong> el objeto <code>cliente</code> (mínimo) y el arreglo <code>lineas</code>. <strong>IDs conservados:</strong> el del pedido como <code>_id</code>, el del cliente y los de producto, todos como BSON Long. El cliente lleva su ID y un alias sintético <code>Cliente &lt;id&gt;</code>, sin nombres ni contactos reales; se excluyeron las observaciones. El precio proviene de <code>detalle_pedido.precio_unitario</code> (histórico); el nombre del producto es el actual.</p>
+  </div>
+  <figure style="width:304px; flex: none;">
+    <div class="crop" style="width:304px; height:477px;">
+      <img src="../evidencias/pedido_1_documento.png" alt="Documento del pedido 1 en Compass" style="width:893px; margin:-94px 0 0 -7px;">
+    </div>
+    <figcaption><strong>Figura 1.</strong> Documento del pedido 1 en <code>foodstore_unidad7.pedidos</code> (Compass): <code>_id</code> Long, fecha Date, cliente con alias, dos líneas con Decimal128 y total 2800.00.</figcaption>
+  </figure>
+</div>
+
+<h2>2. Migración y reglas de integridad (consignas 2 y 3)</h2>
+
+<p><strong>Método.</strong> Amanda ejecutó el 28/10/2026 <code>postgresql/extraccion_pedidos.sql</code> en una transacción <code>REPEATABLE READ, READ ONLY</code>, que exporta a JSON los pedidos 1–5 con sus líneas y controles (referencias, duplicados, fórmulas). Luego ejecutó <code>mongodb/migracion_pedidos.js</code> en la shell de Compass: el script comprueba el SHA-256 del archivo, convierte a tipos BSON sin pérdida (IDs Long, cantidades Int32, fechas Date, importes Decimal128 desde texto), verifica que ningún ID exista en el destino, inserta con <code>insertMany</code> ordenado y luego verifica tipos con <code>$type</code> y cada campo contra el lote fuente. No borra, reemplaza ni reintenta.</p>
+<p><strong>Fuente oficial:</strong> <code>evidencias/extraccion_20261028_170446.json</code>, SHA-256 <code>3973789e22039731d20c1b5227d6907b09fa8065830e88c798264006eeaae243</code>. <strong>Resultado:</strong> 5 pedidos y 7 líneas insertados, tipos BSON correctos y correspondencia con todos los campos del lote.</p>
+
+<figure>
+  <div class="crop" style="width:583px; height:200px;">
+    <img src="../evidencias/migracion_verificacion_amanda.png" alt="Salida de verificación de la migración" style="width:836px; margin:-28px 0 0 -6px;">
+  </div>
+  <figcaption><strong>Figura 2.</strong> Verificación posterior a la migración: 5 pedidos, 7 líneas, tipos BSON correctos, correspondencia con el lote fuente y SHA-256 de la extracción.</figcaption>
+</figure>
+
+<p><strong>Reglas de integridad conservadas</strong> (controladas al extraer y antes de insertar):</p>
+<ol>
+  <li>Cantidad entera positiva e importes finitos no negativos (equivale al <code>CHECK</code> de <code>detalle_pedido</code>).</li>
+  <li><code>subtotal = cantidad × precio_unitario</code> histórico y <code>total</code> = suma de subtotales, calculados con aritmética decimal exacta.</li>
+</ol>
+<p><strong>Por qué se embebe.</strong> El acceso frecuente es al pedido completo; las líneas solo existen dentro de su pedido (composición) y se leen siempre juntas, por lo que un documento evita uniones y queda atómico al escribirse. Del cliente se embebe una referencia mínima (ID y alias) para identificarlo sin duplicar datos personales. Productos, clientes y categorías completos quedan como entidades propias. El costo es duplicar el nombre del producto entre pedidos y almacenar valores derivados (<code>subtotal</code>, <code>total</code>), que deben mantenerse coherentes. No se instalaron validadores permanentes en la colección.</p>
+
+<h2>3. Consultas y comparación (consignas 4 y 5)</h2>
+
+<p><strong>Parámetros.</strong> Todas las consultas se limitan al lote 1–5. Estado: <code>ENTREGADO</code> (presente en los cinco pedidos). Producto: ID <code>1</code> (en los pedidos 1, 3 y 5). Umbral de d): <code>total &gt; Decimal128("3000.00")</code>.</p>
+
+<div class="cols">
+  <div class="grow">
+    <p><strong>MongoDB</strong> (<code>consultas_mongodb.js</code>):</p>
+    <ul>
+      <li>a) <code>find</code> del lote, proyectando <code>_id</code> y <code>estado</code>.</li>
+      <li>b) <code>find</code> con <code>estado: "ENTREGADO"</code>.</li>
+      <li>c) <code>aggregate</code>: <code>$match</code> sobre <code>lineas.id_producto: Long(1)</code> y <code>$filter</code> para mostrar solo la línea coincidente.</li>
+      <li>d) <code>find</code> con <code>total: { $gt: Decimal128("3000.00") }</code>, sin convertir dinero a Double.</li>
+    </ul>
+    <p><strong>PostgreSQL</strong> (<code>consultas_postgresql.sql</code>): b) <code>pedido</code> filtrado por estado; c) <code>pedido</code> unido a <code>detalle_pedido</code> con <code>id_producto = 1</code>, mostrando cantidad y precio.</p>
+  </div>
+  <figure style="width:339px; flex: none;">
+    <div class="crop" style="width:339px; height:182px;">
+      <img src="../evidencias/consultas_mongodb_amanda_2.png" alt="Salida de las consultas a y b en MongoDB" style="width:433px; margin:-99px 0 0 -10px;">
+    </div>
+    <figcaption><strong>Figura 3.</strong> MongoDB, salidas de a) y b): IDs Long 1–5, todos <code>ENTREGADO</code>.</figcaption>
+  </figure>
+</div>
+
+<table>
+  <tr><th>Consulta</th><th>Cantidad en PostgreSQL</th><th>Cantidad en MongoDB</th><th>Coinciden los IDs</th><th>IDs recuperados</th></tr>
+  <tr><td>Estado seleccionado: <code>ENTREGADO</code></td><td class="num">5</td><td class="num">5</td><td class="num">Sí</td><td>1, 2, 3, 4, 5</td></tr>
+  <tr><td>Producto seleccionado: ID <code>1</code></td><td class="num">3</td><td class="num">3</td><td class="num">Sí</td><td>1, 3, 5</td></tr>
+</table>
+
+<p>En c), ambos motores devuelven las mismas líneas con cantidad y precio histórico: pedido 1 (2 × 1000.00), pedido 3 (3 × 1050.00) y pedido 5 (1 × 1050.00). No hubo diferencias que corregir.</p>
+<p><strong>Resultado de d).</strong> Pedidos 3 (total 3150.00) y 4 (total 6200.00). <strong>Justificación del umbral:</strong> el lote suma 14700.00 en cinco pedidos (2800.00, 1500.00, 3150.00, 6200.00 y 1050.00), con un promedio de 2940.00; el umbral de 3000.00 selecciona los pedidos por encima del promedio y excluye el de 2800.00, cercano a él.</p>
+
+<figure>
+  <div class="crop" style="width:570px; height:303px;">
+    <img src="../evidencias/consultas_postgresql_amanda.png" alt="Salida de psql para b y c" style="width:683px; margin:-10px 0 0 -5px;">
+  </div>
+  <figcaption><strong>Figura 4.</strong> PostgreSQL (<code>psql -X -U postgres -d foodstore_dev -f …/consultas_postgresql.sql</code>): b) 5 filas, pedidos 1–5; c) 3 filas, pedidos 1, 3 y 5 con producto 1.</figcaption>
+</figure>
+
+<p class="nota">Mateo ejecutó las consultas el 29/10/2026 en su computadora; su captura de MongoDB no mostraba completas c) y d). Amanda reejecutó los mismos scripts sin modificarlos el 1/11/2026 (figuras 3 a 5) y obtuvo los mismos resultados. La comparación vale para los cinco pedidos migrados; no demuestra sincronización futura entre motores.</p>
+
+<figure style="width:553px; margin-left:auto; margin-right:auto;">
+  <div class="crop" style="width:553px; height:958px;">
+    <img src="../evidencias/consultas_mongodb_amanda_3.png" alt="Salida de las consultas c y d en MongoDB" style="width:768px; margin:0 0 0 -19px;">
+  </div>
+  <figcaption><strong>Figura 5.</strong> MongoDB: c) pedidos 1, 3 y 5 con la línea del producto 1 (cantidad, precio y subtotal Decimal128), y d) pedidos 3 y 4 con totales Decimal128 3150.00 y 6200.00.</figcaption>
+</figure>
+
+<h2>4. Consulta a IA y contraste de afirmaciones (consignas 6 y 7)</h2>
+
+<p><strong>Consulta.</strong> El 29/10/2026 Lucas consultó a Gemini (modelo informado como Flash-Lite) en un chat nuevo. La pregunta describió el modelo relacional real (<code>pedido</code>, <code>detalle_pedido</code> con clave compuesta y precio unitario histórico, <code>cliente</code>, <code>producto</code>), la colección documental con cliente y líneas embebidos y <code>total</code> Decimal128, el acceso frecuente a pedidos completos y la necesidad de conservar la coherencia de cantidades y precios. La IA recomendó mantener PostgreSQL. Se contrastaron dos afirmaciones:</p>
+
+<table>
+  <tr><th style="width:31%">Afirmación de la IA</th><th style="width:47%">Fuente o prueba</th><th style="width:22%">Resultado</th></tr>
+  <tr>
+    <td>1. En MongoDB la coherencia entre <code>subtotal</code>, <code>cantidad</code>, precio y <code>total</code> debe imponerla la aplicación o <code>$jsonSchema</code>, porque no valida dependencias cruzadas entre campos.</td>
+    <td>MongoDB Manual, <em>Specify Validation With Query Operators</em> (consultado el 29/10/2026). Prueba de Lucas en MongoDB 9.0.4, en una colección de ensayo con documentos sintéticos y un validador <code>$expr</code>: aceptó el pedido coherente y rechazó el de total incorrecto y el de subtotal incorrecto. Salida: <code>RECHAZADO (codigo 121 …): Document failed validation</code>.</td>
+    <td><strong>Imprecisa.</strong> MongoDB valida entre campos con <code>$expr</code>, pero la regla debe definirse y mantenerse.</td>
+  </tr>
+  <tr>
+    <td>2. Las claves foráneas de PostgreSQL garantizan que un pedido no apunte a un cliente o producto inexistente.</td>
+    <td>Prueba de Lucas en PostgreSQL 17.11 sobre una copia restaurada, con transacciones terminadas en <code>ROLLBACK</code>. Salida: <code>viola la llave foránea «fk_pedido_cliente»</code>; también <code>fk_detalle_pedido_producto</code>.</td>
+    <td><strong>Confirmada.</strong> Además se rechazaron <code>cantidad = 0</code> (<code>CHECK</code>) y la escritura manual del subtotal (columna generada); <code>pedido</code> no almacena <code>total</code>.</td>
+  </tr>
+</table>
+<p class="nota"><strong>Límites:</strong> documentos sintéticos, una sola ejecución por motor y solo inserciones; el validador no está instalado en <code>foodstore_unidad7</code>; no se midió rendimiento.</p>
+
+<h2>5. Conclusión (consigna 7)</h2>
+
+<p class="conclusion">Conviene mantener PostgreSQL como base principal de pedidos, sin reemplazarlo por MongoDB para este subconjunto. Primer criterio, integridad y coherencia: en PostgreSQL el motor rechazó un pedido con cliente inexistente, una cantidad igual a cero y la escritura manual de un subtotal, que es una columna generada; además no almacena el total, por lo que no puede quedar desactualizado. MongoDB también puede validar reglas entre campos con $expr, como se comprobó en el laboratorio, pero esa regla debe definirse y mantenerse, y el modelo documental almacena total y subtotales derivados. Segundo criterio, atomicidad: MongoDB garantiza atomicidad por documento, y un pedido embebido es un solo documento; las operaciones que involucran varios documentos, como actualizar stock y pedido, requieren transacciones distribuidas, que la documentación oficial describe con mayor costo de rendimiento que una escritura de un solo documento. Con cinco pedidos no se midió rendimiento, por lo que la ventaja de leer un pedido completo en una sola lectura no está probada aquí. Si en el futuro esa lectura fuera un cuello de botella, convendría combinar: PostgreSQL como fuente de verdad y MongoDB solo como copia de lectura derivada.</p>
+
+<h3>Entorno, archivos adjuntos y asistencia de IA</h3>
+<ul>
+  <li><strong>Entorno y versiones.</strong> Amanda: PostgreSQL 17.11, MongoDB Server 9.0.4, MongoDB Compass 1.53.2 con mongosh integrado 2.9.2. Mateo y Lucas: MongoDB Server 9.0.4, según lo informado.</li>
+  <li><strong>Archivos adjuntos</strong> (no incluidos en este PDF): <code>mongodb/consultas_mongodb.js</code> y <code>postgresql/consultas_postgresql.sql</code>.</li>
+  <li><strong>Otras evidencias en el repositorio</strong> (<code>TP1_FoodStore_NoSQL/evidencias/</code>): captura de inserción (<code>migracion_insercion.png</code>), capturas de Mateo del 29/10 (<code>consultas_mongodb_consignas_4_5.png</code>, <code>consultas_postgresql_consignas_4_5.png</code>, <code>migracion_verificacion_mateo_20261029.png</code>), captura de los parámetros ejecutados (<code>consultas_mongodb_amanda_1.png</code>), salidas completas de Lucas (<code>prueba_validacion_expr_salida.txt</code>, <code>contraste_integridad_postgresql_salida.txt</code>) y capturas de la conversación con Gemini (<code>gemini_lucas_1.jpeg</code> a <code>gemini_lucas_5.jpeg</code>).</li>
+  <li><strong>Asistencia de IA.</strong> Claude (Anthropic) asistió en la redacción, los scripts y la revisión; Gemini se usó en la consulta de la consigna 6. Todas las ejecuciones en los motores las realizaron los integrantes.</li>
+</ul>
+
+</body>
+</html>

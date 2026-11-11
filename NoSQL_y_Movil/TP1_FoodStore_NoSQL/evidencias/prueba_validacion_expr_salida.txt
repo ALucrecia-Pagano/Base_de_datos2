@@ -1,0 +1,19 @@
+== Entorno ==
+Servidor MongoDB: 9.0.4
+Base de ensayo: prueba_validacion_lucas
+Coleccion creada con validador $expr.
+
+== A. Pedido coherente (subtotales y total correctos): se espera ACEPTADO ==
+Resultado: ACEPTADO
+Coincide con lo esperado: SI
+
+== B. Total incorrecto (2900.00; subtotales correctos): se espera RECHAZADO ==
+Resultado: RECHAZADO (codigo 121, undefined): Document failed validation
+Coincide con lo esperado: SI
+
+== C. Subtotal incorrecto (1999.00; total = suma de subtotales 2799.00): se espera RECHAZADO ==
+Resultado: RECHAZADO (codigo 121, undefined): Document failed validation
+Coincide con lo esperado: SI
+
+== Estado final de la coleccion de ensayo ==
+Documentos guardados (se espera 1, el pedido 9001): 1

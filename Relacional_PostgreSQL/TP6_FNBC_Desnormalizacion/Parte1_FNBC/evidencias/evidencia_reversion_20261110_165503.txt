@@ -1,0 +1,51 @@
+BEGIN
+DO
+LOCK TABLE
+DO
+CREATE TABLE
+CREATE TABLE
+CREATE TABLE
+INSERT 0 3
+INSERT 0 2
+INSERT 0 2
+INSERT 0 3
+DO
+CREATE TABLE
+CREATE TABLE
+INSERT 0 2
+INSERT 0 3
+CREATE VIEW
+SELECT 3
+psql:Relacional_PostgreSQL/TP6_FNBC_Desnormalizacion/Parte1_FNBC/ensayo_migracion_reversion.sql:378: NOTICE:  Ida verificada: la vista reconstruye la relación original.
+DO
+DROP VIEW
+DROP TABLE
+psql:Relacional_PostgreSQL/TP6_FNBC_Desnormalizacion/Parte1_FNBC/ensayo_migracion_reversion.sql:399: NOTICE:  Corte aplicado: control_lote_almacen retirada.
+DO
+psql:Relacional_PostgreSQL/TP6_FNBC_Desnormalizacion/Parte1_FNBC/ensayo_migracion_reversion.sql:422: NOTICE:  Reversión paso 1 verificada: los datos nuevos respetan (lote_id, deposito_id) → responsable_control_id.
+DO
+CREATE TABLE
+INSERT 0 3
+ sentido | lote_id | deposito_id | responsable_control_id 
+---------+---------+-------------+------------------------
+(0 rows)
+
+psql:Relacional_PostgreSQL/TP6_FNBC_Desnormalizacion/Parte1_FNBC/ensayo_migracion_reversion.sql:529: NOTICE:  Reversión verificada: la relación original quedó idéntica a la foto previa.
+DO
+DROP TABLE
+DROP TABLE
+psql:Relacional_PostgreSQL/TP6_FNBC_Desnormalizacion/Parte1_FNBC/ensayo_migracion_reversion.sql:551: NOTICE:  Estructura nueva retirada: el esquema volvió al estado previo a la migración.
+DO
+ lote_id | deposito_id | responsable_control_id 
+---------+-------------+------------------------
+     501 |          30 |                    801
+     502 |          30 |                    801
+     503 |          31 |                    802
+(3 rows)
+
+ filas_revertidas 
+------------------
+                3
+(1 row)
+
+ROLLBACK

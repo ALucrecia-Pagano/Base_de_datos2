@@ -2,6 +2,8 @@
 
 Repositorio académico de trabajos sobre bases de datos no relacionales, organizado por carpetas de trabajo, en continuidad con el [repositorio relacional anterior](https://github.com/ALucrecia-Pagano/Base_de_datos2).
 
+> Desde el 10/11/2026 este contenido forma parte del repositorio unificado [Base_de_datos2](https://github.com/ALucrecia-Pagano/Base_de_datos2), en la carpeta `NoSQL_y_Movil/`, con todo su historial. En los documentos de esta carpeta, "la raíz del repositorio" es `NoSQL_y_Movil/`: los comandos se ejecutan parados en esta carpeta.
+
 ## Datos académicos
 
 - Institución: Universidad Tecnológica Nacional — Facultad Regional Mendoza.

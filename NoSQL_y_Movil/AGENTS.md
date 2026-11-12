@@ -4,8 +4,8 @@
 
 FoodStore — Unidad 7: NoSQL. Bases de Datos II, Tecnicatura Universitaria en Programación, Universidad Tecnológica Nacional, Facultad Regional Mendoza. Comisión 4; profesor: Neira Sergio. Integrantes: Liendo Mateo, Ávila Lucas y Pagano Amanda.
 
-- Repositorio actual: https://github.com/ALucrecia-Pagano/Bases-de-datos-II-NoSQL
-- Antecedente relacional: https://github.com/ALucrecia-Pagano/Base_de_datos2
+- Repositorio actual: https://github.com/ALucrecia-Pagano/Base_de_datos2 (carpeta `NoSQL_y_Movil/`, que hace las veces de raíz para las rutas de este archivo)
+- Repositorio de origen, conservado como antecedente: https://github.com/ALucrecia-Pagano/Bases-de-datos-II-NoSQL
 
 Este proyecto continúa FoodStore. El TP8 anterior corresponde a la Unidad 6; este trabajo corresponde a la Unidad 7 NoSQL y no al TP7 anterior de Administración y Seguridad. No asumir que los archivos del repositorio anterior describen el estado actual de las bases ni modificar ese repositorio.
 

@@ -6,6 +6,8 @@ Alumnos: Liendo Mateo, Avila Lucas, Pagano Amanda.
 Comisión: 4.
 Profesor: Neira Sergio.
 
+> Desde el 10/11/2026 esta carpeta forma parte del repositorio unificado: las unidades 1 a 6 están en `Relacional_PostgreSQL/` y las 7 y 8 en `NoSQL_y_Movil/`. En los documentos de esta carpeta, "la raíz del repositorio" es `Relacional_PostgreSQL/`.
+
 ## Organización y lectura
 
 Todo el trabajo gira en torno a un mismo proyecto integrador: **FoodStore**, un sistema de pedidos tipo delivery (categorías, clientes, productos, pedidos y detalle de pedidos). Cada TP retoma y amplía ese mismo esquema.

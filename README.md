@@ -14,12 +14,15 @@ Capa de datos completa del proyecto integrador «Food Store»: relacional (Postg
 
 Cada carpeta conserva su README, sus instrucciones para asistentes de IA (`AGENTS.md`) y los TPs tal como fueron entregados.
 
-Informe de la segunda entrega del TPI: [INFORME_TPI_Segunda_Entrega.md](INFORME_TPI_Segunda_Entrega.md).
+Informe de la segunda entrega del TPI: [INFORME_TPI_Segunda_Entrega.md](INFORME_TPI_Segunda_Entrega.md) (también en [PDF](INFORME_TPI_Segunda_Entrega.pdf)).
+
+Cada carpeta funciona como la raíz de su repositorio original: cuando un documento interno dice "desde la raíz del repositorio", se refiere a `Relacional_PostgreSQL/` o a `NoSQL_y_Movil/`, según corresponda.
 
 ## Ramas
 
-- `main`: parte relacional (unidades 1 a 6), tal como se entregó.
-- `unidades-7-8`: capa de datos completa, con las unidades 7 y 8 incorporadas desde el repositorio [Bases-de-datos-II-NoSQL](https://github.com/ALucrecia-Pagano/Bases-de-datos-II-NoSQL) conservando su historial.
+- `main`: capa de datos completa (unidades 1 a 8). Es la versión de la entrega.
+- `unidades-7-8`: rama en la que se incorporaron las unidades 7 y 8 desde el repositorio [Bases-de-datos-II-NoSQL](https://github.com/ALucrecia-Pagano/Bases-de-datos-II-NoSQL), conservando su historial; se integró a `main` mediante el pull request #4.
+- La parte relacional tal como se entregó en la primera instancia queda en el commit `632ba2b`.
 
 ## Colaboración
 

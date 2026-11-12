@@ -1,168 +1,235 @@
-# Informe Técnico — Segunda Entrega del Trabajo Práctico Integrador (FoodStore)
+# Trabajo Práctico Integrador — Segunda entrega (Unidades 4 a 8)
 
-**Universidad Tecnológica Nacional — Facultad Regional Mendoza**  
-**Tecnicatura Universitaria en Programación · Base de Datos II · Comisión 4**  
-**Docente:** Neira Sergio · **Integrantes:** Ávila Lucas, Liendo Mateo Lautaro y Pagano Amanda  
-**Proyecto:** FoodStore · **Alcance:** Unidades 4 a 8 (Objetivos 1 a 14) · **Fecha:** 2026-11-10  
+Base de Datos II · Tecnicatura Universitaria en Programación · UTN Facultad Regional Mendoza · Comisión 4  
+Profesor: Neira Sergio · Integrantes: Ávila Lucas, Liendo Mateo y Pagano Amanda  
+Fecha: 12 de noviembre de 2026
 
-🔗 **[Acceso directo al Repositorio Oficial y evidencias completas en GitHub (Rama unidades-7-8)](https://github.com/ALucrecia-Pagano/Base_de_datos2/tree/unidades-7-8)**
+Repositorio de la entrega: https://github.com/ALucrecia-Pagano/Base_de_datos2
 
----
+Las unidades 7 y 8 se trabajaron primero en un repositorio aparte (https://github.com/ALucrecia-Pagano/Bases-de-datos-II-NoSQL). Siguiendo la indicación del profesor, lo incorporamos a este repositorio en la rama `unidades-7-8`, conservando sus 38 commits, y después lo integramos a `main` (pull request #4). Así la capa de datos completa queda en un solo repositorio y en una sola rama. Comprobamos que la unificación no alteró el contenido: 286 de los 287 archivos de la parte relacional y 81 de los 90 del repositorio NoSQL quedaron idénticos byte a byte. Los que cambiaron son los archivos de configuración que compartían los dos repositorios (`.gitignore`, `.gitattributes`, README, AGENTS y CONTRIBUTING) y cuatro documentos en los que solo se corrigieron rutas por el cambio de carpeta.
 
-## Resumen ejecutivo
+## Organización del repositorio
 
-Este informe consolida el desarrollo técnico, las evidencias ejecutables y el control humano del proyecto **FoodStore** entre las **Unidades 4 y 8**, integrando la capa relacional en PostgreSQL 17 ([Relacional_PostgreSQL](https://github.com/ALucrecia-Pagano/Base_de_datos2/tree/unidades-7-8/Relacional_PostgreSQL)), la persistencia documental en MongoDB 9 y la operación offline sincronizada en SQLite 3 ([NoSQL_y_Movil](https://github.com/ALucrecia-Pagano/Base_de_datos2/tree/unidades-7-8/NoSQL_y_Movil)). Todos los ensayos destructivos o estructurales se ejecutaron en copias de laboratorio (`foodstore_copia_trabajo`, `foodstore_restore_test`, `foodstore_tp8_feria`, bases SQLite aisladas) o bajo el protocolo estricto del TP7 sobre `foodstore_dev` con respaldos previos fuera del repositorio y datos sintéticos o anonimizados.
+| Carpeta | Unidades | Contenido |
+|---|---|---|
+| [Relacional_PostgreSQL](https://github.com/ALucrecia-Pagano/Base_de_datos2/blob/main/Relacional_PostgreSQL/README.md) | 1 a 6 | PostgreSQL: los TPs de la primera entrega y, para esta, TP6 (Unidad 4), TP7 (Unidad 5) y TP8 de mantenimiento (Unidad 6) |
+| [NoSQL_y_Movil](https://github.com/ALucrecia-Pagano/Base_de_datos2/blob/main/NoSQL_y_Movil/README.md) | 7 y 8 | MongoDB (`TP1_FoodStore_NoSQL`) y SQLite con sincronización simulada (`TP8_Unidad8`) |
 
----
-
-## 1. Matriz de cumplimiento (Objetivos 1 a 14)
-
-| Obj. | Unidad / Carpeta | Descripción resumida | Estado verificado | Evidencia / Fuente principal | Brecha o limitación registrada |
-|---:|---|---|---|---|---|
-| **1** | U4 · `TP6` Parte 1 | Normalización `R(L,D,C)` a FNBC (`tp_fnbc_control_lote.sql`) | Cumplido (`ROLLBACK`) | [informe_final_tp6.md](https://github.com/ALucrecia-Pagano/Base_de_datos2/blob/unidades-7-8/Relacional_PostgreSQL/TP6_FNBC_Desnormalizacion/informe_final_tp6.md), [evidencia_fnbc.txt](https://github.com/ALucrecia-Pagano/Base_de_datos2/blob/unidades-7-8/Relacional_PostgreSQL/TP6_FNBC_Desnormalizacion/Parte1_FNBC/evidencias/evidencia_fnbc_20261008_222128.txt) | `LD → C` no se preserva con PK/FK locales. |
-| **2** | U4 · `TP6` (`CH-01`) | Spec de migración, plan E1–E4 y ensayo ida y vuelta | Cumplido (`ROLLBACK`) | [plan_reversion.md](https://github.com/ALucrecia-Pagano/Base_de_datos2/blob/unidades-7-8/Relacional_PostgreSQL/TP6_FNBC_Desnormalizacion/Parte1_FNBC/spec_migracion/plan_reversion.md), [evidencia_reversion.txt](https://github.com/ALucrecia-Pagano/Base_de_datos2/blob/unidades-7-8/Relacional_PostgreSQL/TP6_FNBC_Desnormalizacion/Parte1_FNBC/evidencias/evidencia_reversion_20261110_165503.txt) | No se forzó caso negativo para la guarda `LD → C` ([DUIA_spec_migracion.md](https://github.com/ALucrecia-Pagano/Base_de_datos2/blob/unidades-7-8/Relacional_PostgreSQL/TP6_FNBC_Desnormalizacion/Parte1_FNBC/spec_migracion/DUIA_spec_migracion.md)). |
-| **3** | U4 · `TP6` Parte 2 | Desnormalización controlada del Top diario y triggers | Cumplido (`ROLLBACK`) | [informe_parte2_desnormalizacion.md](https://github.com/ALucrecia-Pagano/Base_de_datos2/blob/unidades-7-8/Relacional_PostgreSQL/TP6_FNBC_Desnormalizacion/Parte2_Desnormalizacion/informe_parte2_desnormalizacion.md), [tp_desnormalizacion_top_categorias.sql](https://github.com/ALucrecia-Pagano/Base_de_datos2/blob/unidades-7-8/Relacional_PostgreSQL/TP6_FNBC_Desnormalizacion/Parte2_Desnormalizacion/tp_desnormalizacion_top_categorias.sql) | Concurrencia entre sesiones no probada; costo de escritura no cuantificado. |
-| **4** | U5 · `TP7` A / D | Roles mínimo privilegio, `SECURITY DEFINER`, endurecimiento y `usuario_anon` | Cumplido y endurecido | [roles.sql](https://github.com/ALucrecia-Pagano/Base_de_datos2/blob/unidades-7-8/Relacional_PostgreSQL/TP7_Administracion_y_Seguridad/sql/roles.sql), [aplicacion_correccion_seguridad.md](https://github.com/ALucrecia-Pagano/Base_de_datos2/blob/unidades-7-8/Relacional_PostgreSQL/TP7_Administracion_y_Seguridad/docs/aplicacion_correccion_seguridad.md), [usuario_anon_cobertura.md](https://github.com/ALucrecia-Pagano/Base_de_datos2/blob/unidades-7-8/Relacional_PostgreSQL/TP7_Administracion_y_Seguridad/docs/evidencias/usuario_anon_cobertura_20261017_233704.md) | `usuario_anon` es seudonimización con `id` recuperable; ACL en `mv` no figura en `role_table_grants`. |
-| **5** | U5 · `TP7` B / C | Auditoría `ALTER SYSTEM`, simulacro `42501`, análisis IA y contención | Cumplido con decisión C.6 | [informe_auditoria.md](https://github.com/ALucrecia-Pagano/Base_de_datos2/blob/unidades-7-8/Relacional_PostgreSQL/TP7_Administracion_y_Seguridad/docs/informe_auditoria.md), [informe_incidente.md](https://github.com/ALucrecia-Pagano/Base_de_datos2/blob/unidades-7-8/Relacional_PostgreSQL/TP7_Administracion_y_Seguridad/docs/informe_incidente.md), [respuesta_ia_incidente.md](https://github.com/ALucrecia-Pagano/Base_de_datos2/blob/unidades-7-8/Relacional_PostgreSQL/TP7_Administracion_y_Seguridad/docs/respuesta_ia_incidente.md) | Restauración del dump de respaldo no probada en esa etapa; ejercicio autodescriptivo. |
-| **6** | U5 · `TP7` A.4 / 15-10 | Auditoría de permisos asistida por IA y decisión humana | **Parcial en consolidación** | [BITACORA.md](https://github.com/ALucrecia-Pagano/Base_de_datos2/blob/unidades-7-8/Relacional_PostgreSQL/BITACORA.md), [revision_documental_20261015.md](https://github.com/ALucrecia-Pagano/Base_de_datos2/blob/unidades-7-8/Relacional_PostgreSQL/TP7_Administracion_y_Seguridad/docs/revision_documental_20261015.md) | Evidencia distribuida sin una sección única equivalente a C.6 ni firma de todo el grupo. |
-| **7** | U6 · `TP8` PG (`CH-02`) | Plan `SPEC_U6`, scripts, `14` checks simulados y tarea programada diaria | Cumplido y probado | [SPEC_U6.md](https://github.com/ALucrecia-Pagano/Base_de_datos2/blob/unidades-7-8/Relacional_PostgreSQL/TP8_Mantenimiento_Respaldo_Recuperacion/SPEC_U6.md), [README_programacion.md](https://github.com/ALucrecia-Pagano/Base_de_datos2/blob/unidades-7-8/Relacional_PostgreSQL/TP8_Mantenimiento_Respaldo_Recuperacion/programacion/README_programacion.md) | Solo corre con sesión Windows activa; servicio PG manual; sin rotación automática. |
-| **8** | U6 · `TP8` PG | Ensayos de recuperación ante desastre, `ANALYZE` selectivo y 3 informes | Cumplido (3 operadores) | [Amanda](https://github.com/ALucrecia-Pagano/Base_de_datos2/blob/unidades-7-8/Relacional_PostgreSQL/TP8_Mantenimiento_Respaldo_Recuperacion/informe_u6_Amanda_Pagano_2026-10-24.md), [Mateo](https://github.com/ALucrecia-Pagano/Base_de_datos2/blob/unidades-7-8/Relacional_PostgreSQL/TP8_Mantenimiento_Respaldo_Recuperacion/informe_u6_Mateo_Liendo_2026-10-26.md), [Lucas](https://github.com/ALucrecia-Pagano/Base_de_datos2/blob/unidades-7-8/Relacional_PostgreSQL/TP8_Mantenimiento_Respaldo_Recuperacion/informe_u6_Lucas_Avila_2026-10-29.md) | Falta respaldo global de roles (`--globals-only`); `ANALYZE` parcial en `maintenance.sql`. |
-| **9** | U7 · `TP1_FoodStore_NoSQL` | Modelo documental `pedidos` y migración verificada desde PG | Cumplido (`5` pedidos) | [modelo_documental.md](https://github.com/ALucrecia-Pagano/Base_de_datos2/blob/unidades-7-8/NoSQL_y_Movil/TP1_FoodStore_NoSQL/docs/modelo_documental.md), [resultado_migracion.md](https://github.com/ALucrecia-Pagano/Base_de_datos2/blob/unidades-7-8/NoSQL_y_Movil/TP1_FoodStore_NoSQL/docs/resultado_migracion.md) | Sin validadores permanentes en `foodstore_unidad7.pedidos`; pendiente aval docente de `id + alias`. |
-| **10** | U7 · `TP1_FoodStore_NoSQL` | Equivalencia consultas a–d, lab `$expr` y contraste IA | Cumplido y contrastado | [comparacion_resultados.md](https://github.com/ALucrecia-Pagano/Base_de_datos2/blob/unidades-7-8/NoSQL_y_Movil/TP1_FoodStore_NoSQL/docs/comparacion_resultados.md), [contraste_ia.md](https://github.com/ALucrecia-Pagano/Base_de_datos2/blob/unidades-7-8/NoSQL_y_Movil/TP1_FoodStore_NoSQL/docs/contraste_ia.md) | Rendimiento no medido sobre 5 documentos; `$expr` probado en colección de ensayo separada. |
-| **11** | U8 · `TP8_Unidad8` | Esquema SQLite offline `STRICT`, pruebas C1/C7 y spec Kiro | Cumplido (spec retroactiva) | [schema_sqlite.sql](https://github.com/ALucrecia-Pagano/Base_de_datos2/blob/unidades-7-8/NoSQL_y_Movil/TP8_Unidad8/movil/schema_sqlite.sql), [resultado_pruebas_sqlite.md](https://github.com/ALucrecia-Pagano/Base_de_datos2/blob/unidades-7-8/NoSQL_y_Movil/TP8_Unidad8/docs/resultado_pruebas_sqlite.md), [design.md](https://github.com/ALucrecia-Pagano/Base_de_datos2/blob/unidades-7-8/NoSQL_y_Movil/TP8_Unidad8/docs/kiro/design.md) | Spec Kiro redactada de forma retroactiva; checkpoints 3 y 5 de `tasks.md` sin evidencia propia. |
-| **12** | U8 · `TP8_Unidad8` | Snapshot PG→CSV→SQLite, Semáforo y casos C1–C7 | Cumplido (PG inalterado) | [semaforo.sql](https://github.com/ALucrecia-Pagano/Base_de_datos2/blob/unidades-7-8/NoSQL_y_Movil/TP8_Unidad8/movil/semaforo.sql), [casos_2c.sql](https://github.com/ALucrecia-Pagano/Base_de_datos2/blob/unidades-7-8/NoSQL_y_Movil/TP8_Unidad8/movil/casos_2c.sql), [resultado_casos_2c.md](https://github.com/ALucrecia-Pagano/Base_de_datos2/blob/unidades-7-8/NoSQL_y_Movil/TP8_Unidad8/docs/resultado_casos_2c.md) | `UNIQUE(solicitud_uuid)` definitivo en PostgreSQL queda documentado a nivel diseño. |
-| **13** | U8 · `TP8_Unidad8` | Code review final asistido por IA sobre `75` scripts (`F01`–`F24`) | Cumplido (`75/75`) | [consigna_3c.md](https://github.com/ALucrecia-Pagano/Base_de_datos2/blob/unidades-7-8/NoSQL_y_Movil/TP8_Unidad8/docs/consigna_3c.md) | Los hallazgos no desarrollados en BD (`F05`/`F07`/`F09`) se evaluaron por lectura estática. |
-| **14** | U4–U8 (Transversal) | Consolidado de DUIA y bitácoras de uso de IA | Cumplido | [DUIA_spec_migracion.md](https://github.com/ALucrecia-Pagano/Base_de_datos2/blob/unidades-7-8/Relacional_PostgreSQL/TP6_FNBC_Desnormalizacion/Parte1_FNBC/spec_migracion/DUIA_spec_migracion.md), [BITACORA.md](https://github.com/ALucrecia-Pagano/Base_de_datos2/blob/unidades-7-8/Relacional_PostgreSQL/BITACORA.md), [contraste_ia.md](https://github.com/ALucrecia-Pagano/Base_de_datos2/blob/unidades-7-8/NoSQL_y_Movil/TP1_FoodStore_NoSQL/docs/contraste_ia.md), [DUIA.md](https://github.com/ALucrecia-Pagano/Base_de_datos2/blob/unidades-7-8/NoSQL_y_Movil/TP8_Unidad8/docs/DUIA.md), [bitacora_ia.md](https://github.com/ALucrecia-Pagano/Base_de_datos2/blob/unidades-7-8/NoSQL_y_Movil/TP8_Unidad8/docs/bitacora_ia.md) | TP6 previo a `CH-01` y TP8 PG no poseen un archivo `DUIA.md` independiente (consta en informes). |
+Cada carpeta tiene su README y sus instrucciones para asistentes de IA. El informe sigue los cinco puntos de la consigna: en cada objetivo contamos qué implementamos, cómo lo probamos, qué resultados obtuvimos y qué decidimos. El uso de IA está en su propio apartado y al final hay una matriz con la evidencia de cada objetivo.
 
 ---
 
-## 2. Unidad 4 — Integridad lógica y rendimiento controlado (`TP6`)
+## Unidad 4 — Normalización avanzada y redundancia
 
-### Objetivo 1 — Dependencias funcionales, descomposición FNBC y migración
+### Objetivo 1. Refactorización hasta FNBC
 
-El análisis formal de la relación de control de lotes `R(L,D,C)` (lote, depósito y responsable de control) estableció las dependencias funcionales de dominio **LD → C** y **C → D**, con únicas claves candidatas **LD** y **LC**, resultando todos los atributos primos. Aunque `R` satisface **3FN** (porque `D` es primo en `C → D`), viola **FNBC** dado que `C` no es superclave, lo que genera anomalías de inserción, borrado y modificación.
+Partimos de la relación heredada `control_lote_almacen(lote, depósito, responsable)`, con las dependencias del dominio LD → C (un lote en un depósito tiene un único responsable) y C → D (cada responsable pertenece a un solo depósito). Calculamos las clausuras, encontramos las claves candidatas LD y LC y comprobamos que la relación está en 3FN pero no en FNBC, porque C determina D sin ser superclave. Eso generaba anomalías concretas de inserción, borrado y actualización, que describimos con ejemplos.
 
-La descomposición aplicada fue `responsable_deposito(C,D)` (PK `C`) y `control_lote(L,C)` (PK `LC`), ambas en FNBC. Se verificaron dos propiedades teóricas diferenciadas:
+La descompusimos en `responsable_deposito(C, D)` y `control_lote(L, C)`. La reunión por C es sin pérdida porque C es clave de la primera tabla. Dejamos escrito que LD → C ya no se garantiza con las restricciones locales, con un contraejemplo.
 
-- **Reunión sin pérdida:** garantizada porque el atributo común `C` es clave primaria de `responsable_deposito` (`C → CD`).
-- **Preservación de dependencias:** **LD → C no se preserva** mediante restricciones locales de PK/FK, ya que podrían coexistir `(801,30)` y `(803,30)` en `responsable_deposito` junto con `(501,801)` y `(501,803)` en `control_lote`. Evitarlo requiere una validación inter-tabla no implementada en esa parte.
+En `foodstore_copia_trabajo`, dentro de una transacción, el script migró los datos y una vista reconstruyó la relación original. El `EXCEPT` en los dos sentidos dio 0 filas y los conteos coincidieron (3 originales, 2 y 3 en las tablas nuevas, 3 reconstruidas). El script termina en `ROLLBACK`.
 
-El script [tp_fnbc_control_lote.sql](https://github.com/ALucrecia-Pagano/Base_de_datos2/blob/unidades-7-8/Relacional_PostgreSQL/TP6_FNBC_Desnormalizacion/Parte1_FNBC/tp_fnbc_control_lote.sql) migró los datos y reconstruyó la relación mediante `v_control_lote_almacen`. La salida [evidencia_fnbc.txt](https://github.com/ALucrecia-Pagano/Base_de_datos2/blob/unidades-7-8/Relacional_PostgreSQL/TP6_FNBC_Desnormalizacion/Parte1_FNBC/evidencias/evidencia_fnbc_20261008_222128.txt) acreditó diferencias bidireccionales con `EXCEPT` en `(0 rows)`, `NOTICE` de equivalencia verificada, conteos `3 / 2 / 3 / 3`, tuplas reconstruidas `(501,30,801)`, `(502,30,801)` y `(503,31,802)`, y cierre en `ROLLBACK`.
+Archivos: [informe_parte1_fnbc.md](https://github.com/ALucrecia-Pagano/Base_de_datos2/blob/main/Relacional_PostgreSQL/TP6_FNBC_Desnormalizacion/Parte1_FNBC/informe_parte1_fnbc.md), [tp_fnbc_control_lote.sql](https://github.com/ALucrecia-Pagano/Base_de_datos2/blob/main/Relacional_PostgreSQL/TP6_FNBC_Desnormalizacion/Parte1_FNBC/tp_fnbc_control_lote.sql), [evidencia](https://github.com/ALucrecia-Pagano/Base_de_datos2/blob/main/Relacional_PostgreSQL/TP6_FNBC_Desnormalizacion/Parte1_FNBC/evidencias/evidencia_fnbc_20261008_222128.txt).
 
-### Objetivo 2 — Spec de migración, plan de reversión y ensayo de ida y vuelta (`CH-01`)
+### Objetivo 2. Migración sin pérdida, especificada y con plan de reversión
 
-Bajo `spec_migracion/` se formalizó el cambio `CH-01`. En [plan_reversion.md](https://github.com/ALucrecia-Pagano/Base_de_datos2/blob/unidades-7-8/Relacional_PostgreSQL/TP6_FNBC_Desnormalizacion/Parte1_FNBC/spec_migracion/plan_reversion.md) se documentaron el respaldo previo fuera del repositorio (`foodstore_copia_trabajo_antes_reversion_20261110_165440.dump`, `7,3 MB`) y cuatro escenarios de reversión (**E1** falla previa al `COMMIT` vía `ON_ERROR_STOP` + `ROLLBACK`, **E2** retiro de objetos en convivencia, **E3** recreación de `control_lote_almacen` desde tablas nuevas previa validación de `LD → C`, y **E4** restauración por `pg_restore`).
+Para esta entrega especificamos la migración en tres archivos (requisitos con criterios de aceptación, diseño y tareas) y escribimos un plan de reversión con cuatro escenarios: falla antes del COMMIT, vuelta atrás con la tabla original todavía presente, vuelta atrás después de haberla retirado y, como último recurso, restauración del respaldo.
 
-El script [ensayo_migracion_reversion.sql](https://github.com/ALucrecia-Pagano/Base_de_datos2/blob/unidades-7-8/Relacional_PostgreSQL/TP6_FNBC_Desnormalizacion/Parte1_FNBC/ensayo_migracion_reversion.sql) ejecutó el ciclo completo dentro de una transacción en `foodstore_copia_trabajo` ([evidencia_reversion.txt](https://github.com/ALucrecia-Pagano/Base_de_datos2/blob/unidades-7-8/Relacional_PostgreSQL/TP6_FNBC_Desnormalizacion/Parte1_FNBC/evidencias/evidencia_reversion_20261110_165503.txt)):
+Para probar el plan armamos un ensayo de ida y vuelta. Hace la migración completa, retira la tabla original como en un corte real, la reconstruye desde las tablas nuevas con el mismo DDL (misma clave primaria y mismas tres claves foráneas) y la compara con una copia tomada antes de empezar. Antes de reconstruir valida que los datos nuevos respeten LD → C, porque la descomposición no la garantiza y la clave primaria original fallaría.
 
-1. Ida verificada (`NOTICE`) y corte aplicado retirando `control_lote_almacen` (`NOTICE`).
-2. Reversión paso 1 verificando `(lote_id, deposito_id) → responsable_control_id` en datos nuevos (`NOTICE`).
-3. Comparación contra foto previa en `(0 rows)`, reversión verificada (`NOTICE`), retiro de estructura nueva (`NOTICE`), `filas_revertidas = 3` con las 3 tuplas restituidas y `ROLLBACK` final.
+Lo ejecutamos el 10/11 en `foodstore_copia_trabajo`, con un respaldo previo de la base guardado fuera del repositorio. Terminó con código de salida 0: los cinco avisos de control aparecieron en orden, la comparación contra la copia dio 0 filas, se restituyeron las 3 filas originales y todo cerró con `ROLLBACK`.
 
-**Limitación declarada:** según [DUIA_spec_migracion.md](https://github.com/ALucrecia-Pagano/Base_de_datos2/blob/unidades-7-8/Relacional_PostgreSQL/TP6_FNBC_Desnormalizacion/Parte1_FNBC/spec_migracion/DUIA_spec_migracion.md), la guarda que detiene la reversión ante violaciones de `LD → C` quedó probada en el camino válido, sin ensayo negativo forzado que la haga abortar.
+Una limitación que dejamos registrada: la validación de LD → C funcionó en el caso válido, pero no la forzamos con un caso que la haga fallar.
 
-### Objetivo 3 — Desnormalización controlada del Top diario de categorías y salvaguardas
+Archivos: [spec y plan](https://github.com/ALucrecia-Pagano/Base_de_datos2/blob/main/Relacional_PostgreSQL/TP6_FNBC_Desnormalizacion/Parte1_FNBC/spec_migracion/plan_reversion.md), [ensayo_migracion_reversion.sql](https://github.com/ALucrecia-Pagano/Base_de_datos2/blob/main/Relacional_PostgreSQL/TP6_FNBC_Desnormalizacion/Parte1_FNBC/ensayo_migracion_reversion.sql), [evidencia](https://github.com/ALucrecia-Pagano/Base_de_datos2/blob/main/Relacional_PostgreSQL/TP6_FNBC_Desnormalizacion/Parte1_FNBC/evidencias/evidencia_reversion_20261110_165503.txt).
 
-En [informe_parte2_desnormalizacion.md](https://github.com/ALucrecia-Pagano/Base_de_datos2/blob/unidades-7-8/Relacional_PostgreSQL/TP6_FNBC_Desnormalizacion/Parte2_Desnormalizacion/informe_parte2_desnormalizacion.md) y [informe_final_tp6.md](https://github.com/ALucrecia-Pagano/Base_de_datos2/blob/unidades-7-8/Relacional_PostgreSQL/TP6_FNBC_Desnormalizacion/informe_final_tp6.md) se evaluó el Top 5 diario de categorías sobre la fecha fija `2026-06-25` (`America/Buenos_Aires`) en la copia masiva (`200005` pedidos, `499571` detalles, `50003` productos, `2` categorías). [tp_desnormalizacion_top_categorias.sql](https://github.com/ALucrecia-Pagano/Base_de_datos2/blob/unidades-7-8/Relacional_PostgreSQL/TP6_FNBC_Desnormalizacion/Parte2_Desnormalizacion/tp_desnormalizacion_top_categorias.sql) incorpora tres columnas redundantes en `detalle_pedido` (`fecha_hora_pedido_cache`, `id_categoria_cache`, `pedido_eliminado_cache`) e `idx_tp6_detalle_fecha_cache`, manteniendo el JOIN con `categoria`.
+### Objetivo 3. Desnormalización controlada
 
-| Serie experimental | Medición previa (ms) | Normalizada promedio (ms) | Desnormalizada promedio (ms) | Cociente | Reducción de tiempo | `shared hit` (Norm. / Desn.) | Reducción `shared hit` | Fuente |
-|---|---:|---:|---:|---:|---:|---:|---:|---|
-| **Ensayo corregido (09/10/2026)** · con filtros `NOT eliminado` independientes | `62.538` | `48.4235` | `1.6515` | `29.32` | `96.59 %` | `10942` / `565` | `94.84 %` | [evidencia logico](https://github.com/ALucrecia-Pagano/Base_de_datos2/blob/unidades-7-8/Relacional_PostgreSQL/TP6_FNBC_Desnormalizacion/Parte2_Desnormalizacion/evidencias/evidencia_top_desnormalizacion_logico_20261009_092837.txt) |
-| **Antecedente histórico (08/10/2026)** · sin filtros de borrado lógico | `47.151` | `42.3635` | `1.835` | `23.09` | `95.67 %` | `10942` / `564` | `94.85 %` | [evidencia historico](https://github.com/ALucrecia-Pagano/Base_de_datos2/blob/unidades-7-8/Relacional_PostgreSQL/TP6_FNBC_Desnormalizacion/Parte2_Desnormalizacion/evidencias/evidencia_top_desnormalizacion_20261008_232126.txt) |
+El reporte que elegimos fue el top diario de ventas por categoría, que en la base de carga masiva (200.005 pedidos y 499.571 detalles) obligaba a recorrer pedidos y productos para cada detalle. Copiamos en `detalle_pedido` la fecha del pedido, la categoría del producto y el estado de borrado del pedido, y agregamos un índice sobre la fecha copiada.
 
-- **Planes y equivalencia:** en la serie corregida se pasó de `Parallel Seq Scan` sobre `pedido` + `Nested Loop` con búsquedas en `detalle_pedido` y `producto`, a `Bitmap Index Scan` sobre `idx_tp6_detalle_fecha_cache` + `Bitmap Heap Scan` (`1539` detalles visibles, `559` bloques) + `Nested Loop` con `categoria`. Ambas versiones devolvieron `Bebidas: 5589534.40` y `Pizzas: 5215387.22`, con `0` filas en auditoría completa, `EXCEPT` del top y `EXCEPT ALL` de filas participantes.
-- **Salvaguardas e inconvenientes observados:** tres triggers (`zz_tp6_sync_detalle_cache`, `trg_tp6_propagar_fecha_cache`, `trg_tp6_propagar_categoria_cache`) mantienen la coherencia dentro de la transacción. Exigen aislamiento `READ COMMITTED` y toman bloqueos `FOR SHARE` en orden `pedido` → `producto`, con riesgo potencial de interbloqueo. Todo el bloque finalizó en `ROLLBACK`; **no se probó concurrencia entre sesiones** ni se cuantificó el sobrecosto en escrituras/WAL/índices.
+Lo decidimos porque es una consulta de lectura frecuente y las columnas copiadas cambian poco. Las salvaguardas son tres triggers que mantienen las copias sincronizadas cuando cambia el dato original, una auditoría que compara cada copia con su fuente y la comparación del resultado del reporte antes y después.
 
----
+Medimos dos rondas con los filtros de borrado lógico: la consulta normalizada promedió 48,42 ms y la desnormalizada 1,65 ms, una reducción del 96,59 %. Los accesos a buffers bajaron de 10.942 a 565. Las dos versiones devolvieron el mismo resultado (Bebidas 5.589.534,40 y Pizzas 5.215.387,22) y la auditoría dio 0 diferencias. Todo se hizo dentro de una transacción con `ROLLBACK`.
 
-## 3. Unidad 5 — Administración, seguridad y auditoría (`TP7`)
+No probamos concurrencia entre sesiones ni medimos el costo extra en las escrituras.
 
-### Objetivo 4 — Roles de mínimo privilegio, endurecimiento y seudonimización
-
-En [roles.sql](https://github.com/ALucrecia-Pagano/Base_de_datos2/blob/unidades-7-8/Relacional_PostgreSQL/TP7_Administracion_y_Seguridad/sql/roles.sql) se implementó un esquema de mínimo privilegio compuesto por 5 roles `NOLOGIN` y 2 de acceso (`app_web` `CONNECTION LIMIT 20`, `admin_datos` `CONNECTION LIMIT 5`, ambos con `PASSWORD NULL`):
-
-- **Restricciones y encapsulamiento:** `rol_app_escritura` dispone de `INSERT, UPDATE` en las 5 tablas operativas y `USAGE, SELECT` en 4 secuencias (excluyendo `usuario` y `usuario_id_seq`, sin `DELETE`). `rol_soporte` conserva exclusivamente acceso por columna a `usuario` (`id, nombre, apellido, mail, celular, rol, eliminado, created_at`) sin lectura ni escritura de `usuario.contrasena`, más `UPDATE (eliminado)`. [fn_autenticar.sql](https://github.com/ALucrecia-Pagano/Base_de_datos2/blob/unidades-7-8/Relacional_PostgreSQL/TP7_Administracion_y_Seguridad/sql/fn_autenticar.sql) y [fn_resetear_password.sql](https://github.com/ALucrecia-Pagano/Base_de_datos2/blob/unidades-7-8/Relacional_PostgreSQL/TP7_Administracion_y_Seguridad/sql/fn_resetear_password.sql) emplean `SECURITY DEFINER`, `SET search_path = pg_catalog, pg_temp`, llamadas calificadas a `public.crypt`/`public.gen_salt('bf')`, rechazo implícito para bajas lógicas (`eliminado = FALSE`) y `REVOKE ALL FROM PUBLIC`.
-- **Corrección de seguridad del 15/10/2026 y estado vigente:** según [aplicacion_correccion_seguridad.md](https://github.com/ALucrecia-Pagano/Base_de_datos2/blob/unidades-7-8/Relacional_PostgreSQL/TP7_Administracion_y_Seguridad/docs/aplicacion_correccion_seguridad.md), se resolvieron cuatro hallazgos: revocación de `SELECT` masivo en `pg_catalog`/`information_schema` para `rol_auditoria` (conservando `pg_monitor`), creación de logins sin contraseña habilitada, alineación de `ALTER DEFAULT PRIVILEGES` al RF-07 exacto y blindaje de `search_path` en funciones.
-- **Verificación:** `\du` y `role_table_grants` (`97` filas en [roles_vigentes.md](https://github.com/ALucrecia-Pagano/Base_de_datos2/blob/unidades-7-8/Relacional_PostgreSQL/TP7_Administracion_y_Seguridad/docs/evidencias/roles_vigentes_20261015.md)); `10/10` guardas negativas de variables ausentes con salida `3` y verificación de privilegios de `PUBLIC` en `(0 rows)` ([verificacion_guardas.md](https://github.com/ALucrecia-Pagano/Base_de_datos2/blob/unidades-7-8/Relacional_PostgreSQL/TP7_Administracion_y_Seguridad/docs/evidencias/verificacion_guardas_public_20261015_124512.md)).
-- **Seudonimización y cobertura (`Parte D`):** sobre [usuario_anon.sql](https://github.com/ALucrecia-Pagano/Base_de_datos2/blob/unidades-7-8/Relacional_PostgreSQL/TP7_Administracion_y_Seguridad/sql/usuario_anon.sql), [usuario_anon_cobertura.sql](https://github.com/ALucrecia-Pagano/Base_de_datos2/blob/unidades-7-8/Relacional_PostgreSQL/TP7_Administracion_y_Seguridad/sql/usuario_anon_cobertura.sql) amplió la prueba en [usuario_anon_cobertura.md](https://github.com/ALucrecia-Pagano/Base_de_datos2/blob/unidades-7-8/Relacional_PostgreSQL/TP7_Administracion_y_Seguridad/docs/evidencias/usuario_anon_cobertura_20261017_233704.md) dentro de `REPEATABLE READ` con `8` filas, `5` grupos, `3` roles, `4` meses distintos y `2` registros con baja lógica, arrojando `diferencias 0/0, totales 8/8`, `ROLLBACK` y `PSQL_EXIT=0` sin alterar conteos.
-
-### Objetivo 5 — Auditoría nativa, simulacro de incidente, análisis IA y contención
-
-- **Auditoría nativa (`Parte B`):** mediante `ALTER SYSTEM SET` + `pg_reload_conf()` se activaron `log_connections = on`, `log_disconnections = on`, `log_statement = 'all'` y `log_line_prefix = '%m [%p] %u@%d %r %a '` ([informe_auditoria.md](https://github.com/ALucrecia-Pagano/Base_de_datos2/blob/unidades-7-8/Relacional_PostgreSQL/TP7_Administracion_y_Seguridad/docs/informe_auditoria.md)).
-- **Simulacro y reconstrucción (`Parte C`):** [simulacro_incidente.sql](https://github.com/ALucrecia-Pagano/Base_de_datos2/blob/unidades-7-8/Relacional_PostgreSQL/TP7_Administracion_y_Seguridad/sql/simulacro_incidente.sql) ejecutó bajo `foodstore_dev` la secuencia verificada en [ejecucion_20261015_0215.md](https://github.com/ALucrecia-Pagano/Base_de_datos2/blob/unidades-7-8/Relacional_PostgreSQL/TP7_Administracion_y_Seguridad/docs/evidencias/ejecucion_20261015_0215.md): `3× FALLIDO`, `EXITOSO id=1`, `SELECT` masivo bajo `rol_soporte` sin `contrasena`, intento `GRANT admin_datos TO app_web` denegado (`42501`), `ROLLBACK`, `0` membresías residuales y restauración posterior con `ALTER SYSTEM RESET`.
-- **Contraste humano y decisión de contención:** OpenCode (`Muse Spark 1.3 Free`, [respuesta_ia_incidente.md](https://github.com/ALucrecia-Pagano/Base_de_datos2/blob/unidades-7-8/Relacional_PostgreSQL/TP7_Administracion_y_Seguridad/docs/respuesta_ia_incidente.md)) identificó correctamente un escenario consistente con laboratorio guiado. En [informe_incidente.md](https://github.com/ALucrecia-Pagano/Base_de_datos2/blob/unidades-7-8/Relacional_PostgreSQL/TP7_Administracion_y_Seguridad/docs/informe_incidente.md) se descartaron afirmaciones no sustentadas y quedó asentada textualmente la **decisión humana de contención (§3)**: no bloquear direcciones ni rotar credenciales en el laboratorio por haberse confirmado prueba autorizada con escalamiento rechazado.
-
-### Objetivo 6 — Auditoría de permisos asistida por IA y decisión humana *(evidencia distribuida y brecha explícita)*
-
-Según la consigna de la Unidad 5 (Parte A.4 p. 4 y Parte C.6 p. 5):
-
-- **Evidencia existente (distribuida):** en [BITACORA.md](https://github.com/ALucrecia-Pagano/Base_de_datos2/blob/unidades-7-8/Relacional_PostgreSQL/BITACORA.md) constan tanto la auditoría A.4 de `roles.sql` como el rechazo explícito a dos permisos amplios propuestos como ejercicio. Posteriormente, las filas 54–59 de `BITACORA.md` y [aplicacion_correccion_seguridad.md](https://github.com/ALucrecia-Pagano/Base_de_datos2/blob/unidades-7-8/Relacional_PostgreSQL/TP7_Administracion_y_Seguridad/docs/aplicacion_correccion_seguridad.md) registran los 4 hallazgos de seguridad del 15/10, su ensayo/aplicación/validación y su incorporación al cierre publicado en `88675cc` y `39e4c6e` por la usuaria responsable ([revision_documental_20261015.md](https://github.com/ALucrecia-Pagano/Base_de_datos2/blob/unidades-7-8/Relacional_PostgreSQL/TP7_Administracion_y_Seguridad/docs/revision_documental_20261015.md)).
-- **Limitación documental explícita:** a diferencia del Objetivo 5, el Objetivo 6 **carece de una sección o documento único unificado** titulado como decisión final humana sobre la auditoría de permisos asistida por IA, permaneciendo repartida en `BITACORA.md` y documentos auxiliares.
+Archivos: [informe_final_tp6.md](https://github.com/ALucrecia-Pagano/Base_de_datos2/blob/main/Relacional_PostgreSQL/TP6_FNBC_Desnormalizacion/informe_final_tp6.md), [informe de la parte 2](https://github.com/ALucrecia-Pagano/Base_de_datos2/blob/main/Relacional_PostgreSQL/TP6_FNBC_Desnormalizacion/Parte2_Desnormalizacion/informe_parte2_desnormalizacion.md), [script](https://github.com/ALucrecia-Pagano/Base_de_datos2/blob/main/Relacional_PostgreSQL/TP6_FNBC_Desnormalizacion/Parte2_Desnormalizacion/tp_desnormalizacion_top_categorias.sql).
 
 ---
 
-## 4. Unidad 6 — Mantenimiento, respaldo y recuperación (`TP8_Mantenimiento_Respaldo_Recuperacion`)
+## Unidad 5 — Administración y seguridad
 
-### Objetivo 7 — Plan de mantenimiento y respaldo diario programado (`CH-02`)
+### Objetivo 4. Usuarios, roles y permisos con mínimo privilegio
 
-[SPEC_U6.md](https://github.com/ALucrecia-Pagano/Base_de_datos2/blob/unidades-7-8/Relacional_PostgreSQL/TP8_Mantenimiento_Respaldo_Recuperacion/SPEC_U6.md) establece respaldos custom diarios (`pg_dump -Fc`) y chequeo de salud diario ([health_check.sql](https://github.com/ALucrecia-Pagano/Base_de_datos2/blob/unidades-7-8/Relacional_PostgreSQL/TP8_Mantenimiento_Respaldo_Recuperacion/health_check.sql)), junto con mantenimiento selectivo semanal ([maintenance.sql](https://github.com/ALucrecia-Pagano/Base_de_datos2/blob/unidades-7-8/Relacional_PostgreSQL/TP8_Mantenimiento_Respaldo_Recuperacion/maintenance.sql)) y restauración de prueba ([restore_test.ps1](https://github.com/ALucrecia-Pagano/Base_de_datos2/blob/unidades-7-8/Relacional_PostgreSQL/TP8_Mantenimiento_Respaldo_Recuperacion/restore_test.ps1)), fijando metas de laboratorio **RPO ≤ 24 h** y **RTO ≤ 15 min**. Las pruebas simuladas automatizadas arrojaron `PASS 14 checks`.
+Definimos cinco roles de grupo sin login (`rol_app_lectura`, `rol_app_escritura`, `rol_soporte`, `rol_reportes`, `rol_auditoria`) y dos usuarios que los heredan (`app_web` y `admin_datos`). La aplicación puede leer, insertar y actualizar, pero no borrar, porque las bajas son lógicas. Soporte puede ver los datos de los usuarios menos la contraseña y solo puede tocar la columna `eliminado`. El acceso a contraseñas pasa únicamente por dos funciones `SECURITY DEFINER` (autenticar y resetear) con `search_path` fijo y sin permiso para `PUBLIC`.
 
-Mediante `CH-02` ([README_programacion.md](https://github.com/ALucrecia-Pagano/Base_de_datos2/blob/unidades-7-8/Relacional_PostgreSQL/TP8_Mantenimiento_Respaldo_Recuperacion/programacion/README_programacion.md)), se implementó [registrar_respaldo_programado.ps1](https://github.com/ALucrecia-Pagano/Base_de_datos2/blob/unidades-7-8/Relacional_PostgreSQL/TP8_Mantenimiento_Respaldo_Recuperacion/programacion/registrar_respaldo_programado.ps1) y [quitar_respaldo_programado.ps1](https://github.com/ALucrecia-Pagano/Base_de_datos2/blob/unidades-7-8/Relacional_PostgreSQL/TP8_Mantenimiento_Respaldo_Recuperacion/programacion/quitar_respaldo_programado.ps1) creando la tarea diaria **`FoodStore_Respaldo_Diario`** a las `23:00` sobre `foodstore_dev` invocando [backup_foodstore.ps1](https://github.com/ALucrecia-Pagano/Base_de_datos2/blob/unidades-7-8/Relacional_PostgreSQL/TP8_Mantenimiento_Respaldo_Recuperacion/backup_foodstore.ps1). La ejecución del `10/11/2026 23:17:47` finalizó con `LastTaskResult = 0`, `status = PASS`, duración **`1,893 s`**, archivo de **`46877` bytes**, huella SHA-256 `A5FEFDBA89565CBF60F5C9F14E1B527AC59C3D3681D56919C166D94F1C2B280B` ([metadata.json](https://github.com/ALucrecia-Pagano/Base_de_datos2/blob/unidades-7-8/Relacional_PostgreSQL/TP8_Mantenimiento_Respaldo_Recuperacion/programacion/evidencias_20261110/metadata.json)).
+Lo especificamos antes de escribir el script y lo verificamos con el listado de permisos efectivos y con pruebas negativas, por ejemplo que soporte no pueda leer `contrasena`. Una revisión posterior encontró cuatro problemas (permisos de catálogo de más para auditoría, logins con contraseña de ejemplo, privilegios por defecto desalineados con la especificación y funciones sin `search_path` fijo). Los corregimos, los probamos y los publicamos.
 
-### Objetivo 8 — Ensayos de recuperación ante desastre e informes de 3 operadores
+Archivos: [roles.sql](https://github.com/ALucrecia-Pagano/Base_de_datos2/blob/main/Relacional_PostgreSQL/TP7_Administracion_y_Seguridad/sql/roles.sql), [spec de roles](https://github.com/ALucrecia-Pagano/Base_de_datos2/blob/main/Relacional_PostgreSQL/TP7_Administracion_y_Seguridad/docs/kiro_roles_spec/requirements.md), [corrección de seguridad](https://github.com/ALucrecia-Pagano/Base_de_datos2/blob/main/Relacional_PostgreSQL/TP7_Administracion_y_Seguridad/docs/aplicacion_correccion_seguridad.md).
 
-- **Amanda Pagano** (24/10/2026, [informe Amanda](https://github.com/ALucrecia-Pagano/Base_de_datos2/blob/unidades-7-8/Relacional_PostgreSQL/TP8_Mantenimiento_Respaldo_Recuperacion/informe_u6_Amanda_Pagano_2026-10-24.md)): `foodstore_dev` RTO `2,57 s`, RPO `100 s`; `foodstore_tp3_carga` RTO `9,15 s`, RPO `49 s`. `0` errores en 9 checks.
-- **Mateo Liendo** (26/10/2026, [informe Mateo](https://github.com/ALucrecia-Pagano/Base_de_datos2/blob/unidades-7-8/Relacional_PostgreSQL/TP8_Mantenimiento_Respaldo_Recuperacion/informe_u6_Mateo_Liendo_2026-10-26.md)): `foodstore_dev` RTO `1,63 s`, RPO `195 s`. `0` errores.
-- **Lucas Ávila** (29/10/2026, [informe Lucas](https://github.com/ALucrecia-Pagano/Base_de_datos2/blob/unidades-7-8/Relacional_PostgreSQL/TP8_Mantenimiento_Respaldo_Recuperacion/informe_u6_Lucas_Avila_2026-10-29.md)): `foodstore_dev` RTO `0,93 s`, RPO `1.205 s`. Propuso `ANALYZE` completo tras restaurar.
+### Objetivo 5. Auditoría activada y simulacro de acceso indebido
 
----
+Activamos el registro nativo de PostgreSQL: conexiones, desconexiones y todas las sentencias, con un prefijo que identifica hora, proceso, usuario, base y origen. Elegimos `log_statement = 'all'` en lugar de `'mod'` porque el simulacro necesitaba ver también las lecturas. Su costo, que las claves quedan en texto plano en el log, lo dejamos documentado.
 
-## 5. Unidad 7 — Modelo documental en MongoDB (`TP1_FoodStore_NoSQL`)
+El simulacro reprodujo un ataque típico: tres intentos de login fallidos, uno exitoso, una lectura masiva con el rol de soporte y un intento de escalar privilegios (`GRANT admin_datos TO app_web`), que PostgreSQL rechazó con el error 42501. A partir del log anonimizado (209 líneas) reconstruimos la secuencia, se la dimos a una IA para que la analizara y contrastamos su respuesta contra el log. Aceptamos lo que acertó y descartamos dos afirmaciones que el log no sostenía. Para un incidente real, la contención que propusimos es validar primero el origen y la cuenta afectada y, si se confirma un acceso no autorizado, revocar las sesiones y restablecer la credencial. El bloqueo del origen queda sujeto a esa investigación. En el laboratorio no bloqueamos direcciones ni cambiamos credenciales, porque se trataba de una prueba autorizada, con datos sintéticos y con el escalamiento rechazado. Sí conservamos las evidencias y comprobamos que no quedaran membresías indebidas. Esa decisión está escrita en el informe del incidente.
 
-### Objetivo 9 — Modelo documental `pedidos` y migración verificada desde PostgreSQL
+Archivos: [informe de auditoría](https://github.com/ALucrecia-Pagano/Base_de_datos2/blob/main/Relacional_PostgreSQL/TP7_Administracion_y_Seguridad/docs/informe_auditoria.md), [informe del incidente](https://github.com/ALucrecia-Pagano/Base_de_datos2/blob/main/Relacional_PostgreSQL/TP7_Administracion_y_Seguridad/docs/informe_incidente.md), [simulacro_incidente.sql](https://github.com/ALucrecia-Pagano/Base_de_datos2/blob/main/Relacional_PostgreSQL/TP7_Administracion_y_Seguridad/sql/simulacro_incidente.sql).
 
-El modelo diseñado en [modelo_documental.md](https://github.com/ALucrecia-Pagano/Base_de_datos2/blob/unidades-7-8/NoSQL_y_Movil/TP1_FoodStore_NoSQL/docs/modelo_documental.md) e implementado en [migracion_pedidos.js](https://github.com/ALucrecia-Pagano/Base_de_datos2/blob/unidades-7-8/NoSQL_y_Movil/TP1_FoodStore_NoSQL/mongodb/migracion_pedidos.js) traslada los pedidos `1` a `5` desde `foodstore_dev.public` a la colección `foodstore_unidad7.pedidos` mediante [extraccion.json](https://github.com/ALucrecia-Pagano/Base_de_datos2/blob/unidades-7-8/NoSQL_y_Movil/TP1_FoodStore_NoSQL/evidencias/extraccion_20261028_170446.json) (SHA-256 `3973789e22039731d20c1b5227d6907b09fa8065830e88c798264006eeaae243`):
-- `5` documentos con `_id: Long`, `fecha_hora` en `Date` UTC, `cliente` embebido sintético `{ id: Long, alias: "Cliente N" }` (excluyendo **todas las `observaciones`** por privacidad), arreglo `lineas` con `7` ítems y `total` calculado en `Decimal128` (suma `14700.00`; promedio `2940.00`).
+### Objetivo 6. Auditoría de permisos asistida por IA y decisión humana
 
-### Objetivo 10 — Equivalencia de consultas, laboratorio `$expr` y contraste IA
+Le pedimos a la IA que auditara `roles.sql` contra la especificación: que buscara permisos técnicos faltantes (uso del esquema, secuencias, vistas, privilegios por defecto) y que, como ejercicio de la consigna, propusiera permisos más amplios "para simplificar". No encontró faltantes bloqueantes. Propuso tres permisos amplios: `GRANT ALL ON ALL TABLES` a `rol_app_escritura`, `GRANT ALL PRIVILEGES ON ALL TABLES` a `app_web` y `GRANT SELECT ON usuario` a `rol_soporte`.
 
-- **Comparación SQL vs MongoDB:** [comparacion_resultados.md](https://github.com/ALucrecia-Pagano/Base_de_datos2/blob/unidades-7-8/NoSQL_y_Movil/TP1_FoodStore_NoSQL/docs/comparacion_resultados.md) acreditó coincidencia exacta en estado `ENTREGADO`, productos y totales `> Decimal128("3000.00")` (pedidos `3` y `4`).
-- **Contraste de IA ([contraste_ia.md](https://github.com/ALucrecia-Pagano/Base_de_datos2/blob/unidades-7-8/NoSQL_y_Movil/TP1_FoodStore_NoSQL/docs/contraste_ia.md)):** se contrastaron afirmaciones sobre validaciones cruzadas frente al Manual MongoDB 9.0 mediante [prueba_validacion_expr_mongodb.js](https://github.com/ALucrecia-Pagano/Base_de_datos2/blob/unidades-7-8/NoSQL_y_Movil/TP1_FoodStore_NoSQL/mongodb/prueba_validacion_expr_mongodb.js) ($expr código `121`) y [contraste_integridad_postgresql.sql](https://github.com/ALucrecia-Pagano/Base_de_datos2/blob/unidades-7-8/NoSQL_y_Movil/TP1_FoodStore_NoSQL/postgresql/contraste_integridad_postgresql.sql). Conclusión: mantener PostgreSQL como fuente de verdad.
+Rechazamos los tres y no aplicamos ninguno. `ALL` incluye `DELETE` y `TRUNCATE`, y eso habilitaría el borrado físico del historial que las bajas lógicas buscan evitar. Darle a soporte toda la tabla `usuario` le expondría el hash de las contraseñas. En los dos casos, un error de permisos futuro se resuelve con un permiso puntual y autorizado. El prompt, la propuesta y la decisión de cada caso están en la bitácora (filas de la Parte A.4).
+
+Archivos: [BITACORA.md](https://github.com/ALucrecia-Pagano/Base_de_datos2/blob/main/Relacional_PostgreSQL/BITACORA.md), [README del TP7, fila A.4](https://github.com/ALucrecia-Pagano/Base_de_datos2/blob/main/Relacional_PostgreSQL/TP7_Administracion_y_Seguridad/README.md).
 
 ---
 
-## 6. Unidad 8 — Operación offline en SQLite, sincronización y revisión final (`TP8_Unidad8`)
+## Unidad 6 — Mantenimiento
 
-### Objetivo 11 — Esquema SQLite offline y especificación Kiro
+### Objetivo 7. Plan de mantenimiento completo
 
-[schema_sqlite.sql](https://github.com/ALucrecia-Pagano/Base_de_datos2/blob/unidades-7-8/NoSQL_y_Movil/TP8_Unidad8/movil/schema_sqlite.sql) define `6` tablas **`STRICT`** sin triggers ([resultado_pruebas_sqlite.md](https://github.com/ALucrecia-Pagano/Base_de_datos2/blob/unidades-7-8/NoSQL_y_Movil/TP8_Unidad8/docs/resultado_pruebas_sqlite.md)). La spec Kiro ([design.md](https://github.com/ALucrecia-Pagano/Base_de_datos2/blob/unidades-7-8/NoSQL_y_Movil/TP8_Unidad8/docs/kiro/design.md)) se redactó de forma retroactiva.
+El plan define un respaldo diario en formato custom (`pg_dump -Fc`), un chequeo de salud diario, mantenimiento semanal y restauraciones de prueba sobre una base descartable (`foodstore_restore_test`), con metas de RPO ≤ 24 h y RTO ≤ 15 min. Cada parte tiene su script:
 
-### Objetivo 12 — Instantánea servidor → móvil, Semáforo y casos C1–C7
+- `backup_foodstore.ps1` hace el respaldo, guarda su hash SHA-256 y cuenta las filas de cada tabla para tener contra qué comparar.
+- `restore_test.ps1` restaura en la base descartable y compara tabla por tabla.
+- `maintenance.sql` actualiza estadísticas y limpia.
+- `health_check.sql` verifica la integridad: huérfanos, cantidades y precios inválidos.
 
-El flujo de sincronización alimentó el evaluador local [semaforo.sql](https://github.com/ALucrecia-Pagano/Base_de_datos2/blob/unidades-7-8/NoSQL_y_Movil/TP8_Unidad8/movil/semaforo.sql). En [resultado_casos_2c.md](https://github.com/ALucrecia-Pagano/Base_de_datos2/blob/unidades-7-8/NoSQL_y_Movil/TP8_Unidad8/docs/resultado_casos_2c.md) se acreditaron los casos **C1–C7** (C2 conflicto resuelto, C3 stock insuficiente, C4 baja lógica, C5 aprobado, C6 idempotencia rechazada por `UNIQUE` en `cola_sync`). La inmutabilidad del servidor fue verificada con [verificar_sin_cambios_2c.sql](https://github.com/ALucrecia-Pagano/Base_de_datos2/blob/unidades-7-8/NoSQL_y_Movil/TP8_Unidad8/postgresql/verificar_sin_cambios_2c.sql).
+En la Unidad 6 el respaldo se corría a mano, y lo habíamos dejado anotado como mejora. Para esta entrega lo programamos en el Programador de tareas de Windows: la tarea `FoodStore_Respaldo_Diario` ejecuta el mismo script todos los días a las 23:00. Para probarla la disparamos desde el Programador y no a mano. Terminó con resultado 0 y estado `PASS`, con un respaldo de 46.877 bytes y los 9 controles de integridad en cero.
 
-### Objetivo 13 — Code review final asistido por IA sobre 75 scripts
+Las limitaciones que dejamos anotadas son tres. La tarea corre solo con la sesión iniciada, para no guardar contraseñas en el Programador. Si el servicio de PostgreSQL está apagado a esa hora, el respaldo falla y queda registrado como `FAIL`. Y no hay rotación automática de los respaldos viejos.
 
-Según [consigna_3c.md](https://github.com/ALucrecia-Pagano/Base_de_datos2/blob/unidades-7-8/NoSQL_y_Movil/TP8_Unidad8/docs/consigna_3c.md), Antigravity inspeccionó `75` scripts y reportó `24` hallazgos (`F01`–`F24`: `20` aceptados, `1` corregido en `recargar_snapshot.sql` con `.bail on`/`.bail off`, `3` descartados).
+Archivos: [SPEC_U6.md](https://github.com/ALucrecia-Pagano/Base_de_datos2/blob/main/Relacional_PostgreSQL/TP8_Mantenimiento_Respaldo_Recuperacion/SPEC_U6.md), [respaldo programado](https://github.com/ALucrecia-Pagano/Base_de_datos2/blob/main/Relacional_PostgreSQL/TP8_Mantenimiento_Respaldo_Recuperacion/programacion/README_programacion.md), [maintenance.sql](https://github.com/ALucrecia-Pagano/Base_de_datos2/blob/main/Relacional_PostgreSQL/TP8_Mantenimiento_Respaldo_Recuperacion/maintenance.sql), [health_check.sql](https://github.com/ALucrecia-Pagano/Base_de_datos2/blob/main/Relacional_PostgreSQL/TP8_Mantenimiento_Respaldo_Recuperacion/health_check.sql).
 
-### Objetivo 14 — Resumen consolidado de DUIA y bitácoras (Unidades 4 a 8)
+### Objetivo 8. Simulacro de desastre contra reloj
 
-Trazabilidad consolidada en [DUIA.md](https://github.com/ALucrecia-Pagano/Base_de_datos2/blob/unidades-7-8/NoSQL_y_Movil/TP8_Unidad8/docs/DUIA.md), [bitacora_ia.md](https://github.com/ALucrecia-Pagano/Base_de_datos2/blob/unidades-7-8/NoSQL_y_Movil/TP8_Unidad8/docs/bitacora_ia.md) y [BITACORA.md](https://github.com/ALucrecia-Pagano/Base_de_datos2/blob/unidades-7-8/Relacional_PostgreSQL/BITACORA.md) con uso supervisado de asistentes (Gemini, Claude, OpenCode, Kiro, Codex).
+Cada integrante hizo su propio simulacro. Partimos del último respaldo, restauramos en la base descartable midiendo el tiempo y verificamos que los conteos y los 9 controles de integridad coincidieran con el origen.
+
+| Integrante | Base | Tiempo de restauración (RTO) | Antigüedad del respaldo | Resultado |
+|---|---|---|---|---|
+| Amanda Pagano (24/10) | `foodstore_dev` | 2,58 s | 100,4 s | `PASS`, conteos iguales |
+| Amanda Pagano (24/10) | `foodstore_tp3_carga` (carga masiva) | 9,15 s | 50,0 s | `PASS`, 499.571 detalles iguales |
+| Mateo Liendo (26/10) | `foodstore_dev` | 1,64 s | 195,2 s | `PASS` |
+| Lucas Ávila (29/10) | `foodstore_dev` | 0,93 s | 1.205,9 s | `PASS` |
+
+Todos quedaron muy por debajo de la meta de 15 minutos. Cada informe individual tiene su sección de incidente. En el de Amanda, la primera comparación de la base de carga marcó una diferencia que en realidad era el orden de las claves del JSON. Se corrigió para comparar por valor y el script quedó con esa lección incorporada. Como mejora quedó respaldar también roles y permisos (`pg_dumpall --globals-only`), porque hoy se recuperan los datos pero no los dueños ni los permisos.
+
+Archivos: informes de [Amanda](https://github.com/ALucrecia-Pagano/Base_de_datos2/blob/main/Relacional_PostgreSQL/TP8_Mantenimiento_Respaldo_Recuperacion/informe_u6_Amanda_Pagano_2026-10-24.md), [Mateo](https://github.com/ALucrecia-Pagano/Base_de_datos2/blob/main/Relacional_PostgreSQL/TP8_Mantenimiento_Respaldo_Recuperacion/informe_u6_Mateo_Liendo_2026-10-26.md) y [Lucas](https://github.com/ALucrecia-Pagano/Base_de_datos2/blob/main/Relacional_PostgreSQL/TP8_Mantenimiento_Respaldo_Recuperacion/informe_u6_Lucas_Avila_2026-10-29.md).
 
 ---
 
-## 7. Protocolo de IA sobre datos, resguardo y autorizaciones
+## Unidad 7 — NoSQL
 
-- Aislamiento de herramientas e infraestructura (escrituras en Git exclusivas de Amanda).
-- Copias, transacciones reversibles (`ROLLBACK`) y respaldos `.dump` previos fuera del repositorio.
-- Privacidad estricta: datos sintéticos, contraseñas ficticias y exclusión de `observaciones` y PII en MongoDB.
+### Objetivo 9. Modelado documental y consultas sobre datos reales
+
+Modelamos los pedidos como documentos con el detalle embebido en un arreglo de líneas, porque un pedido y sus líneas siempre se leen juntos. Del cliente guardamos solo un id y un alias ("Cliente N"), para no llevar datos personales. Elegimos los tipos con cuidado para no perder precisión: ids `Long`, cantidades `Int32`, fechas `Date` e importes `Decimal128`.
+
+Extrajimos 5 pedidos reales (con 7 líneas) de `foodstore_dev` con una consulta de solo lectura y los migramos a `foodstore_unidad7.pedidos`. Después verificamos tipos y valores contra el origen. El archivo extraído conserva su hash SHA-256, que está protegido en el repositorio para que Git no le cambie los finales de línea.
+
+Las consultas pedidas (listar, filtrar por estado, buscar por producto y filtrar por total) se corrieron sobre esos datos en MongoDB Compass y mongosh.
+
+Archivos: [modelo_documental.md](https://github.com/ALucrecia-Pagano/Base_de_datos2/blob/main/NoSQL_y_Movil/TP1_FoodStore_NoSQL/docs/modelo_documental.md), [migracion_pedidos.js](https://github.com/ALucrecia-Pagano/Base_de_datos2/blob/main/NoSQL_y_Movil/TP1_FoodStore_NoSQL/mongodb/migracion_pedidos.js), [consultas_mongodb.js](https://github.com/ALucrecia-Pagano/Base_de_datos2/blob/main/NoSQL_y_Movil/TP1_FoodStore_NoSQL/mongodb/consultas_mongodb.js), [resultado_migracion.md](https://github.com/ALucrecia-Pagano/Base_de_datos2/blob/main/NoSQL_y_Movil/TP1_FoodStore_NoSQL/docs/resultado_migracion.md).
+
+### Objetivo 10. Comparación documental vs. relacional
+
+Corrimos las mismas consultas en PostgreSQL y en MongoDB y los resultados coincidieron. Por estado `ENTREGADO` aparecieron los 5 pedidos en los dos motores. Por producto, los pedidos 1, 3 y 5, con las mismas cantidades y precios históricos.
+
+Además le pedimos a una IA (Gemini) que comparara los dos motores y contrastamos dos de sus afirmaciones. Que MongoDB "no valida dependencias entre campos" resultó imprecisa: armamos un validador con `$expr` y MongoDB rechazó con el código 121 los pedidos con totales o subtotales mal calculados. Que PostgreSQL garantiza la integridad con claves foráneas y restricciones se confirmó con una prueba dentro de una transacción.
+
+Elegimos mantener PostgreSQL como fuente de verdad de los pedidos. Las reglas de integridad que necesita Food Store vienen dadas por el motor, mientras que en MongoDB hay que escribirlas y mantenerlas a mano. MongoDB quedaría, si hiciera falta, como copia de lectura. No medimos rendimiento, porque con 5 documentos no tenía sentido.
+
+Archivos: [comparacion_resultados.md](https://github.com/ALucrecia-Pagano/Base_de_datos2/blob/main/NoSQL_y_Movil/TP1_FoodStore_NoSQL/docs/comparacion_resultados.md), [contraste_ia.md](https://github.com/ALucrecia-Pagano/Base_de_datos2/blob/main/NoSQL_y_Movil/TP1_FoodStore_NoSQL/docs/contraste_ia.md).
 
 ---
 
-## 8. Limitaciones conocidas y deuda técnica consolidada
+## Unidad 8 — Bases móviles e integración
 
-- **Unidad 4 (`TP6`):** concurrencia de triggers no ensayada; `LD → C` no preservada por restricciones declarativas locales.
-- **Unidad 5 (`TP7`):** evidencia del Objetivo 6 distribuida; `usuario_anon` con `id` recuperable.
-- **Unidad 6 (`TP8` PG):** dumps sin globales (`--globals-only`), `maintenance.sql` parcial en `ANALYZE`, respaldo programado dependiente de sesión activa.
-- **Unidad 7 (`TP1` NoSQL):** pendiente aval docente de `id + alias`; sin validadores permanentes.
-- **Unidad 8 (`TP8` SQLite):** spec Kiro retroactiva; `UNIQUE(solicitud_uuid)` en servidor pendiente.
+### Objetivo 11. Base SQLite con esquema y sincronización especificados
+
+Diseñamos la base de la tablet en SQLite con tablas `STRICT`, claves foráneas activadas, precios en centavos enteros y restricciones `CHECK`. Tiene seis tablas: el catálogo en caché, la instantánea del servidor, los pedidos borrador con sus ítems y una cola de sincronización. La especificación (requisitos, diseño y tareas) está en la carpeta de Kiro. La dejamos declarada como retroactiva, porque la escribimos después del código y la auditamos línea por línea contra los scripts.
+
+Lo probamos con un borrador válido que confirma, otro que se deshace sin dejar filas y dos rechazos esperados (cantidad cero y producto inexistente).
+
+Archivos: [schema_sqlite.sql](https://github.com/ALucrecia-Pagano/Base_de_datos2/blob/main/NoSQL_y_Movil/TP8_Unidad8/movil/schema_sqlite.sql), [spec](https://github.com/ALucrecia-Pagano/Base_de_datos2/blob/main/NoSQL_y_Movil/TP8_Unidad8/docs/kiro/requirements.md), [resultado de las pruebas](https://github.com/ALucrecia-Pagano/Base_de_datos2/blob/main/NoSQL_y_Movil/TP8_Unidad8/docs/resultado_pruebas_sqlite.md).
+
+### Objetivo 12. Sincronización simulada con conflictos
+
+El servidor exporta una vista con precio, stock y disponibilidad de cada producto, y la tablet la importa como instantánea. Un "semáforo" en SQLite evalúa cada solicitud pendiente contra esa instantánea. La regla de oro es que la tablet nunca cambia el stock ni el precio del servidor.
+
+Probamos los casos con cambios hechos de verdad en una copia del servidor (`foodstore_tp8_feria`):
+
+| Caso | Situación | Resultado |
+|---|---|---|
+| C2 | Cambió el precio | `CONFLICTO`; al aceptar el precio nuevo, con otra solicitud, `SIMULADO_APROBADO` |
+| C3 | Stock insuficiente | `RECHAZADO` |
+| C4 | Producto dado de baja | `RECHAZADO` |
+| C5 | Todo coincide | `SIMULADO_APROBADO` |
+| C6 | Reenvío de la misma solicitud | Rechazado por `UNIQUE` sobre el identificador: no se duplica |
+
+Antes y después de los casos verificamos que el servidor no cambió (5 pedidos, 7 detalles y el mismo stock).
+
+Archivos: [semaforo.sql](https://github.com/ALucrecia-Pagano/Base_de_datos2/blob/main/NoSQL_y_Movil/TP8_Unidad8/movil/semaforo.sql), [casos_2c.sql](https://github.com/ALucrecia-Pagano/Base_de_datos2/blob/main/NoSQL_y_Movil/TP8_Unidad8/movil/casos_2c.sql), [resultado_casos_2c.md](https://github.com/ALucrecia-Pagano/Base_de_datos2/blob/main/NoSQL_y_Movil/TP8_Unidad8/docs/resultado_casos_2c.md).
+
+### Objetivo 13. Code review final con IA
+
+Revisamos con IA los 75 scripts de toda la cursada (`.sql`, `.js`, `.ps1` y `.py` de los dos repositorios), en modo de solo lectura y sobre una copia. Salieron 24 hallazgos y decidimos cada uno: 20 aceptados, 1 corregido y 3 descartados con su motivo.
+
+Los aceptados que son de TPs ya calificados quedaron registrados como mejora, sin tocar esos trabajos. El que corregimos (F07) era real: un error al recargar la instantánea dejaba la tablet vacía. Lo comprobamos, lo arreglamos y repetimos los casos. Uno de los aceptados (F05, un pedido entregado que se podía borrar) lo comprobamos en la base dentro de una transacción. Uno de los descartados (F09) lo refutamos también en la base.
+
+Archivo: [consigna_3c.md](https://github.com/ALucrecia-Pagano/Base_de_datos2/blob/main/NoSQL_y_Movil/TP8_Unidad8/docs/consigna_3c.md).
+
+### Objetivo 14. Capa de datos completa
+
+La capa relacional, la documental y la móvil están en este repositorio, con sus specs, todos los scripts versionados en Git, el plan de mantenimiento con el respaldo programado y el registro del uso de IA en cada carpeta. Los aportes de los tres integrantes quedan en el historial de commits.
+
+---
+
+## Uso de IA
+
+| Unidad | Herramientas | Para qué | Qué aceptamos | Qué descartamos o corregimos |
+|---|---|---|---|---|
+| 4 | Antigravity (Gemini), Claude | Spec, plan de reversión y ensayo | El ensayo de ida y vuelta | Un escenario que daba por probado un fallo nunca forzado; redacción técnica imprecisa |
+| 5 | OpenCode, Kiro, Codex | Spec de roles, auditoría de permisos, análisis del incidente | La auditoría sin faltantes; lo que el log confirmaba | Una tabla `usuario` distinta de la real; los tres permisos amplios; dos afirmaciones sin sustento en el log |
+| 6 | Codex, Claude Code, Claude, Antigravity | Scripts de respaldo, restauración y programación | Los scripts revisados y probados | Un segundo borrado de la base de prueba que no estaba autorizado: se hizo recién después de autorizarlo expresamente |
+| 7 | Gemini, Claude | Contraste de afirmaciones sobre los motores | La afirmación sobre PostgreSQL | La de MongoDB, por imprecisa |
+| 8 | Kiro, Copilot, Claude, Antigravity | Spec, scripts y code review | 20 hallazgos aceptados y 1 corregido | 3 hallazgos descartados; un criterio erróneo en un requisito |
+
+El detalle de prompts y decisiones está en las DUIA y bitácoras de cada carpeta: [Unidad 4](https://github.com/ALucrecia-Pagano/Base_de_datos2/blob/main/Relacional_PostgreSQL/TP6_FNBC_Desnormalizacion/Parte1_FNBC/spec_migracion/DUIA_spec_migracion.md), [Unidades 5 y anteriores](https://github.com/ALucrecia-Pagano/Base_de_datos2/blob/main/Relacional_PostgreSQL/BITACORA.md), [Unidad 6](https://github.com/ALucrecia-Pagano/Base_de_datos2/blob/main/Relacional_PostgreSQL/TP8_Mantenimiento_Respaldo_Recuperacion/programacion/README_programacion.md), [Unidad 7](https://github.com/ALucrecia-Pagano/Base_de_datos2/blob/main/NoSQL_y_Movil/TP1_FoodStore_NoSQL/docs/contraste_ia.md), [Unidad 8 — DUIA](https://github.com/ALucrecia-Pagano/Base_de_datos2/blob/main/NoSQL_y_Movil/TP8_Unidad8/docs/DUIA.md) y [bitácora](https://github.com/ALucrecia-Pagano/Base_de_datos2/blob/main/NoSQL_y_Movil/TP8_Unidad8/docs/bitacora_ia.md).
+
+### Cómo cumplimos el protocolo de IA sobre datos
+
+- Ningún script generado con IA se ejecutó sin leerlo antes. Las pruebas corrieron en copias (`foodstore_copia_trabajo`, `foodstore_restore_test`, `foodstore_tp8_feria`) o dentro de transacciones con `ROLLBACK`, y con un respaldo previo guardado fuera del repositorio cuando había cambios de estructura.
+- No le pasamos a ninguna IA datos personales reales: usamos usuarios sintéticos (`@example.invalid`), clientes con alias, IPs de documentación en los logs y contraseñas de prueba. Las credenciales locales están en `pgpass.conf`, fuera del repositorio.
+- Los asistentes no hicieron commits ni se conectaron a las bases sin autorización para cada etapa.
+
+---
+
+## Matriz de cumplimiento
+
+| Obj. | Evidencia principal | Estado |
+|---|---|---|
+| 1 | [informe_parte1_fnbc.md](https://github.com/ALucrecia-Pagano/Base_de_datos2/blob/main/Relacional_PostgreSQL/TP6_FNBC_Desnormalizacion/Parte1_FNBC/informe_parte1_fnbc.md) | Cumplido |
+| 2 | [plan_reversion.md](https://github.com/ALucrecia-Pagano/Base_de_datos2/blob/main/Relacional_PostgreSQL/TP6_FNBC_Desnormalizacion/Parte1_FNBC/spec_migracion/plan_reversion.md) y [evidencia](https://github.com/ALucrecia-Pagano/Base_de_datos2/blob/main/Relacional_PostgreSQL/TP6_FNBC_Desnormalizacion/Parte1_FNBC/evidencias/evidencia_reversion_20261110_165503.txt) | Cumplido |
+| 3 | [informe_final_tp6.md](https://github.com/ALucrecia-Pagano/Base_de_datos2/blob/main/Relacional_PostgreSQL/TP6_FNBC_Desnormalizacion/informe_final_tp6.md) | Cumplido |
+| 4 | [roles.sql](https://github.com/ALucrecia-Pagano/Base_de_datos2/blob/main/Relacional_PostgreSQL/TP7_Administracion_y_Seguridad/sql/roles.sql) | Cumplido |
+| 5 | [informe_incidente.md](https://github.com/ALucrecia-Pagano/Base_de_datos2/blob/main/Relacional_PostgreSQL/TP7_Administracion_y_Seguridad/docs/informe_incidente.md) | Cumplido |
+| 6 | [BITACORA.md](https://github.com/ALucrecia-Pagano/Base_de_datos2/blob/main/Relacional_PostgreSQL/BITACORA.md), Parte A.4 | Cumplido |
+| 7 | [README_programacion.md](https://github.com/ALucrecia-Pagano/Base_de_datos2/blob/main/Relacional_PostgreSQL/TP8_Mantenimiento_Respaldo_Recuperacion/programacion/README_programacion.md) y [SPEC_U6.md](https://github.com/ALucrecia-Pagano/Base_de_datos2/blob/main/Relacional_PostgreSQL/TP8_Mantenimiento_Respaldo_Recuperacion/SPEC_U6.md) | Cumplido |
+| 8 | Informes individuales de la Unidad 6 | Cumplido |
+| 9 | [resultado_migracion.md](https://github.com/ALucrecia-Pagano/Base_de_datos2/blob/main/NoSQL_y_Movil/TP1_FoodStore_NoSQL/docs/resultado_migracion.md) | Cumplido |
+| 10 | [comparacion_resultados.md](https://github.com/ALucrecia-Pagano/Base_de_datos2/blob/main/NoSQL_y_Movil/TP1_FoodStore_NoSQL/docs/comparacion_resultados.md) | Cumplido |
+| 11 | [schema_sqlite.sql](https://github.com/ALucrecia-Pagano/Base_de_datos2/blob/main/NoSQL_y_Movil/TP8_Unidad8/movil/schema_sqlite.sql) y spec | Cumplido |
+| 12 | [resultado_casos_2c.md](https://github.com/ALucrecia-Pagano/Base_de_datos2/blob/main/NoSQL_y_Movil/TP8_Unidad8/docs/resultado_casos_2c.md) | Cumplido |
+| 13 | [consigna_3c.md](https://github.com/ALucrecia-Pagano/Base_de_datos2/blob/main/NoSQL_y_Movil/TP8_Unidad8/docs/consigna_3c.md) | Cumplido |
+| 14 | Este repositorio | Cumplido |
+
+## Limitaciones conocidas
+
+- La descomposición FNBC no garantiza LD → C por sí sola, y la validación que lo controla en la reversión no se probó con un caso negativo.
+- En la desnormalización no probamos concurrencia entre sesiones ni medimos el costo en escrituras.
+- Los respaldos no incluyen roles ni permisos globales.
+- El respaldo programado depende de que la sesión esté iniciada y el servicio de PostgreSQL encendido.
+- En MongoDB no quedaron validadores permanentes en la colección.
+- La spec de la Unidad 8 es retroactiva.
+- Las mejoras del code review que tocan TPs ya calificados quedaron registradas, no aplicadas.

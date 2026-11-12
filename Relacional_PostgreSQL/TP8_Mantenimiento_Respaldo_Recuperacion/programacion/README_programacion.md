@@ -40,6 +40,7 @@ Las tareas complementarias del plan de mantenimiento siguen como se implementaro
 - La tarea corre solo con la sesión de Windows iniciada (para no guardar contraseñas en el Programador de tareas).
 - El servicio de PostgreSQL se inicia a mano en esta máquina y, si está detenido a esa hora, el respaldo falla y queda registrado como `FAIL` en `metadata.json`.
 - No hay rotación automática, por lo que los respaldos viejos se borran a mano.
+- La tarea guarda la ruta absoluta de `backup_foodstore.ps1`. Si el repositorio se mueve o se vuelve a clonar en otra carpeta, hay que quitar la tarea y registrarla de nuevo; si no, la tarea falla sin llegar a correr el script y sin dejar `metadata.json`. Una falla de ese tipo solo se ve en el `LastTaskResult` de `Get-ScheduledTaskInfo`, por eso el control diario revisa las dos cosas.
 
 ## DUIA
 | Herramienta | Finalidad | Fecha |

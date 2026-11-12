@@ -14,7 +14,7 @@ BEGIN;
 -- No crea ni cambia la conexión.
 -- Rechaza otra base, la ausencia de usuario o cualquier objeto
 -- previo cuyos nombres se utilizarían en esta propuesta.
--- Copiado sin cambios de tp_fnbc_control_lote.sql (secciones 1 a 8).
+-- Copiado sin cambios de tp_fnbc_control_lote.sql (secciones 1 a 9).
 
 DO $$
 DECLARE

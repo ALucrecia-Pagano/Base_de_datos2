@@ -39,7 +39,7 @@ Para probar el plan armamos un ensayo de ida y vuelta. Hace la migración comple
 
 Lo ejecutamos el 10/11 en `foodstore_copia_trabajo`, con un respaldo previo de la base guardado fuera del repositorio. Terminó con código de salida 0: los cinco avisos de control aparecieron en orden, la comparación contra la copia dio 0 filas, se restituyeron las 3 filas originales y todo cerró con `ROLLBACK`.
 
-Una limitación que dejamos registrada: la validación de LD → C funcionó en el caso válido, pero no la forzamos con un caso que la haga fallar.
+El ensayo corre la ida y la vuelta en una sola transacción y compara contra una foto temporal tomada antes del corte. Prueba que la secuencia es correcta, pero no reproduce una reversión real hecha en otra sesión después del `COMMIT`: en ese caso la foto ya no existe y la tabla recreada se verifica contra el `JOIN` de las tablas nuevas. Lo aclaramos en el plan a partir del code review (hallazgo F26). Otra limitación que dejamos registrada: la validación de LD → C funcionó en el caso válido, pero no la forzamos con un caso que la haga fallar.
 
 Archivos: [spec y plan](https://github.com/ALucrecia-Pagano/Base_de_datos2/blob/main/Relacional_PostgreSQL/TP6_FNBC_Desnormalizacion/Parte1_FNBC/spec_migracion/plan_reversion.md), [ensayo_migracion_reversion.sql](https://github.com/ALucrecia-Pagano/Base_de_datos2/blob/main/Relacional_PostgreSQL/TP6_FNBC_Desnormalizacion/Parte1_FNBC/ensayo_migracion_reversion.sql), [evidencia](https://github.com/ALucrecia-Pagano/Base_de_datos2/blob/main/Relacional_PostgreSQL/TP6_FNBC_Desnormalizacion/Parte1_FNBC/evidencias/evidencia_reversion_20261110_165503.txt).
 
@@ -98,7 +98,7 @@ El plan define un respaldo diario en formato custom (`pg_dump -Fc`), un chequeo 
 
 En la Unidad 6 el respaldo se corría a mano, y lo habíamos dejado anotado como mejora. Para esta entrega lo programamos en el Programador de tareas de Windows: la tarea `FoodStore_Respaldo_Diario` ejecuta el mismo script todos los días a las 23:00. Para probarla la disparamos desde el Programador y no a mano. Terminó con resultado 0 y estado `PASS`, con un respaldo de 46.877 bytes y los 9 controles de integridad en cero.
 
-Las limitaciones que dejamos anotadas son tres. La tarea corre solo con la sesión iniciada, para no guardar contraseñas en el Programador. Si el servicio de PostgreSQL está apagado a esa hora, el respaldo falla y queda registrado como `FAIL`. Y no hay rotación automática de los respaldos viejos.
+Las limitaciones que dejamos anotadas son tres. La tarea corre solo con la sesión iniciada, para no guardar contraseñas en el Programador. Si el servicio de PostgreSQL está apagado a esa hora, el respaldo falla y queda registrado como `FAIL`. Y no hay rotación automática de los respaldos viejos. El code review agregó una cuarta: la tarea guarda la ruta absoluta del script, así que si el repositorio se mueve hay que registrarla de nuevo, y esa falla solo se ve en el resultado de la tarea (hallazgo F27).
 
 Archivos: [SPEC_U6.md](https://github.com/ALucrecia-Pagano/Base_de_datos2/blob/main/Relacional_PostgreSQL/TP8_Mantenimiento_Respaldo_Recuperacion/SPEC_U6.md), [respaldo programado](https://github.com/ALucrecia-Pagano/Base_de_datos2/blob/main/Relacional_PostgreSQL/TP8_Mantenimiento_Respaldo_Recuperacion/programacion/README_programacion.md), [maintenance.sql](https://github.com/ALucrecia-Pagano/Base_de_datos2/blob/main/Relacional_PostgreSQL/TP8_Mantenimiento_Respaldo_Recuperacion/maintenance.sql), [health_check.sql](https://github.com/ALucrecia-Pagano/Base_de_datos2/blob/main/Relacional_PostgreSQL/TP8_Mantenimiento_Respaldo_Recuperacion/health_check.sql).
 
@@ -173,11 +173,13 @@ Archivos: [semaforo.sql](https://github.com/ALucrecia-Pagano/Base_de_datos2/blob
 
 ### Objetivo 13. Code review final con IA
 
-Revisamos con IA los 75 scripts de toda la cursada (`.sql`, `.js`, `.ps1` y `.py` de los dos repositorios), en modo de solo lectura y sobre una copia. Salieron 24 hallazgos y decidimos cada uno: 20 aceptados, 1 corregido y 3 descartados con su motivo.
+Revisamos con IA los 75 scripts que tenía la cursada al 4/11 (`.sql`, `.js`, `.ps1` y `.py` de los dos repositorios), en modo de solo lectura y sobre una copia. Salieron 24 hallazgos y decidimos cada uno: 20 aceptados, 1 corregido y 3 descartados con su motivo.
+
+Para esta entrega agregamos 3 scripts (el ensayo de reversión y los dos de la tarea programada), así que hicimos un anexo con Claude Code para que la revisión cubra los 78 scripts del repositorio. Salieron 5 hallazgos más (F25 a F29). Corregimos un comentario del ensayo que no coincidía con su DUIA y aclaramos en el plan de reversión y en el README del respaldo dos afirmaciones que decían más de lo probado. Los otros dos, de riesgo bajo, quedaron como mejora.
 
 Los aceptados que son de TPs ya calificados quedaron registrados como mejora, sin tocar esos trabajos. El que corregimos (F07) era real: un error al recargar la instantánea dejaba la tablet vacía. Lo comprobamos, lo arreglamos y repetimos los casos. Uno de los aceptados (F05, un pedido entregado que se podía borrar) lo comprobamos en la base dentro de una transacción. Uno de los descartados (F09) lo refutamos también en la base.
 
-Archivo: [consigna_3c.md](https://github.com/ALucrecia-Pagano/Base_de_datos2/blob/main/NoSQL_y_Movil/TP8_Unidad8/docs/consigna_3c.md).
+Archivos: [consigna_3c.md](https://github.com/ALucrecia-Pagano/Base_de_datos2/blob/main/NoSQL_y_Movil/TP8_Unidad8/docs/consigna_3c.md) y [anexo](https://github.com/ALucrecia-Pagano/Base_de_datos2/blob/main/NoSQL_y_Movil/TP8_Unidad8/docs/consigna_3c_adenda.md).
 
 ### Objetivo 14. Capa de datos completa
 
@@ -189,11 +191,14 @@ La capa relacional, la documental y la móvil están en este repositorio, con su
 
 | Unidad | Herramientas | Para qué | Qué aceptamos | Qué descartamos o corregimos |
 |---|---|---|---|---|
-| 4 | Antigravity (Gemini), Claude | Spec, plan de reversión y ensayo | El ensayo de ida y vuelta | Un escenario que daba por probado un fallo nunca forzado; redacción técnica imprecisa |
+| 4 · TP6 (octubre) | Claude (chat) y Claude Code (Amanda); OpenCode y Kiro (Mateo); Gemini (chat) y OpenCode (Lucas) | Asistencia en las dos partes del TP6 | Los scripts, después de revisarlos y probarlos con `ROLLBACK` | No quedó registrado: la consigna no pedía DUIA (ver nota abajo) |
+| 4 · spec de migración (noviembre) | Antigravity (Gemini) y Claude (chat) | Spec, plan de reversión y ensayo | El ensayo de ida y vuelta | Un escenario que daba por probado un fallo nunca forzado; redacción técnica imprecisa |
 | 5 | OpenCode, Kiro, Codex | Spec de roles, auditoría de permisos, análisis del incidente | La auditoría sin faltantes; lo que el log confirmaba | Una tabla `usuario` distinta de la real; los tres permisos amplios; dos afirmaciones sin sustento en el log |
 | 6 | Codex, Claude Code, Claude, Antigravity | Scripts de respaldo, restauración y programación | Los scripts revisados y probados | Un segundo borrado de la base de prueba que no estaba autorizado: se hizo recién después de autorizarlo expresamente |
 | 7 | Gemini, Claude | Contraste de afirmaciones sobre los motores | La afirmación sobre PostgreSQL | La de MongoDB, por imprecisa |
-| 8 | Kiro, Copilot, Claude, Antigravity | Spec, scripts y code review | 20 hallazgos aceptados y 1 corregido | 3 hallazgos descartados; un criterio erróneo en un requisito |
+| 8 | Kiro, Copilot, Claude, Antigravity; Claude Code para el anexo del code review | Spec, scripts y code review | 20 hallazgos aceptados y 1 corregido; en el anexo, los 5 hallazgos | 3 hallazgos descartados; un criterio erróneo en un requisito |
+
+La consigna de la Unidad 4 no pedía DUIA. En el TP6, Amanda usó Claude (chat) y Claude Code, Mateo usó OpenCode y Kiro, y Lucas usó OpenCode y el chat de Gemini como asistentes. Los scripts se revisaron y se probaron dentro de transacciones que terminan en `ROLLBACK`, como muestran las evidencias. Para esta entrega agregamos la spec de migración y su plan de reversión, hechos con Antigravity y Claude; esa asistencia está declarada en su propia DUIA.
 
 El detalle de prompts y decisiones está en las DUIA y bitácoras de cada carpeta: [Unidad 4](https://github.com/ALucrecia-Pagano/Base_de_datos2/blob/main/Relacional_PostgreSQL/TP6_FNBC_Desnormalizacion/Parte1_FNBC/spec_migracion/DUIA_spec_migracion.md), [Unidades 5 y anteriores](https://github.com/ALucrecia-Pagano/Base_de_datos2/blob/main/Relacional_PostgreSQL/BITACORA.md), [Unidad 6](https://github.com/ALucrecia-Pagano/Base_de_datos2/blob/main/Relacional_PostgreSQL/TP8_Mantenimiento_Respaldo_Recuperacion/programacion/README_programacion.md), [Unidad 7](https://github.com/ALucrecia-Pagano/Base_de_datos2/blob/main/NoSQL_y_Movil/TP1_FoodStore_NoSQL/docs/contraste_ia.md), [Unidad 8 — DUIA](https://github.com/ALucrecia-Pagano/Base_de_datos2/blob/main/NoSQL_y_Movil/TP8_Unidad8/docs/DUIA.md) y [bitácora](https://github.com/ALucrecia-Pagano/Base_de_datos2/blob/main/NoSQL_y_Movil/TP8_Unidad8/docs/bitacora_ia.md).
 
@@ -221,7 +226,7 @@ El detalle de prompts y decisiones está en las DUIA y bitácoras de cada carpet
 | 10 | [comparacion_resultados.md](https://github.com/ALucrecia-Pagano/Base_de_datos2/blob/main/NoSQL_y_Movil/TP1_FoodStore_NoSQL/docs/comparacion_resultados.md) | Cumplido |
 | 11 | [schema_sqlite.sql](https://github.com/ALucrecia-Pagano/Base_de_datos2/blob/main/NoSQL_y_Movil/TP8_Unidad8/movil/schema_sqlite.sql) y spec | Cumplido |
 | 12 | [resultado_casos_2c.md](https://github.com/ALucrecia-Pagano/Base_de_datos2/blob/main/NoSQL_y_Movil/TP8_Unidad8/docs/resultado_casos_2c.md) | Cumplido |
-| 13 | [consigna_3c.md](https://github.com/ALucrecia-Pagano/Base_de_datos2/blob/main/NoSQL_y_Movil/TP8_Unidad8/docs/consigna_3c.md) | Cumplido |
+| 13 | [consigna_3c.md](https://github.com/ALucrecia-Pagano/Base_de_datos2/blob/main/NoSQL_y_Movil/TP8_Unidad8/docs/consigna_3c.md) y [anexo](https://github.com/ALucrecia-Pagano/Base_de_datos2/blob/main/NoSQL_y_Movil/TP8_Unidad8/docs/consigna_3c_adenda.md) (78 de 78 scripts) | Cumplido |
 | 14 | Este repositorio | Cumplido |
 
 ## Limitaciones conocidas
@@ -229,7 +234,8 @@ El detalle de prompts y decisiones está en las DUIA y bitácoras de cada carpet
 - La descomposición FNBC no garantiza LD → C por sí sola, y la validación que lo controla en la reversión no se probó con un caso negativo.
 - En la desnormalización no probamos concurrencia entre sesiones ni medimos el costo en escrituras.
 - Los respaldos no incluyen roles ni permisos globales.
-- El respaldo programado depende de que la sesión esté iniciada y el servicio de PostgreSQL encendido.
+- La reversión posterior al `COMMIT` está ensayada dentro de una transacción; un script de reversión independiente quedó como mejora.
+- El respaldo programado depende de que la sesión esté iniciada, el servicio de PostgreSQL encendido y el repositorio en la misma carpeta.
 - En MongoDB no quedaron validadores permanentes en la colección.
 - La spec de la Unidad 8 es retroactiva.
 - Las mejoras del code review que tocan TPs ya calificados quedaron registradas, no aplicadas.

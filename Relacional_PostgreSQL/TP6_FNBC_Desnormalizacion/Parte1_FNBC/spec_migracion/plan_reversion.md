@@ -13,7 +13,7 @@ Respaldo tomado antes del ensayo del 2026-11-10: `foodstore_copia_trabajo_antes_
 |---|---|---|---|
 | **E1** Falla antes del COMMIT | Error con `ON_ERROR_STOP` | La transacción se deshace sola (`ROLLBACK`) | Mecanismo de PostgreSQL (`BEGIN` + `ON_ERROR_STOP`), usado por ambos scripts. No se forzó un fallo: la evidencia del TP6 muestra el cierre con `ROLLBACK`, no un error. |
 | **E2** Después del COMMIT, con la tabla original todavía presente (convivencia) | La verificación de equivalencia falla o se decide volver atrás | `DROP` de la vista y de las dos tablas nuevas en orden | `ensayo_migracion_reversion.sql` (pasos de retiro). |
-| **E3** Después del COMMIT y del retiro de la tabla original | Se decide volver atrás | Script de reversión: validar LD → C, recrear la tabla, poblarla por JOIN, verificar y retirar lo nuevo | `ensayo_migracion_reversion.sql`. |
+| **E3** Después del COMMIT y del retiro de la tabla original | Se decide volver atrás | Script de reversión: validar LD → C, recrear la tabla, poblarla por JOIN, verificar y retirar lo nuevo | Ensayado en `ensayo_migracion_reversion.sql` dentro de la misma transacción de la migración (ver alcance del ensayo, abajo). |
 | **E4** Último recurso: datos nuevos corruptos o que violan LD → C | La reversión E3 aborta en su paso 1 (validación de LD → C) o la verificación detecta datos inconsistentes | Restaurar el respaldo del punto de restauración con `pg_restore` | Unidad 6: `restore_test.ps1` y simulacro de desastre con RTO medido. |
 
 ## Criterio para volver atrás
@@ -23,6 +23,10 @@ Se activará la reversión ante cualquiera de las siguientes condiciones:
 - Los conteos de filas (`COUNT(*)`) no coinciden entre relaciones correspondientes.
 - Aparece una violación de la dependencia funcional LD → C en los datos de las tablas nuevas.
 - Una consulta o funcionalidad de la aplicación deja de funcionar tras el corte.
+
+## Alcance del ensayo de E3
+
+El ensayo corre la ida y la vuelta en una sola transacción y compara la tabla recreada con una foto temporal (`ON COMMIT DROP`) tomada antes del corte. Demuestra que la secuencia de pasos es correcta y que la reconstrucción es exacta, pero no reproduce un E3 real, en el que la reversión se ejecuta en otra sesión después del `COMMIT` y esa foto ya no existe. En ese caso la verificación se hace contra las tablas descompuestas: la tabla recreada tiene que coincidir con el `JOIN` de `control_lote` y `responsable_deposito` (diferencias vacías y mismos conteos), y no contra el estado previo, porque los datos pudieron cambiar después del corte. Un script de reversión independiente queda registrado como mejora (hallazgo F26 del [anexo del code review](../../../../NoSQL_y_Movil/TP8_Unidad8/docs/consigna_3c_adenda.md)).
 
 ## Limitación
 

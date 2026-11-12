@@ -151,6 +151,17 @@ Los archivos `.dump` permanecen fuera del repositorio porque contienen los
 datos completos de la base y la tabla `usuario`, que incluye hashes de
 contraseñas.
 
+## Uso de IA y control humano
+
+Se utilizó **Copilot**, mediante su agente de terminal, y **Kiro** como
+asistencia para preparar y revisar el trabajo de la Unidad 6. La asistencia de
+IA no reemplazó el control del operador: cada operación sobre la base fue
+autorizada y ejecutada manualmente, y se revisaron sus resultados antes de
+continuar. Las validaciones propias incluyeron la comprobación del estado
+`PASS`, el tamaño y la huella SHA-256 del respaldo, los conteos de las cinco
+tablas, los nueve indicadores de integridad y la preservación de los conteos
+después del mantenimiento.
+
 ## Conclusión
 
 El respaldo de `foodstore_dev`, realizado por Mateo Liendo, finalizó con
